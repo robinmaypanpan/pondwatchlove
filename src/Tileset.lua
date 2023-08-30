@@ -4,7 +4,7 @@ local Tileset = class('Tileset')
 
 -- Adjust the relative path so it points from the root
 function fixRelPath(path)
-    local result, _ = string.gsub(path, '../tilesets', 'assets/tilesets')
+    local result, _ = string.gsub(path, '../', 'assets/')
     return result
 end
 
