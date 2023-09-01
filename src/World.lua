@@ -2,19 +2,27 @@ local class = require('lib/middleclass')
 
 local World = class('World')
 
-function World:initialize(worldData)
-    assert(worldData.worldLayout == 'GridVania')
+function World:initialize(data)
+    assert(data.worldLayout == 'GridVania')
+    self.data = data
 
-    self.gridWidth = worldData.worldGridWidth
-    self.gridHeight = worldData.worldGridHeight
+    self.gridWidth = data.worldGridWidth
+    self.gridHeight = data.worldGridHeight
 
     self.activeLevels = {}
+
     self.levels = {}
 end
 
 -- Adds the provided level data as an inactive level in the world
 function World:addLevel(level)
-    table.insert(self.levels, level)
+    self.levels[level.id] = level
+end
+
+function World:displayLevel(levelId)
+    local level = self.levels[levelId]
+
+    table.insert(self.activeLevels, level)
 end
 
 -- Draws this level at the indicated position

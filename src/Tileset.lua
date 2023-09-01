@@ -18,21 +18,46 @@ function Tileset:initialize(data)
     self.tileSize = data.tileGridSize
     self.spacing = data.spacing
     self.padding = data.padding
+
+    self.numRows = data.__cHei
+    self.numCols = data.__cWid
+
+    self.width = data.pxWid
+    self.height = data.pxHei
+
     self.imageSource = love.graphics.newImage(fixRelPath(data.relPath))
+
+    local numTiles = self.numRows * self.numCols
+    self.tileQuads = {}
 end
 
-function Tileset:getTileQuad()
-    -- Get "grid-based" coordinate of the tileId
-    -- local gridTileX = tileId - atlasGridBaseWidth * Std.int(tileId / atlasGridBaseWidth);
+-- Create or retrieve a tile quad for a given tile
+function Tileset:getTileQuad(tileId)
+    if self.tileQuads[tileId] == nil then
+        -- Get "grid-based" coordinate of the tileId
+        local gridTileX = tileId - self.numCols * math.floor(tileId / self.numCols);
 
-    -- -- Get the atlas pixel coordinate
-    -- local pixelTileX = padding + gridTileX * (gridSize + spacing);
+        -- Get the atlas pixel coordinate
+        local pixelTileX = self.padding + gridTileX * (self.tileSize + self.spacing);
 
-    -- -- Get "grid-based" coordinate of the tileId
-    -- local gridTileY = Std.int(tileId / atlasGridBaseWidth)
+        -- Get "grid-based" coordinate of the tileId
+        local gridTileY = math.floor(tileId / self.numCols)
 
-    -- -- Get the atlas pixel coordinate
-    -- local pixelTileY = padding + gridTileY * (gridSize + spacing);
+        -- Get the atlas pixel coordinate
+        local pixelTileY = self.padding + gridTileY * (self.tileSize + self.spacing);
+
+        self.tileQuads[tileId] = love.graphics.newQuad(pixelTileX, pixelTileY,
+            self.tileSize, self.tileSize,
+            self.width, self.height)
+    end
+
+    return self.tileQuads[tileId]
+end
+
+-- Returns a SpriteBatch object
+function Tileset:createSpriteBatch(numRows, numCols)
+    local spriteBatch = love.graphics.newSpriteBatch(self.imageSource, numRows * numCols)
+    return spriteBatch
 end
 
 return Tileset

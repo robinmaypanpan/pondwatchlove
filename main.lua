@@ -7,6 +7,7 @@ local builder = LevelBuilder:new()
 
 function love.load()
     world = builder:loadLDTK('assets/levels/test1.ldtk')
+    world:displayLevel('Entrance')
 end
 
 -- Called before calling draw each time a frame updates
@@ -15,8 +16,5 @@ end
 
 -- Called after calling update each frame.
 function love.draw()
-    if builder.data then
-        love.graphics.print('Loaded: ' .. builder.data.levels[1].identifier)
-        love.graphics.draw(builder.tilesets['Pixel_platformer_characters'].imageSource)
-    end
+    world:draw()
 end

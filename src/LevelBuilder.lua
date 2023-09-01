@@ -1,7 +1,7 @@
 local json = require('lib/json')
 local class = require('lib/middleclass')
 
--- local Level = require('Level')
+local Level = require('src/Level')
 local World = require('src/World')
 local Tileset = require('src/Tileset')
 
@@ -12,7 +12,7 @@ function LevelBuilder:initialize()
 end
 
 function LevelBuilder:loadLDTK(filename)
-    assert(love.filesystem.exists(filename), "Level file " .. filename .. " does not exist")
+    assert(love.filesystem.getInfo(filename), "Level file " .. filename .. " does not exist")
 
     local fileData = love.filesystem.read(filename)
 
@@ -27,10 +27,10 @@ function LevelBuilder:loadLDTK(filename)
         self.tilesets[tileset.uid] = tileset
     end
 
-    -- for _, levelData in self.data.levels do
-    --     local level = Level:new(levelData)
-    --     world:addLevel(level)
-    -- end
+    for _, levelData in pairs(self.data.levels) do
+        local level = Level:new(levelData, self)
+        world:addLevel(level)
+    end
 
     return world
 end
