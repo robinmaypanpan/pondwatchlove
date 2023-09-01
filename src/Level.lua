@@ -1,5 +1,6 @@
 local class = require('lib/middleclass')
 local TileLayer = require('src/TileLayer')
+local colorFromValue = require('lib/colorFromValue')
 
 local Level = class('Level')
 
@@ -33,12 +34,15 @@ end
 
 -- Draws this level at the indicated position
 function Level:draw()
-    -- love.graphics.setColor(self.bgColor)
-    -- love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
+    love.graphics.setColor(colorFromValue(self.bgColor))
+    love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 
+    love.graphics.setColor(1, 1, 1, 1);
     for _, layer in ipairs(self.layers) do
-        local drawable = layer:renderDrawable()
-        love.graphics.draw(drawable, self.x, self.y)
+        if layer.visible then
+            local drawable = layer:renderDrawable()
+            love.graphics.draw(drawable, self.x, self.y)
+        end
     end
 end
 

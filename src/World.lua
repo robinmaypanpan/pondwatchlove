@@ -6,8 +6,8 @@ function World:initialize(data)
     assert(data.worldLayout == 'GridVania')
     self.data = data
 
-    self.gridWidth = data.worldGridWidth
-    self.gridHeight = data.worldGridHeight
+    self.levelWidth = data.defaultLevelWidth
+    self.levelHeight = data.defaultLevelHeight
 
     self.activeLevels = {}
 

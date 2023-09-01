@@ -11,6 +11,9 @@ function TileLayer:initialize(data, builder)
 
     self.tileset = builder.tilesets[data.__tilesetDefUid]
 
+    self.visible = data.visible
+    self.opacity = data.__opacity
+
     self.tiles = {}
 
     local tiles
@@ -44,7 +47,15 @@ end
 function TileLayer:renderDrawable()
     self.tilesetBatch:clear()
     for _, tile in ipairs(self.tiles) do
-        self.tilesetBatch:add(tile.quad, tile.drawLocation.x, tile.drawLocation.y)
+        local scaleX = 1
+        local scaleY = 1
+        if tile.flipX then
+            scaleX = -1
+        end
+        if tile.flipY then
+            scaleY = -1
+        end
+        self.tilesetBatch:add(tile.quad, tile.drawLocation.x, tile.drawLocation.y, 0, scaleX, scaleY)
     end
     self.tilesetBatch:flush()
     return self.tilesetBatch
