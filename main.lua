@@ -2,7 +2,7 @@ if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
     require("lldebugger").start()
 end
 
-local LevelBuilder = require('src/LevelBuilder')
+local LevelBuilder = require('lib/ldtk/LevelBuilder')
 local builder = LevelBuilder:new()
 
 function love.load()
@@ -10,7 +10,7 @@ function love.load()
     love.window.setMode(1920, 1080, {
         fullscreen = false
     })
-    world = builder:loadLDTK('assets/levels/test1.ldtk')
+    world = builder:load('assets/levels/test1.ldtk')
 
     world:displayLevel('Entrance')
 end

@@ -1,5 +1,5 @@
 local class = require('lib/middleclass')
-local TileLayer = require('src/TileLayer')
+local TileLayer = require('lib/ldtk/TileLayer')
 local colorFromValue = require('lib/colorFromValue')
 
 local Level = class('Level')
