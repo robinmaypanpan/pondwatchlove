@@ -23,14 +23,14 @@ function Level:initialize(data, builder)
 
     for _, layerData in pairs(data.layerInstances) do
         if layerData.__type == 'IntGrid' then
-            local layer = IntLayer:new(layerData, builder)
+            local layer = IntLayer:new(layerData, builder, self)
             table.insert(self.layers, layer)
         elseif layerData.__type == 'Tiles' or layerData.__type == 'AutoLayer' then
-            local layer = TileLayer:new(layerData, builder)
+            local layer = TileLayer:new(layerData, builder, self)
             table.insert(self.layers, layer)
         elseif layerData.__type == 'Entities' then
-            -- local layer = EntityLayer:new(layerData, builder)
-            -- table.insert(self.layers, layer)
+            local layer = EntityLayer:new(layerData, builder, self)
+            table.insert(self.layers, layer)
         end
     end
 end
@@ -43,8 +43,7 @@ function Level:draw()
     love.graphics.setColor(1, 1, 1, 1);
     for _, layer in ipairs(self.layers) do
         if layer.visible then
-            local drawable = layer:renderDrawable()
-            love.graphics.draw(drawable, self.x, self.y)
+            layer:draw()
         end
     end
 end

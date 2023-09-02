@@ -4,8 +4,8 @@ local TileLayer = require('lib/ldtk/TileLayer')
 
 local IntLayer = class('IntLayer', TileLayer)
 
-function IntLayer:initialize(data, builder)
-    TileLayer.initialize(self, data, builder)
+function IntLayer:initialize(data, builder, level)
+    TileLayer.initialize(self, data, builder, level)
 
     self.intGrid = {}
     local index = 1

@@ -7,8 +7,20 @@ local Tileset = require('lib/ldtk/Tileset')
 
 local LevelBuilder = class('LevelBuilder')
 
-function LevelBuilder:initialize()
+function LevelBuilder:initialize(entityTable)
     self.tilesets = {}
+    self.entityTable = entityTable
+end
+
+-- Creates an entity from the provided data
+function LevelBuilder:createEntity(data)
+    for _, tag in ipairs(data.__tags) do
+        if self.entityTable[tag] then
+            local entityGenerator = self.entityTable[tag]
+            return entityGenerator(data)
+        end
+    end
+    return nil
 end
 
 function LevelBuilder:load(filename)

@@ -2,7 +2,7 @@ local class = require('lib/middleclass')
 
 local EntityLayer = class('EntityLayer')
 
-function EntityLayer:initialize(data, builder)
+function EntityLayer:initialize(data, builder, level)
     self.entities = {}
     self.data = data
 
@@ -10,20 +10,21 @@ function EntityLayer:initialize(data, builder)
     self.opacity = data.opacity
     self.visible = data.visible
 
-    for _, entityData in ipairs(data.entitiyInstances) do
-        local entity = {
-            id = data.__identifier,
-            x = data.__worldX,
-            y = data.__worldY,
-            tags = data.__tags,
-            data = entityData
-        }
+    for _, entityData in ipairs(data.entityInstances) do
+        local entity = builder:createEntity(entityData)
         table.insert(self.entities, entity)
     end
 end
 
-function EntityLayer:renderDrawable()
+-- Binds an entity controller to the local entity data
+function EntityLayer:bindEntity(controller)
+end
 
+-- Render a drawable associated with this layer
+function EntityLayer:draw()
+    for _, entity in ipairs(self.entities) do
+        entity:draw()
+    end
 end
 
 return EntityLayer

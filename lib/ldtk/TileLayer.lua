@@ -2,7 +2,9 @@ local class = require('lib/middleclass')
 
 local TileLayer = class('TileLayer')
 
-function TileLayer:initialize(data, builder)
+function TileLayer:initialize(data, builder, level)
+    self.level = level
+
     self.id = data.__identifier
     self.numRows = data.__cHei
     self.numCols = data.__cWid
@@ -43,8 +45,8 @@ function TileLayer:initialize(data, builder)
     self.tilesetBatch = self.tileset:createSpriteBatch(self.numRows, self.numCols)
 end
 
--- returns a drawable for this layer representing its current state
-function TileLayer:renderDrawable()
+-- Draws this current tile layer
+function TileLayer:draw()
     self.tilesetBatch:clear()
     for _, tile in ipairs(self.tiles) do
         local scaleX = 1
@@ -58,7 +60,7 @@ function TileLayer:renderDrawable()
         self.tilesetBatch:add(tile.quad, tile.drawLocation.x, tile.drawLocation.y, 0, scaleX, scaleY)
     end
     self.tilesetBatch:flush()
-    return self.tilesetBatch
+    love.graphics.draw(self.tilesetBatch, self.level.x, self.level.y)
 end
 
 return TileLayer

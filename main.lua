@@ -4,13 +4,19 @@ end
 
 require('lib/table')
 local LevelBuilder = require('lib/ldtk/LevelBuilder')
-local builder = LevelBuilder:new()
+local Player = require('game/Player')
+
+local entityTable = {
+    Player = function(data) return Player:new(data) end
+}
 
 function love.load()
     love.window.setTitle('Garden Love')
     love.window.setMode(1920, 1080, {
         fullscreen = false
     })
+
+    local builder = LevelBuilder:new(entityTable)
     world = builder:load('assets/levels/test1.ldtk')
 
     world:activateLevel('Entrance')
