@@ -20,7 +20,7 @@ function love.load()
     })
 
     local builder = LevelBuilder:new(entityTable)
-    world = builder:load('assets/levels/test_avery.ldtk')
+    world = builder:load('assets/levels/Ori_Test.ldtk')
 
     world:activateLevel('Entrance')
 end

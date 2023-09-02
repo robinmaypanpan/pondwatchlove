@@ -21,7 +21,9 @@ function Level:initialize(data, builder)
 
     self.layers = {}
 
-    for _, layerData in pairs(data.layerInstances) do
+    --for _, layerData in ipairs(data.layerInstances) do
+    for i=#data.layerInstances,1,-1 do
+        local layerData = data.layerInstances[i]
         if layerData.__type == 'IntGrid' then
             local layer = IntLayer:new(layerData, builder, self)
             table.insert(self.layers, layer)
