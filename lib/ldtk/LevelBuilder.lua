@@ -13,11 +13,11 @@ function LevelBuilder:initialize(entityTable)
 end
 
 -- Creates an entity from the provided data
-function LevelBuilder:createEntity(data)
+function LevelBuilder:createEntity(data, level)
     for _, tag in ipairs(data.__tags) do
         if self.entityTable[tag] then
             local entityGenerator = self.entityTable[tag]
-            return entityGenerator(data)
+            return entityGenerator(data, level)
         end
     end
     return nil

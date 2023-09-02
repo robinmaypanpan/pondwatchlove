@@ -5,7 +5,6 @@ local class = require('lib/middleclass')
 local World = class('World')
 
 function World:initialize(data)
-    assert(data.worldLayout == 'GridVania')
     self.data = data
 
     self.levelWidth = data.defaultLevelWidth

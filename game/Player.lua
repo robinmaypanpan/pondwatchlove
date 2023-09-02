@@ -4,17 +4,23 @@ local Player = class('Player')
 
 local MoveSpeed = 2
 
-function Player:initialize(data)
+local PlayerWidth = 24
+local PlayerHeight = 24
+
+function Player:initialize(data, level)
+    self.level = level
+    self.data = data
+
     self.id = data.__identifier
     self.x = data.__worldX
     self.y = data.__worldY
 
     self.image = love.graphics.newImage('assets/tilesets/pixel-platformer-characters.png')
-    self.quad = love.graphics.newQuad(0, 0, 24, 24, self.image:getWidth(), self.image:getHeight())
+    self.quad = love.graphics.newQuad(0, 0, PlayerWidth, PlayerHeight, self.image:getWidth(), self.image:getHeight())
 end
 
 function Player:update(updates)
-    local deltaX = love.timer.step()
+    local collisionLayer = self.level:getLayer('Collision')
 
     if updates.moveLeft then
         self.x = self.x - MoveSpeed
@@ -27,6 +33,10 @@ function Player:update(updates)
     elseif updates.moveDown then
         self.y = self.y + MoveSpeed
     end
+
+    local collideTile = collisionLayer:getTileInWorld(self.x, self.y)
+
+    print('Collisions at ' .. collideTile.value .. ' and ' .. collideTile.value)
 end
 
 function Player:draw()
