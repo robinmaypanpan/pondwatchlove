@@ -16,7 +16,6 @@ function IntLayer:initialize(data, builder, level)
             self.intGrid[row][col] = data.intGridCsv[index]
             assert(data.intGridCsv[index] ~= nil,
                 'Missing int grid value for ' .. row .. ', ' .. col .. ' in layer ' .. self.id)
-            print('Set collision ' .. row .. ',' .. col .. ' to ' .. data.intGridCsv[index])
         end
     end
 end
@@ -51,7 +50,6 @@ function IntLayer:getTileInLevel(x, y)
     assert(x < self.level.width, 'x value is too high')
     assert(y < self.level.height, 'y value is too high')
 
-    print('Obtaining tile in level at ' .. x .. ', ' .. y .. ' => ' .. row .. ', ' .. col)
     return self:getTile(row, col)
 end
 
