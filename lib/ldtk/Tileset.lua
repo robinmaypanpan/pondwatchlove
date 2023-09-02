@@ -27,6 +27,7 @@ function Tileset:initialize(data)
     self.height = data.pxHei
 
     self.imageSource = love.graphics.newImage(fixRelPath(data.relPath))
+    self.imageSource:setFilter("nearest", "nearest")
 
     local numTiles = self.numRows * self.numCols
     self.tileQuads = {}

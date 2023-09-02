@@ -42,14 +42,9 @@ end
 
 -- Called after calling update each frame.
 function love.draw()
-    local canvas = love.graphics.newCanvas(world.levelWidth, world.levelHeight)
-    love.graphics.setCanvas(canvas)
-    world:draw()
-    love.graphics.setCanvas()
-
     local scale = love.graphics.getWidth() / 600
     love.graphics.scale(scale)
+    love.graphics.translate(-(player.x - 300), -(player.y - 150))
 
-    love.graphics.setColor(255, 255, 255, 1)
-    love.graphics.draw(canvas, 0, 0)
+    world:draw()
 end
