@@ -22,21 +22,29 @@ end
 function Player:update(updates)
     local collisionLayer = self.level:getLayer('Collision')
 
+    local newX = self.x
+    local newY = self.y
+
     if updates.moveLeft then
-        self.x = self.x - MoveSpeed
+        newX = self.x - MoveSpeed
     elseif updates.moveRight then
-        self.x = self.x + MoveSpeed
+        newX = self.x + MoveSpeed
     end
 
     if updates.moveUp then
-        self.y = self.y - MoveSpeed
+        newY = self.y - MoveSpeed
     elseif updates.moveDown then
-        self.y = self.y + MoveSpeed
+        newY = self.y + MoveSpeed
     end
 
-    local collideTile = collisionLayer:getTileInWorld(self.x, self.y)
+    local collideTile = collisionLayer:getTileInWorld(newX, newY)
 
-    print('Collisions at ' .. collideTile.value .. ' and ' .. collideTile.value)
+    if collideTile.value == 0 then
+        self.x = newX
+        self.y = newY
+    else
+        print('Colliding at ' .. newX .. ', ' .. newY)
+    end
 end
 
 function Player:draw()

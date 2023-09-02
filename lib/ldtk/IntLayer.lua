@@ -12,7 +12,7 @@ function IntLayer:initialize(data, builder, level)
     for row = 0, self.numRows - 1 do
         self.intGrid[row] = {}
         for col = 0, self.numCols - 1 do
-            local index = row * self.numRows + col % self.numRows + 1
+            local index = row * self.numCols + col % self.numCols + 1
             self.intGrid[row][col] = data.intGridCsv[index]
             assert(data.intGridCsv[index] ~= nil,
                 'Missing int grid value for ' .. row .. ', ' .. col .. ' in layer ' .. self.id)
@@ -28,13 +28,17 @@ function IntLayer:getTile(row, col)
     assert(row < self.numRows, 'row is too high')
     assert(col < self.numCols, 'col is too high')
 
-    return {
+    local tileData = {
         value = self.intGrid[row][col],
         x = row * self.tileSize,
         y = col * self.tileSize,
         worldX = row * self.tileSize + self.level.x,
         worldY = col * self.tileSize + self.level.y
     }
+
+    -- TODO: Allow us to pull up the actual tileId here as well
+
+    return tileData
 end
 
 -- Returns the tile at the specified x,y level coordinates
@@ -47,7 +51,7 @@ function IntLayer:getTileInLevel(x, y)
     assert(x < self.level.width, 'x value is too high')
     assert(y < self.level.height, 'y value is too high')
 
-    print('Obtaining tile in level at ' .. x .. ', ' .. y)
+    print('Obtaining tile in level at ' .. x .. ', ' .. y .. ' => ' .. row .. ', ' .. col)
     return self:getTile(row, col)
 end
 
