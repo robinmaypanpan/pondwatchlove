@@ -7,7 +7,10 @@ local LevelBuilder = require('lib/ldtk/LevelBuilder')
 local Player = require('game/Player')
 
 local entityTable = {
-    Player = function(data) return Player:new(data) end
+    Player = function(data)
+        player = Player:new(data)
+        return player
+    end
 }
 
 function love.load()
@@ -24,6 +27,17 @@ end
 
 -- Called before calling draw each time a frame updates
 function love.update()
+    if player then
+        local moveLeft = love.keyboard.isDown('a') or love.keyboard.isDown('left')
+        local moveRight = love.keyboard.isDown('d') or love.keyboard.isDown('right')
+        local jump = love.keyboard.isDown('space')
+
+        player:update({
+            moveLeft = moveLeft,
+            moveRight = moveRight,
+            jump = jump
+        })
+    end
 end
 
 -- Called after calling update each frame.

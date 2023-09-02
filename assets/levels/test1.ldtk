@@ -935,7 +935,24 @@
 					"seed": 8699487,
 					"overrideTilesetUid": null,
 					"gridTiles": [],
-					"entityInstances": []
+					"entityInstances": [
+						{
+							"__identifier": "Player",
+							"__grid": [10,13],
+							"__pivot": [0.5,0.5],
+							"__tags": ["Player"],
+							"__tile": { "tilesetUid": 63, "x": 0, "y": 0, "w": 24, "h": 24 },
+							"__smartColor": "#BE4A2F",
+							"__worldX": 189,
+							"__worldY": 243,
+							"iid": "3da99160-3b70-11ee-b7c3-51965ed4baf1",
+							"width": 24,
+							"height": 24,
+							"defUid": 21,
+							"px": [189,243],
+							"fieldInstances": []
+						}
+					]
 				},
 				{
 					"__identifier": "Collision",
@@ -3030,24 +3047,7 @@
 					"seed": 7836276,
 					"overrideTilesetUid": null,
 					"gridTiles": [],
-					"entityInstances": [
-						{
-							"__identifier": "Player",
-							"__grid": [18,9],
-							"__pivot": [0.5,0.5],
-							"__tags": ["Player"],
-							"__tile": { "tilesetUid": 63, "x": 0, "y": 0, "w": 24, "h": 24 },
-							"__smartColor": "#BE4A2F",
-							"__worldX": 333,
-							"__worldY": 495,
-							"iid": "3da99160-3b70-11ee-b7c3-51965ed4baf1",
-							"width": 24,
-							"height": 24,
-							"defUid": 21,
-							"px": [333,171],
-							"fieldInstances": []
-						}
-					]
+					"entityInstances": []
 				},
 				{
 					"__identifier": "Collision",
