@@ -63,7 +63,9 @@ function TileLayer:draw()
             self.tilesetBatch:add(tile.quad, tile.drawLocation.x, tile.drawLocation.y, 0, scaleX, scaleY)
         end
         self.tilesetBatch:flush()
+        love.graphics.setColor(1, 1, 1, self.opacity)
         love.graphics.draw(self.tilesetBatch, self.level.x, self.level.y)
+        love.graphics.setColor(1, 1, 1, 1)
     end
 end
 
