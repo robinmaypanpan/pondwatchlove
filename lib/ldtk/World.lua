@@ -18,8 +18,6 @@ end
 -- Adds the provided level data as an inactive level in the world
 function World:addLevel(level)
     self.levels[level.id] = level
-
-    table.insert(self.activeLevels, level)
 end
 
 -- Sets the indicated level as a level to display
