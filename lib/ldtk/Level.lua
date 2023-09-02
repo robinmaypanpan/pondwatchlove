@@ -1,5 +1,7 @@
 local class = require('lib/middleclass')
 local TileLayer = require('lib/ldtk/TileLayer')
+local EntityLayer = require('lib/ldtk/EntityLayer')
+local IntLayer = require('lib/ldtk/IntLayer')
 local colorFromValue = require('lib/colorFromValue')
 
 local Level = class('Level')
@@ -21,13 +23,14 @@ function Level:initialize(data, builder)
 
     for _, layerData in pairs(data.layerInstances) do
         if layerData.__type == 'IntGrid' then
-            local layer = TileLayer:new(layerData, builder)
-
+            local layer = IntLayer:new(layerData, builder)
             table.insert(self.layers, layer)
         elseif layerData.__type == 'Tiles' or layerData.__type == 'AutoLayer' then
             local layer = TileLayer:new(layerData, builder)
-
             table.insert(self.layers, layer)
+        elseif layerData.__type == 'Entities' then
+            -- local layer = EntityLayer:new(layerData, builder)
+            -- table.insert(self.layers, layer)
         end
     end
 end

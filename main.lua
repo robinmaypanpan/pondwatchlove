@@ -2,6 +2,7 @@ if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
     require("lldebugger").start()
 end
 
+require('lib/table')
 local LevelBuilder = require('lib/ldtk/LevelBuilder')
 local builder = LevelBuilder:new()
 
@@ -12,7 +13,7 @@ function love.load()
     })
     world = builder:load('assets/levels/test1.ldtk')
 
-    world:displayLevel('Entrance')
+    world:activateLevel('Entrance')
 end
 
 -- Called before calling draw each time a frame updates

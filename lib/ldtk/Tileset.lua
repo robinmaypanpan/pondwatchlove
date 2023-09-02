@@ -1,5 +1,6 @@
 local class = require('lib/middleclass')
 
+-- A Tileset is a collection of images that can be used for sprite batches and other sources
 local Tileset = class('Tileset')
 
 -- Adjust the relative path so it points from the root
