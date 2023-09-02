@@ -30,11 +30,16 @@ function love.update()
     if player then
         local moveLeft = love.keyboard.isDown('a') or love.keyboard.isDown('left')
         local moveRight = love.keyboard.isDown('d') or love.keyboard.isDown('right')
+        local moveUp = love.keyboard.isDown('w') or love.keyboard.isDown('up')
+        local moveDown = love.keyboard.isDown('s') or love.keyboard.isDown('down')
+
         local jump = love.keyboard.isDown('space')
 
         player:update({
             moveLeft = moveLeft,
             moveRight = moveRight,
+            moveUp = moveUp,
+            moveDown = moveDown,
             jump = jump
         })
     end

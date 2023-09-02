@@ -14,10 +14,18 @@ function Player:initialize(data)
 end
 
 function Player:update(updates)
+    local deltaX = love.timer.step()
+
     if updates.moveLeft then
         self.x = self.x - MoveSpeed
     elseif updates.moveRight then
         self.x = self.x + MoveSpeed
+    end
+
+    if updates.moveUp then
+        self.y = self.y - MoveSpeed
+    elseif updates.moveDown then
+        self.y = self.y + MoveSpeed
     end
 end
 
