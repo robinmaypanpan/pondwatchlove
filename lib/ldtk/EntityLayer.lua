@@ -5,13 +5,14 @@ local EntityLayer = class('EntityLayer')
 function EntityLayer:initialize(data, builder, level)
     self.entities = {}
     self.data = data
+    self.level = level
 
     self.id = data.__identifier
     self.opacity = data.opacity
     self.visible = data.visible
 
     for _, entityData in ipairs(data.entityInstances) do
-        local entity = builder:createEntity(entityData)
+        local entity = builder:createEntity(entityData, level)
         table.insert(self.entities, entity)
     end
 end

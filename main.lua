@@ -3,30 +3,40 @@ if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
 end
 
 require('lib/table')
+require('lib/math')
+
 local LevelBuilder = require('lib/ldtk/LevelBuilder')
 local Player = require('game/Player')
 
+local player
+local world
+
 local entityTable = {
-    Player = function(data)
-        player = Player:new(data)
+    Player = function(data, level)
+        player = Player:new(data, level)
         return player
     end
 }
 
-function love.load()
+function love.load(arg)
     love.window.setTitle('Garden Love')
-    love.window.setMode(1920, 1080, {
+    love.window.setMode(1280, 720, {
         fullscreen = false
     })
 
+    levelFilename = 'assets/levels/world.ldtk'
+    if arg and #arg > 1 then
+        levelFileName = arg[2]
+    end
+
     local builder = LevelBuilder:new(entityTable)
-    world = builder:load('assets/levels/world.ldtk')
+    world = builder:load(levelFilename)
 
     world:activateLevel('Entrance')
 end
 
 -- Called before calling draw each time a frame updates
-function love.update()
+function love.update(dt)
     if player then
         local moveLeft = love.keyboard.isDown('a') or love.keyboard.isDown('left')
         local moveRight = love.keyboard.isDown('d') or love.keyboard.isDown('right')
@@ -47,9 +57,30 @@ end
 
 -- Called after calling update each frame.
 function love.draw()
-    local scale = love.graphics.getWidth() / 600
+    local scale = love.graphics.getWidth() / world.levelWidth
     love.graphics.scale(scale)
-    love.graphics.translate(-(player.x - 300), -(player.y - 150))
+
+    updateCamera(player, world)
 
     world:draw()
+end
+
+-- Shift the camera to a location that is ideal
+function updateCamera(player, world)
+    local screenWidth = world.levelWidth
+    local screenHeight = world.levelHeight
+
+    -- Center the viewport on the player
+    local centerX = player.x - screenWidth / 2
+    local centerY = player.y - screenHeight / 2
+
+    -- Prevent the camera from exiting the level
+    local maxCameraX = player.level.x + player.level.width - screenWidth
+    local maxCameraY = player.level.y + player.level.height - screenHeight
+
+    -- Set the camera position to within the bounds of the level, but centered on our character
+    local cameraX = math.mid(player.level.x, centerX, maxCameraX)
+    local cameraY = math.mid(player.level.y, centerY, maxCameraY)
+
+    love.graphics.translate(-cameraX, -cameraY)
 end

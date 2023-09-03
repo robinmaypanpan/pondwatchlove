@@ -5,11 +5,10 @@ local class = require('lib/middleclass')
 local World = class('World')
 
 function World:initialize(data)
-    assert(data.worldLayout == 'GridVania')
     self.data = data
 
-    self.levelWidth = data.defaultLevelWidth
-    self.levelHeight = data.defaultLevelHeight
+    self.levelWidth = data.worldGridWidth
+    self.levelHeight = data.worldGridHeight
 
     self.activeLevels = {}
 
@@ -19,8 +18,8 @@ end
 -- Adds the provided level data as an inactive level in the world
 function World:addLevel(level)
     self.levels[level.id] = level
-
-    table.insert(self.activeLevels, level)
+    self.levels[level.iid] = level
+    self.levels[level.uid] = level
 end
 
 -- Sets the indicated level as a level to display
@@ -29,6 +28,13 @@ function World:activateLevel(levelId)
     assert(level ~= nil, 'Level ' .. levelId .. ' not found')
 
     table.insert(self.activeLevels, level)
+
+    --Now activate neighbors
+    for _, neighborData in ipairs(level.neighbors) do
+        local neighborLevel = self.levels[neighborData.levelIid]
+        assert(neighborLevel ~= nil, 'Could not find neighboring level')
+        table.insert(self.activeLevels, neighborLevel)
+    end
 end
 
 -- Removes a given level from the activated level list
