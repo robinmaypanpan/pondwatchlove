@@ -7,6 +7,12 @@ local MoveSpeed = 2
 local PlayerWidth = 24
 local PlayerHeight = 24
 
+local CollisionType = {
+    None = 0,
+    Wall = 1,
+    OutsideLevel = 2
+}
+
 function Player:initialize(data, level)
     self.level = level
     self.data = data
@@ -19,54 +25,106 @@ function Player:initialize(data, level)
     self.quad = love.graphics.newQuad(0, 0, PlayerWidth, PlayerHeight, self.image:getWidth(), self.image:getHeight())
 end
 
--- returns true if the world x and y coordinates provided are within this level
-function Player:isWithinLevel(x, y)
-    return x >= self.level.x and y >= self.level.y
-        and x < self.level.x + self.level.width
-        and y < self.level.y + self.level.height
-end
-
 -- Checks for collision at the indicated position
 function Player:checkCollision(x, y)
-    if not self:isWithinLevel(x, y) then
-        return false
+    if not self.level:isWithinLevel(x, y) then
+        return CollisionType.OutsideLevel
     end
 
     local collisionLayer = self.level:getLayer('Collision')
     local collideTile = collisionLayer:getTileInWorld(x, y)
-    return collideTile.value == 1
+    if collideTile.value == 1 then
+        return CollisionType.Wall
+    else
+        return CollisionType.None
+    end
 end
 
--- Used to check the corners for collision
-function Player:checkCornerCollision(x, y)
-    if self:checkCollision(x, y) then return true end
-    if self:checkCollision(x + PlayerWidth, y) then return true end
-    if self:checkCollision(x, y + PlayerHeight) then return true end
-    if self:checkCollision(x + PlayerWidth, y + PlayerHeight) then return true end
+-- Check for collisions in all the right places
+function Player:checkForCollisions(x, y)
+    local results = {}
 
-    return false
+    table.insert(results, self:checkCollision(x, y))
+    table.insert(results, self:checkCollision(x + PlayerWidth, y))
+    table.insert(results, self:checkCollision(x, y + PlayerHeight))
+    table.insert(results, self:checkCollision(x + PlayerWidth, y + PlayerHeight))
+
+    for _, result in ipairs(results) do
+        if result == CollisionType.Wall then
+            return result
+        end
+    end
+
+    for _, result in ipairs(results) do
+        if result == CollisionType.OutsideLevel then
+            return result
+        end
+    end
+
+    return CollisionType.None
 end
 
 function Player:update(updates)
     if updates.moveLeft then
-        if not self:checkCornerCollision(self.x - MoveSpeed, self.y) then
+        local result = self:checkForCollisions(self.x - MoveSpeed, self.y)
+        if result ~= CollisionType.Wall then
             self.x = self.x - MoveSpeed
         end
+        if result == CollisionType.OutsideLevel then
+            self:changeLevels()
+            return
+        end
     elseif updates.moveRight then
-        if not self:checkCornerCollision(self.x + MoveSpeed, self.y) then
+        local result = self:checkForCollisions(self.x + MoveSpeed, self.y)
+        if result ~= CollisionType.Wall then
             self.x = self.x + MoveSpeed
+        end
+        if result == CollisionType.OutsideLevel then
+            self:changeLevels()
+            return
         end
     end
 
     if updates.moveUp then
-        if not self:checkCornerCollision(self.x, self.y - MoveSpeed) then
+        local result = self:checkForCollisions(self.x, self.y - MoveSpeed)
+        if result ~= CollisionType.Wall then
             self.y = self.y - MoveSpeed
         end
+        if result == CollisionType.OutsideLevel then
+            self:changeLevels()
+            return
+        end
     elseif updates.moveDown then
-        if not self:checkCornerCollision(self.x, self.y + MoveSpeed) then
+        local result = self:checkForCollisions(self.x, self.y + MoveSpeed)
+        if result ~= CollisionType.Wall then
             self.y = self.y + MoveSpeed
         end
+        if result == CollisionType.OutsideLevel then
+            self:changeLevels()
+            return
+        end
     end
+end
+
+-- Used to trigger a level change
+function Player:changeLevels()
+    local newLevel = world:getLevelAt(self.x, self.y)
+
+    if newLevel == nil then
+        -- do nothing
+        return
+    end
+
+    local oldLevel = self.level
+    local entityLayer = oldLevel:getLayer('Entities')
+    entityLayer:unbindEntity(self)
+
+    local newLevel = world:getLevelAt(self.x, self.y)
+    self.level = newLevel
+    entityLayer = newLevel:getLayer('Entities')
+    entityLayer:bindEntity(self)
+
+    world:setActiveLevel(newLevel.id)
 end
 
 function Player:draw()

@@ -9,7 +9,6 @@ local LevelBuilder = require('lib/ldtk/LevelBuilder')
 local Player = require('game/Player')
 
 local player
-local world
 
 local entityTable = {
     Player = function(data, level)
@@ -32,7 +31,7 @@ function love.load(arg)
     local builder = LevelBuilder:new(entityTable)
     world = builder:load(levelFilename)
 
-    world:activateLevel('Entrance')
+    world:setActiveLevel('Entrance')
 end
 
 -- Called before calling draw each time a frame updates

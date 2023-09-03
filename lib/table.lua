@@ -14,3 +14,9 @@ function table.findKey(tbl, target)
 
     return nil
 end
+
+-- Finds the indicated item in this table and removes it
+function table.removeItem(tbl, item)
+    local key = table.findKey(tbl, item)
+    table.remove(tbl, key)
+end
