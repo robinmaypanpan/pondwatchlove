@@ -26,7 +26,10 @@ function IntLayer:getTile(row, col)
         return nil
     end
 
+    local tile = TileLayer.getTile(self, row, col)
+
     local tileData = {
+        tileId = tile and tile.id,
         value = self.intGrid[row][col],
         x = row * self.tileSize,
         y = col * self.tileSize,
@@ -34,22 +37,7 @@ function IntLayer:getTile(row, col)
         worldY = col * self.tileSize + self.level.y
     }
 
-    -- TODO: Allow us to pull up the actual tileId here as well
-
     return tileData
-end
-
--- Returns the tile at the specified x,y level coordinates
-function IntLayer:getTileInLevel(x, y)
-    local row = math.floor(y / self.tileSize)
-    local col = math.floor(x / self.tileSize)
-
-    return self:getTile(row, col)
-end
-
--- Returns the tile at the specified x,y world coordinates
-function IntLayer:getTileInWorld(x, y)
-    return self:getTileInLevel(x - self.level.x, y - self.level.y)
 end
 
 return IntLayer
