@@ -27,7 +27,7 @@ function love.load(arg)
     love.window.setMode(1280, 720, {
         fullscreen = false
     })
-    love.graphics.setDefaultFilter('nearest', 'nearest', 1)
+    love.graphics.setDefaultFilter('nearest', 'nearest')
     levelFilename = 'assets/levels/world.ldtk'
     if arg and #arg > 1 then
         levelFileName = arg[2]
