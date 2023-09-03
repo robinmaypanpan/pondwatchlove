@@ -2791,7 +2791,7 @@
 			"worldX": 1280,
 			"worldY": 368,
 			"worldDepth": 0,
-			"pxWid": 640,
+			"pxWid": 1280,
 			"pxHei": 368,
 			"__bgColor": "#74ACDA",
 			"bgColor": "#74ACDA",

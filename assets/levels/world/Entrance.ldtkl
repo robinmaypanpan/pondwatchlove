@@ -379,22 +379,22 @@
 					"__tags": ["Player"],
 					"__tile": { "tilesetUid": 248, "x": 0, "y": 0, "w": 16, "h": 16 },
 					"__smartColor": "#BE4A2F",
-					"__worldX": 264,
-					"__worldY": 1032,
-					"iid": "97349f80-3b70-11ee-ad8e-3f5551e982fd",
+					"__worldX": 269,
+					"__worldY": 1039,
+					"iid": "66e462c0-3b70-11ee-b5ed-37dd333ef4b4",
 					"width": 16,
 					"height": 16,
 					"defUid": 168,
-					"px": [264,296],
+					"px": [269,303],
 					"fieldInstances": [
-						{ "__identifier": "MaxXSpeed", "__type": "Float", "__value": 2, "__tile": null, "defUid": 242, "realEditorValues": [null] },
-						{ "__identifier": "MaxYSpeed", "__type": "Float", "__value": 3, "__tile": null, "defUid": 243, "realEditorValues": [{ "id": "V_Float", "params": [3] }] },
-						{ "__identifier": "Gravity", "__type": "Float", "__value": 0.5, "__tile": null, "defUid": 244, "realEditorValues": [{ "id": "V_Float", "params": [0.5] }] },
+						{ "__identifier": "MaxXSpeed", "__type": "Float", "__value": 2, "__tile": null, "defUid": 242, "realEditorValues": [] },
+						{ "__identifier": "MaxYSpeed", "__type": "Float", "__value": 2, "__tile": null, "defUid": 243, "realEditorValues": [] },
+						{ "__identifier": "Gravity", "__type": "Float", "__value": 0.2, "__tile": null, "defUid": 244, "realEditorValues": [] },
 						{ "__identifier": "Accel", "__type": "Float", "__value": 0.1, "__tile": null, "defUid": 245, "realEditorValues": [] },
 						{ "__identifier": "Friction", "__type": "Float", "__value": 0.2, "__tile": null, "defUid": 246, "realEditorValues": [] },
-						{ "__identifier": "JumpAccel", "__type": "Float", "__value": 0.75, "__tile": null, "defUid": 247, "realEditorValues": [{ "id": "V_Float", "params": [0.75] }] },
-						{ "__identifier": "InitialGravityMultiplier", "__type": "Float", "__value": 0.3, "__tile": null, "defUid": 253, "realEditorValues": [{ "id": "V_Float", "params": [0.3] }] },
-						{ "__identifier": "GravityDecay", "__type": "Float", "__value": 0.09, "__tile": null, "defUid": 254, "realEditorValues": [{ "id": "V_Float", "params": [0.09] }] }
+						{ "__identifier": "JumpAccel", "__type": "Float", "__value": 0.5, "__tile": null, "defUid": 247, "realEditorValues": [] },
+						{ "__identifier": "InitialGravityMultiplier", "__type": "Float", "__value": 0.4, "__tile": null, "defUid": 253, "realEditorValues": [] },
+						{ "__identifier": "GravityDecay", "__type": "Float", "__value": 0.1, "__tile": null, "defUid": 254, "realEditorValues": [] }
 					]
 				}
 			]
