@@ -33,7 +33,7 @@ function Player:checkCollision(x, y)
 
     local collisionLayer = self.level:getLayer('Collision')
     local collideTile = collisionLayer:getTileInWorld(x, y)
-    if collideTile.value == 1 then
+    if collideTile.value == 1 or collideTile.value == 2 then
         return CollisionType.Wall
     else
         return CollisionType.None
