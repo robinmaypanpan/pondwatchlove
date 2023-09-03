@@ -2,8 +2,7 @@ local class = require('lib/middleclass')
 
 local Player = class('Player')
 
-local PlayerWidth = 24
-local PlayerHeight = 24
+local MoveSpeed = 2
 
 local CollisionType = {
     None = 0,
@@ -24,8 +23,9 @@ function Player:initialize(data, level)
 
     self.isJumping = false
 
-    self.image = love.graphics.newImage('assets/tilesets/pixel-platformer-characters.png')
-    self.quad = love.graphics.newQuad(0, 0, PlayerWidth, PlayerHeight, self.image:getWidth(), self.image:getHeight())
+    self.image = love.graphics.newImage('assets/sprites/birb.png')
+    self.width = self.image:getWidth()
+    self.height = self.image:getHeight()
 end
 
 -- Checks for collision at the indicated position
@@ -48,9 +48,9 @@ function Player:checkForCollisions(x, y)
     local results = {}
 
     table.insert(results, self:checkCollision(x, y))
-    table.insert(results, self:checkCollision(x + PlayerWidth, y))
-    table.insert(results, self:checkCollision(x, y + PlayerHeight))
-    table.insert(results, self:checkCollision(x + PlayerWidth, y + PlayerHeight))
+    table.insert(results, self:checkCollision(x + self.width, y))
+    table.insert(results, self:checkCollision(x, y + self.height))
+    table.insert(results, self:checkCollision(x + self.width, y + self.height))
 
     for _, result in ipairs(results) do
         if result == CollisionType.Wall then
@@ -162,7 +162,7 @@ function Player:changeLevels()
 end
 
 function Player:draw()
-    love.graphics.draw(self.image, self.quad, self.x, self.y)
+    love.graphics.draw(self.image, self.x, self.y)
     love.graphics.print('x Speed: ' .. self.xSpeed, self.x, self.y - 20)
     love.graphics.print('y Speed: ' .. self.ySpeed, self.x, self.y - 35)
     love.graphics.print('Jumping: ' .. string.fromBool(self.jump), self.x, self.y - 50)
