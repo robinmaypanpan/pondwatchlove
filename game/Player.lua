@@ -118,16 +118,23 @@ function Player:update(updates)
     end
 
     -- Now do the vertical component
+    local startGravity = Gravity * self.fields.InitialGravityMultiplier
+    self.currentGravity = startGravity
     impulse = 0
     self.jump = updates.jump
     if updates.jump and self:isOnGround() then
         self.isJumping = true
+        self.currentGravity = startGravity
         impulse = -JumpAccel
     elseif updates.jump and self.isJumping then
+        self.currentGravity = startGravity
         impulse = -JumpAccel
     else
         self.isJumping = false
-        impulse = Gravity
+        if self.currentGravity < Gravity then
+            self.currentGravity = self.currentGravity + Gravity * self.fields.GravityDecay
+        end
+        impulse = self.currentGravity
     end
 
     self.ySpeed = math.mid(-MaxYSpeed, self.ySpeed + impulse, MaxYSpeed)
