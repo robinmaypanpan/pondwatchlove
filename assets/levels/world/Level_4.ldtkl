@@ -26,7 +26,7 @@
 	"__smartColor": "#A39081",
 	"__bgPos": null,
 	"externalRelPath": null,
-	"fieldInstances": [],
+	"fieldInstances": [{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": false, "__tile": null, "defUid": 338, "realEditorValues": [] }],
 	"layerInstances": [
 		{
 			"__identifier": "OverPlayerEdges",

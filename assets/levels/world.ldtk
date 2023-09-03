@@ -11,7 +11,7 @@
 	"iid": "82c3b630-3b70-11ee-9b71-cb89db194432",
 	"jsonVersion": "1.3.4",
 	"appBuildId": 470178,
-	"nextUid": 338,
+	"nextUid": 339,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "GridVania",
@@ -2914,7 +2914,43 @@
 			"savedSelections": [],
 			"cachedPixelData": { "opaqueTiles": "0", "averageColors": "aa97" }
 		}
-	], "enums": [], "externalEnums": [], "levelFields": [] },
+	], "enums": [], "externalEnums": [], "levelFields": [
+		{
+			"identifier": "LockBGToCamera",
+			"doc": "When true, the background image is locked to the camera",
+			"__type": "Bool",
+			"uid": 338,
+			"type": "F_Bool",
+			"isArray": false,
+			"canBeNull": false,
+			"arrayMinLength": null,
+			"arrayMaxLength": null,
+			"editorDisplayMode": "Hidden",
+			"editorDisplayScale": 1,
+			"editorDisplayPos": "Above",
+			"editorLinkStyle": "StraightArrow",
+			"editorDisplayColor": null,
+			"editorAlwaysShow": false,
+			"editorShowInWorld": true,
+			"editorCutLongValues": true,
+			"editorTextSuffix": null,
+			"editorTextPrefix": null,
+			"useForSmartColor": false,
+			"min": null,
+			"max": null,
+			"regex": null,
+			"acceptFileTypes": null,
+			"defaultOverride": null,
+			"textLanguageMode": null,
+			"symmetricalRef": false,
+			"autoChainRef": true,
+			"allowOutOfLevelRef": true,
+			"allowedRefs": "OnlySame",
+			"allowedRefsEntityUid": null,
+			"allowedRefTags": [],
+			"tilesetUid": null
+		}
+	] },
 	"levels": [
 		{
 			"identifier": "Sandbox",
@@ -2935,7 +2971,7 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": null,
 			"externalRelPath": "world/Sandbox.ldtkl",
-			"fieldInstances": [],
+			"fieldInstances": [{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": false, "__tile": null, "defUid": 338, "realEditorValues": [] }],
 			"layerInstances": null,
 			"__neighbours": []
 		},
@@ -2958,7 +2994,7 @@
 			"__smartColor": "#A39081",
 			"__bgPos": null,
 			"externalRelPath": "world/Entrance.ldtkl",
-			"fieldInstances": [],
+			"fieldInstances": [{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": false, "__tile": null, "defUid": 338, "realEditorValues": [] }],
 			"layerInstances": null,
 			"__neighbours": [ { "levelIid": "7c3f2680-3b70-11ee-b5ed-c7a97be26d8e", "dir": "e" }, { "levelIid": "3e20acf0-3b70-11ee-b5ed-c953ba717d80", "dir": "n" } ]
 		},
@@ -2981,7 +3017,7 @@
 			"__smartColor": "#A39081",
 			"__bgPos": null,
 			"externalRelPath": "world/Entrance2.ldtkl",
-			"fieldInstances": [],
+			"fieldInstances": [{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": false, "__tile": null, "defUid": 338, "realEditorValues": [] }],
 			"layerInstances": null,
 			"__neighbours": []
 		},
@@ -3004,7 +3040,7 @@
 			"__smartColor": "#A39081",
 			"__bgPos": null,
 			"externalRelPath": "world/Entrance_2.ldtkl",
-			"fieldInstances": [],
+			"fieldInstances": [{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": false, "__tile": null, "defUid": 338, "realEditorValues": [] }],
 			"layerInstances": null,
 			"__neighbours": []
 		},
@@ -3027,7 +3063,7 @@
 			"__smartColor": "#A39081",
 			"__bgPos": null,
 			"externalRelPath": "world/Level_4.ldtkl",
-			"fieldInstances": [],
+			"fieldInstances": [{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": false, "__tile": null, "defUid": 338, "realEditorValues": [] }],
 			"layerInstances": null,
 			"__neighbours": [ { "levelIid": "4b640660-3b70-11ee-8d2f-553f8aafb481", "dir": "w" }, { "levelIid": "3e20acf0-3b70-11ee-b5ed-c953ba717d80", "dir": "n" } ]
 		},
@@ -3050,7 +3086,10 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": { "topLeftPx": [0,0], "scale": [0.8130081300813008,0.8130081300813008], "cropRect": [0,264.48,1968,551.04] },
 			"externalRelPath": "world/Level_5.ldtkl",
-			"fieldInstances": [],
+			"fieldInstances": [{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": true, "__tile": null, "defUid": 338, "realEditorValues": [{
+				"id": "V_Bool",
+				"params": [ true ]
+			}] }],
 			"layerInstances": null,
 			"__neighbours": [ { "levelIid": "4b640660-3b70-11ee-8d2f-553f8aafb481", "dir": "s" }, { "levelIid": "7c3f2680-3b70-11ee-b5ed-c7a97be26d8e", "dir": "s" } ]
 		}

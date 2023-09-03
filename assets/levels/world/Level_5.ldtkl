@@ -26,7 +26,10 @@
 	"__smartColor": "#ADADB5",
 	"__bgPos": { "topLeftPx": [0,0], "scale": [0.8130081300813008,0.8130081300813008], "cropRect": [0,264.48,1968,551.04] },
 	"externalRelPath": null,
-	"fieldInstances": [],
+	"fieldInstances": [{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": true, "__tile": null, "defUid": 338, "realEditorValues": [{
+		"id": "V_Bool",
+		"params": [ true ]
+	}] }],
 	"layerInstances": [
 		{
 			"__identifier": "OverPlayerEdges",
