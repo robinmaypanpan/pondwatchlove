@@ -18,7 +18,13 @@ function EntityLayer:initialize(data, builder, level)
 end
 
 -- Binds an entity controller to the local entity data
-function EntityLayer:bindEntity(controller)
+function EntityLayer:bindEntity(entity)
+    table.insert(self.entities, entity)
+end
+
+-- Unbinds an entity from the local entity table
+function EntityLayer:unbindEntity(entity)
+    table.removeItem(self.entities, entity)
 end
 
 -- Render a drawable associated with this layer

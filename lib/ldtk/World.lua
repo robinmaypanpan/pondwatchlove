@@ -23,9 +23,11 @@ function World:addLevel(level)
 end
 
 -- Sets the indicated level as a level to display
-function World:activateLevel(levelId)
+function World:setActiveLevel(levelId)
     local level = self.levels[levelId]
     assert(level ~= nil, 'Level ' .. levelId .. ' not found')
+
+    self.activeLevels = {}
 
     table.insert(self.activeLevels, level)
 
@@ -37,13 +39,15 @@ function World:activateLevel(levelId)
     end
 end
 
--- Removes a given level from the activated level list
-function World:deactivateLevel(levelId)
-    local level = self.levels[levelId]
+-- Returns a level at a given location, checking active levels first
+function World:getLevelAt(x, y)
+    for _, level in pairs(self.activeLevels) do
+        if level:isWithinLevel(x, y) then
+            return level
+        end
+    end
 
-    assert(level ~= nil, 'Level ' .. levelId .. ' not found')
-    local index = table.find(self.activeLevels, level)
-    table.remove(self.activeLevels, index)
+    return nil
 end
 
 -- Draws this level

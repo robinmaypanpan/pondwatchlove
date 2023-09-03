@@ -22,10 +22,9 @@ end
 
 -- Returns the grid value at a given location
 function IntLayer:getTile(row, col)
-    assert(row >= 0, "row is too low")
-    assert(col >= 0, 'col is too low')
-    assert(row < self.numRows, 'row is too high')
-    assert(col < self.numCols, 'col is too high')
+    if row < 0 or col < 0 or row >= self.numRows or col >= self.numCols then
+        return nil
+    end
 
     local tileData = {
         value = self.intGrid[row][col],
@@ -44,11 +43,6 @@ end
 function IntLayer:getTileInLevel(x, y)
     local row = math.floor(y / self.tileSize)
     local col = math.floor(x / self.tileSize)
-
-    assert(x >= 0, "X value is too low")
-    assert(y >= 0, 'Y value is too low')
-    assert(x < self.level.width, 'x value is too high')
-    assert(y < self.level.height, 'y value is too high')
 
     return self:getTile(row, col)
 end

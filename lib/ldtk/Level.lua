@@ -53,6 +53,13 @@ function Level:getLayer(layerId)
     return self.layers[layerId]
 end
 
+-- returns true if the world x and y coordinates provided are within this level
+function Level:isWithinLevel(x, y)
+    return x >= self.x and y >= self.y
+        and x < self.x + self.width
+        and y < self.y + self.height
+end
+
 -- Draws this level at the indicated position
 function Level:draw()
     love.graphics.setColor(colorFromValue(self.bgColor))
