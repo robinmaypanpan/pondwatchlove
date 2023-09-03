@@ -138,6 +138,7 @@ end
 -- Draws this level at the indicated position
 function Level:draw()
     self:drawBackground()
+
     love.graphics.setColor(1, 1, 1, 1);
     for _, layer in ipairs(self.drawLayers) do
         if layer.visible then

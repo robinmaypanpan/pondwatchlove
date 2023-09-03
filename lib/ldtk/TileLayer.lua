@@ -19,7 +19,7 @@ function TileLayer:initialize(data, builder, level)
     self.drawTiles = {}
     self.tiles = {}
 
-    local tiles
+    local tiles = {}
 
     if #data.autoLayerTiles > 0 then
         tiles = data.autoLayerTiles
@@ -27,34 +27,32 @@ function TileLayer:initialize(data, builder, level)
         tiles = data.gridTiles
     end
 
-    if tiles ~= nil and #tiles > 0 then
-        for _, tileData in ipairs(tiles) do
-            local tile = {
-                tileId = tileData.t,
-                sourceLocation = { x = tileData.src[1], y = tileData.src[2] },
-                drawLocation = { x = tileData.px[1], y = tileData.px[2] },
-                flipX = tileData.f == 1 or tileData.f == 3,
-                flipY = tileData.f == 2 or tileData.f == 3,
-                opacity = tileData.a,
-                data = tileData
-            }
+    for _, tileData in ipairs(tiles) do
+        local tile = {
+            tileId = tileData.t,
+            sourceLocation = { x = tileData.src[1], y = tileData.src[2] },
+            drawLocation = { x = tileData.px[1], y = tileData.px[2] },
+            flipX = tileData.f == 1 or tileData.f == 3,
+            flipY = tileData.f == 2 or tileData.f == 3,
+            opacity = tileData.a,
+            data = tileData
+        }
 
-            tile.quad = self.tileset:getTileQuad(tileData.t)
+        tile.quad = self.tileset:getTileQuad(tileData.t)
 
-            table.insert(self.drawTiles, tile)
+        table.insert(self.drawTiles, tile)
 
-            local tileRow = math.floor(tileData.src[2] / self.numRows)
-            local tileCol = math.floor(tileData.src[1] / self.numCols)
+        local tileRow = math.floor(tileData.src[2] / self.numRows)
+        local tileCol = math.floor(tileData.src[1] / self.numCols)
 
-            if not self.tiles[tileRow] then
-                self.tiles[tileRow] = {}
-            end
-
-            self.tiles[tileRow][tileCol] = tile
+        if not self.tiles[tileRow] then
+            self.tiles[tileRow] = {}
         end
 
-        self.tilesetBatch = self.tileset:createSpriteBatch(self.numRows, self.numCols)
+        self.tiles[tileRow][tileCol] = tile
     end
+
+    self.tilesetBatch = self.tileset:createSpriteBatch(self.numRows, self.numCols)
 end
 
 -- Retrieves the tile at the indicated location
@@ -80,6 +78,7 @@ function TileLayer:getTileInLevel(x, y)
 end
 
 -- Returns the tile at the specified x,y world coordinates
+-- NB: Returns nil outside the level
 function TileLayer:getTileInWorld(x, y)
     return self:getTileInLevel(x - self.level.x, y - self.level.y)
 end

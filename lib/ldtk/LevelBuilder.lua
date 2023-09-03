@@ -23,6 +23,15 @@ function LevelBuilder:createEntity(data, level)
     return nil
 end
 
+-- Returns the definition for the indicated layer
+function LevelBuilder:getLayerDefinition(id)
+    for _, layerData in ipairs(self.data.defs.layers) do
+        if layerData.identifier == id then
+            return layerData
+        end
+    end
+end
+
 function LevelBuilder:load(filename)
     assert(love.filesystem.getInfo(filename), "Level file " .. filename .. " does not exist")
 
