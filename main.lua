@@ -15,14 +15,19 @@ local entityTable = {
     end
 }
 
-function love.load()
+function love.load(arg)
     love.window.setTitle('Garden Love')
     love.window.setMode(1920, 1080, {
         fullscreen = false
     })
 
+    levelFilename = 'assets/levels/world.ldtk'
+    if arg and #arg > 1 then
+        levelFileName = arg[2]
+    end
+
     local builder = LevelBuilder:new(entityTable)
-    world = builder:load('assets/levels/world.ldtk')
+    world = builder:load(levelFilename)
 
     world:activateLevel('Entrance')
 end
