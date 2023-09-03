@@ -2260,7 +2260,24 @@
 					"seed": 2098332,
 					"overrideTilesetUid": null,
 					"gridTiles": [],
-					"entityInstances": []
+					"entityInstances": [
+						{
+							"__identifier": "Player",
+							"__grid": [25,3],
+							"__pivot": [0.5,0.5],
+							"__tags": ["Player"],
+							"__tile": null,
+							"__smartColor": "#BE4A2F",
+							"__worldX": 408,
+							"__worldY": 56,
+							"iid": "97349f80-3b70-11ee-ad8e-3f5551e982fd",
+							"width": 16,
+							"height": 16,
+							"defUid": 168,
+							"px": [408,56],
+							"fieldInstances": []
+						}
+					]
 				},
 				{
 					"__identifier": "Collision",
