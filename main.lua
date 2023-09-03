@@ -64,10 +64,31 @@ function love.update(dt)
     camera:update()
 end
 
+function drawStaticBackground()
+    -- Early aborts
+    if not player then return end
+    if not player.level then return end
+    if not player.level.background then return end
+
+    local bg = player.level.background
+    if bg.image and player.level.fields.LockBGToCamera then
+        local scaleX, scaleY
+        scaleX = world.levelWidth / bg.image:getWidth()
+        scaleY = world.levelHeight / bg.image:getHeight()
+        scaleX = math.max(scaleX, scaleY)
+        scaleY = scaleX
+
+        love.graphics.setColor(1, 1, 1, 1);
+        love.graphics.draw(bg.image, 0, 0, 0, scaleX, scaleY, bg.pivotX, bg.pivotY)
+    end
+end
+
 -- Called after calling update each frame.
 function love.draw()
     local scale = love.graphics.getWidth() / world.levelWidth
     love.graphics.scale(scale)
+
+    drawStaticBackground()
 
     camera:draw()
 

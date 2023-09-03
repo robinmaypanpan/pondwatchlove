@@ -22,6 +22,12 @@ function Level:initialize(data, builder)
     self.width = data.pxWid
     self.height = data.pxHei
 
+    self.fields = {}
+
+    for _, field in pairs(data.fieldInstances) do
+        self.fields[field.__identifier] = field.__value
+    end
+
     local bgColor = data.bgColor or data.__bgColor
 
     self.background = {
@@ -80,15 +86,18 @@ end
 
 -- Draws the background to the various layers
 function Level:drawBackground()
+    if self.fields.LockBGToCamera then
+        -- Defer background drawing to camera
+        return
+    end
+
     local bg = self.background
 
-    love.graphics.setColor(colorFromValue(bg.color))
-    love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
-
     if bg.image then
-        if bg.position == 'repeat' then
+        if bg.position == 'Repeat' then
             -- TODO: Implementing repeating backgrounds
         else
+            local scaleX, scaleY, x, y
             if bg.position == 'Cover' then
                 scaleX = self.width / bg.image:getWidth()
                 scaleY = self.height / bg.image:getHeight()
@@ -120,6 +129,9 @@ function Level:drawBackground()
             love.graphics.draw(bg.image, self.x + x, self.y + y, 0, scaleX, scaleY, bg.pivotX, bg.pivotY)
             love.graphics.setStencilTest()
         end
+    else
+        love.graphics.setColor(colorFromValue(bg.color))
+        love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
     end
 end
 
