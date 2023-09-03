@@ -18,6 +18,8 @@ end
 -- Adds the provided level data as an inactive level in the world
 function World:addLevel(level)
     self.levels[level.id] = level
+    self.levels[level.iid] = level
+    self.levels[level.uid] = level
 end
 
 -- Sets the indicated level as a level to display
@@ -26,6 +28,13 @@ function World:activateLevel(levelId)
     assert(level ~= nil, 'Level ' .. levelId .. ' not found')
 
     table.insert(self.activeLevels, level)
+
+    --Now activate neighbors
+    for _, neighborData in ipairs(level.neighbors) do
+        local neighborLevel = self.levels[neighborData.levelIid]
+        assert(neighborLevel ~= nil, 'Could not find neighboring level')
+        table.insert(self.activeLevels, neighborLevel)
+    end
 end
 
 -- Removes a given level from the activated level list
