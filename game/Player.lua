@@ -22,6 +22,7 @@ function Player:initialize(data, level)
     self.ySpeed = 0
 
     self.isJumping = false
+    self.flipImage = false
 
     self.image = love.graphics.newImage('assets/sprites/birb.png')
     self.width = self.image:getWidth()
@@ -83,12 +84,14 @@ function Player:update(updates)
         else
             impulse = -Accel
         end
+        self.flipImage = true
     elseif updates.moveRight then
         if self.xSpeed < 0 then
             impulse = Friction
         else
             impulse = Accel
         end
+        self.flipImage = false
     else
         local frictionEffect = Friction
         if math.abs(self.xSpeed) < Friction then
@@ -162,7 +165,13 @@ function Player:changeLevels()
 end
 
 function Player:draw()
-    love.graphics.draw(self.image, self.x, self.y)
+    local scale = 1
+    local width = 0
+    if self.flipImage then
+        scale = -1
+        width = self.width
+    end
+    love.graphics.draw(self.image, self.x, self.y, 0, scale, 1, width)
     love.graphics.print('x Speed: ' .. self.xSpeed, self.x, self.y - 20)
     love.graphics.print('y Speed: ' .. self.ySpeed, self.x, self.y - 35)
     love.graphics.print('Jumping: ' .. string.fromBool(self.jump), self.x, self.y - 50)
