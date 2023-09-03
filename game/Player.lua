@@ -19,31 +19,40 @@ function Player:initialize(data, level)
     self.quad = love.graphics.newQuad(0, 0, PlayerWidth, PlayerHeight, self.image:getWidth(), self.image:getHeight())
 end
 
-function Player:update(updates)
+-- Used to check the corners for collision
+function Player:checkCornerCollision(x, y)
     local collisionLayer = self.level:getLayer('Collision')
 
-    local newX = self.x
-    local newY = self.y
+    local collideTile = collisionLayer:getTileInWorld(x, y)
+    if collideTile and collideTile.value > 0 then return false end
+    collideTile = collisionLayer:getTileInWorld(x + PlayerWidth, y)
+    if collideTile and collideTile.value > 0 then return false end
+    collideTile = collisionLayer:getTileInWorld(x, y + PlayerWidth)
+    if collideTile and collideTile.value > 0 then return false end
+    collideTile = collisionLayer:getTileInWorld(x + PlayerWidth, y + PlayerWidth)
+    if collideTile and collideTile.value > 0 then return false end
+    return true
+end
 
+function Player:update(updates)
     if updates.moveLeft then
-        newX = self.x - MoveSpeed
+        if self:checkCornerCollision(self.x - MoveSpeed, self.y) then
+            self.x = self.x - MoveSpeed
+        end
     elseif updates.moveRight then
-        newX = self.x + MoveSpeed
+        if self:checkCornerCollision(self.x + MoveSpeed, self.y) then
+            self.x = self.x + MoveSpeed
+        end
     end
 
     if updates.moveUp then
-        newY = self.y - MoveSpeed
+        if self:checkCornerCollision(self.x, self.y - MoveSpeed) then
+            self.y = self.y - MoveSpeed
+        end
     elseif updates.moveDown then
-        newY = self.y + MoveSpeed
-    end
-
-    local collideTile = collisionLayer:getTileInWorld(newX, newY)
-
-    if collideTile.value == 0 then
-        self.x = newX
-        self.y = newY
-    else
-        print('Colliding at ' .. newX .. ', ' .. newY)
+        if self:checkCornerCollision(self.x, self.y + MoveSpeed) then
+            self.y = self.y + MoveSpeed
+        end
     end
 end
 
