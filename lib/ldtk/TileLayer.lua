@@ -16,6 +16,7 @@ function TileLayer:initialize(data, builder, level)
     self.visible = data.visible
     self.opacity = data.__opacity
 
+    self.drawTiles = {}
     self.tiles = {}
 
     local tiles
@@ -29,7 +30,7 @@ function TileLayer:initialize(data, builder, level)
     if tiles ~= nil and #tiles > 0 then
         for _, tileData in ipairs(tiles) do
             local tile = {
-                id = tileData.t,
+                tileId = tileData.t,
                 sourceLocation = { x = tileData.src[1], y = tileData.src[2] },
                 drawLocation = { x = tileData.px[1], y = tileData.px[2] },
                 flipX = tileData.f == 1 or tileData.f == 3,
@@ -38,20 +39,56 @@ function TileLayer:initialize(data, builder, level)
                 data = tileData
             }
 
-            tile.quad = self.tileset:getTileQuad(tile.id)
+            tile.quad = self.tileset:getTileQuad(tileData.t)
 
-            table.insert(self.tiles, tile)
+            table.insert(self.drawTiles, tile)
+
+            local tileRow = math.floor(tileData.src[2] / self.numRows)
+            local tileCol = math.floor(tileData.src[1] / self.numCols)
+
+            if not self.tiles[tileRow] then
+                self.tiles[tileRow] = {}
+            end
+
+            self.tiles[tileRow][tileCol] = tile
         end
 
         self.tilesetBatch = self.tileset:createSpriteBatch(self.numRows, self.numCols)
     end
 end
 
+-- Retrieves the tile at the indicated location
+-- Returns the grid value at a given location
+function TileLayer:getTile(row, col)
+    if row < 0 or col < 0 or row >= self.numRows or col >= self.numCols then
+        return nil
+    end
+
+    if not self.tiles[row] then
+        return nil
+    end
+
+    return self.tiles[row][col]
+end
+
+-- Returns the tile at the specified x,y level coordinates
+function TileLayer:getTileInLevel(x, y)
+    local row = math.floor(y / self.tileSize)
+    local col = math.floor(x / self.tileSize)
+
+    return self:getTile(row, col)
+end
+
+-- Returns the tile at the specified x,y world coordinates
+function TileLayer:getTileInWorld(x, y)
+    return self:getTileInLevel(x - self.level.x, y - self.level.y)
+end
+
 -- Draws this current tile layer
 function TileLayer:draw()
     if self.tilesetBatch then
         self.tilesetBatch:clear()
-        for _, tile in ipairs(self.tiles) do
+        for _, tile in ipairs(self.drawTiles) do
             local scaleX = 1
             local scaleY = 1
             if tile.flipX then
