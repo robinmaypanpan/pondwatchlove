@@ -8,6 +8,9 @@ require('lib/math')
 local LevelBuilder = require('lib/ldtk/LevelBuilder')
 local Player = require('game/Player')
 
+local player
+local world
+
 local entityTable = {
     Player = function(data, level)
         player = Player:new(data, level)
@@ -54,10 +57,30 @@ end
 
 -- Called after calling update each frame.
 function love.draw()
-    local scale = love.graphics.getWidth() / 600
+    local scale = love.graphics.getWidth() / world.levelWidth
     love.graphics.scale(scale)
 
-    love.graphics.translate(-(player.x - 300), -(player.y - 150))
+    updateCamera(player, world)
 
     world:draw()
+end
+
+-- Shift the camera to a location that is ideal
+function updateCamera(player, world)
+    local screenWidth = world.levelWidth
+    local screenHeight = world.levelHeight
+
+    -- Center the viewport on the player
+    local centerX = player.x - screenWidth / 2
+    local centerY = player.y - screenHeight / 2
+
+    -- Prevent the camera from exiting the level
+    local maxCameraX = player.level.x + player.level.width - screenWidth
+    local maxCameraY = player.level.y + player.level.height - screenHeight
+
+    -- Set the camera position to within the bounds of the level, but centered on our character
+    local cameraX = math.mid(player.level.x, centerX, maxCameraX)
+    local cameraY = math.mid(player.level.y, centerY, maxCameraY)
+
+    love.graphics.translate(-cameraX, -cameraY)
 end
