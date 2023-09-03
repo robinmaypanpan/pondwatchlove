@@ -19,7 +19,7 @@ local entityTable = {
 
 function love.load(arg)
     love.window.setTitle('Garden Love')
-    love.window.setMode(1920, 1080, {
+    love.window.setMode(1280, 720, {
         fullscreen = false
     })
 
