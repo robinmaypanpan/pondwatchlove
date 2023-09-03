@@ -7,8 +7,8 @@ local World = class('World')
 function World:initialize(data)
     self.data = data
 
-    self.levelWidth = data.defaultLevelWidth
-    self.levelHeight = data.defaultLevelHeight
+    self.levelWidth = data.worldGridWidth
+    self.levelHeight = data.worldGridHeight
 
     self.activeLevels = {}
 

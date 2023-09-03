@@ -34,7 +34,7 @@ function Player:checkCollision(x, y)
 
     local collisionLayer = self.level:getLayer('Collision')
     local collideTile = collisionLayer:getTileInWorld(x, y)
-    return collideTile.value > 0
+    return collideTile.value == 1
 end
 
 -- Used to check the corners for collision
