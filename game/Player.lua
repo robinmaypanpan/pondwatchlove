@@ -114,7 +114,6 @@ function Player:update(updates)
     end
     if result == CollisionType.OutsideLevel then
         self:changeLevels()
-        return
     end
 
     -- Now do the vertical component
@@ -147,7 +146,6 @@ function Player:update(updates)
     end
     if result == CollisionType.OutsideLevel then
         self:changeLevels()
-        return
     end
 end
 
