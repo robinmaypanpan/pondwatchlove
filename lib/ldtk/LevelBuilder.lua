@@ -40,7 +40,16 @@ function LevelBuilder:load(filename)
     end
 
     for _, levelData in ipairs(self.data.levels) do
-        local level = Level:new(levelData, self)
+        local realData = levelData
+        if levelData.externalRelPath then
+            local filename = 'assets/levels/' .. levelData.externalRelPath
+            assert(love.filesystem.getInfo(filename), "Level file " .. filename .. " does not exist")
+
+            local fileData = love.filesystem.read(filename)
+
+            realData = json.decode(fileData)
+        end
+        local level = Level:new(realData, self)
         world:addLevel(level)
     end
 

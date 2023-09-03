@@ -178,9 +178,6 @@ function Player:draw()
         width = self.width
     end
     love.graphics.draw(self.image, self.x, self.y, 0, scale, 1, width)
-    love.graphics.print('x Speed: ' .. self.xSpeed, self.x, self.y - 20)
-    love.graphics.print('y Speed: ' .. self.ySpeed, self.x, self.y - 35)
-    love.graphics.print('Jumping: ' .. string.fromBool(self.jump), self.x, self.y - 50)
 end
 
 return Player
