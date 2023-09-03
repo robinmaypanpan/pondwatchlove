@@ -90,24 +90,24 @@ function Level:drawBackground()
             -- TODO: Implementing repeating backgrounds
         else
             if bg.position == 'Cover' then
-                scaleX = world.levelWidth / bg.image:getWidth()
-                scaleY = world.levelHeight / bg.image:getHeight()
+                scaleX = self.width / bg.image:getWidth()
+                scaleY = self.height / bg.image:getHeight()
                 scaleX = math.max(scaleX, scaleY)
                 scaleY = scaleX
             elseif bg.position == 'Contain' then
-                scaleX = world.levelWidth / bg.image:getWidth()
-                scaleY = world.levelHeight / bg.image:getHeight()
+                scaleX = self.width / bg.image:getWidth()
+                scaleY = self.height / bg.image:getHeight()
                 scaleX = math.min(scaleX, scaleY)
                 scaleY = scaleX
             elseif bg.position == 'CoverDirty' then
-                scaleX = world.levelWidth / bg.image:getWidth()
-                scaleY = world.levelHeight / bg.image:getHeight()
+                scaleX = self.width / bg.image:getWidth()
+                scaleY = self.height / bg.image:getHeight()
             elseif bg.position == 'Unscaled' then
                 scaleX = 1
                 scaleY = 1
             end
-            x = calculatePivot(bg.pivotX, scaleX * bg.image:getWidth(), world.levelWidth)
-            y = calculatePivot(bg.pivotY, scaleY * bg.image:getHeight(), world.levelHeight)
+            x = calculatePivot(bg.pivotX, scaleX * bg.image:getWidth(), self.width)
+            y = calculatePivot(bg.pivotY, scaleY * bg.image:getHeight(), self.height)
 
             createStencil = function()
                 love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
