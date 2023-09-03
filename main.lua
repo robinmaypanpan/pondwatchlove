@@ -6,6 +6,7 @@ require('lib/table')
 require('lib/math')
 require('lib/string')
 
+local flux = require('lib/flux')
 local LevelBuilder = require('lib/ldtk/LevelBuilder')
 local Player = require('game/Player')
 
@@ -37,6 +38,8 @@ end
 
 -- Called before calling draw each time a frame updates
 function love.update(dt)
+    flux.update(dt)
+
     if player then
         local moveLeft = love.keyboard.isDown('a') or love.keyboard.isDown('left')
         local moveRight = love.keyboard.isDown('d') or love.keyboard.isDown('right')
@@ -62,8 +65,11 @@ function love.draw()
     world:draw()
 end
 
--- Shift the camera to a location that is ideal
-function updateCamera(player, world)
+local camera = { x = 0, y = 0 }
+local isLevelTransition = false
+local lastLevel
+
+function getCameraInLevel(level)
     local screenWidth = world.levelWidth
     local screenHeight = world.levelHeight
 
@@ -72,12 +78,33 @@ function updateCamera(player, world)
     local centerY = player.y - screenHeight / 2
 
     -- Prevent the camera from exiting the level
-    local maxCameraX = player.level.x + player.level.width - screenWidth
-    local maxCameraY = player.level.y + player.level.height - screenHeight
+    local maxCameraX = level.x + level.width - screenWidth
+    local maxCameraY = level.y + level.height - screenHeight
 
     -- Set the camera position to within the bounds of the level, but centered on our character
-    local cameraX = math.mid(player.level.x, centerX, maxCameraX)
-    local cameraY = math.mid(player.level.y, centerY, maxCameraY)
+    local cameraX = math.mid(level.x, centerX, maxCameraX)
+    local cameraY = math.mid(level.y, centerY, maxCameraY)
 
-    love.graphics.translate(-cameraX, -cameraY)
+    return cameraX, cameraY
+end
+
+-- Shift the camera to a location that is ideal
+function updateCamera(player, world)
+    if isLevelTransition then
+        -- Nothin to do thanks to flux!
+    elseif lastLevel ~= player.level then
+        isLevelTransition = true
+        destinationX, destinationY = getCameraInLevel(player.level)
+        flux.to(camera, 0.6, { x = destinationX, y = destinationY }):ease("quartinout"):oncomplete(
+            function()
+                lastLevel = player.level
+                isLevelTransition = false
+            end
+        )
+    else
+        lastLevel = player.level
+        camera.x, camera.y = getCameraInLevel(player.level)
+    end
+
+    love.graphics.translate(-camera.x, -camera.y)
 end
