@@ -109,8 +109,16 @@ function Level:drawBackground()
             x = calculatePivot(bg.pivotX, scaleX * bg.image:getWidth(), world.levelWidth)
             y = calculatePivot(bg.pivotY, scaleY * bg.image:getHeight(), world.levelHeight)
 
+            createStencil = function()
+                love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+            end
+
+            love.graphics.stencil(createStencil, "replace", 1)
+            -- Only allow rendering on pixels which have a stencil value greater than 0.
+            love.graphics.setStencilTest("greater", 0)
             love.graphics.setColor(1, 1, 1, 1);
             love.graphics.draw(bg.image, self.x + x, self.y + y, 0, scaleX, scaleY, bg.pivotX, bg.pivotY)
+            love.graphics.setStencilTest()
         end
     end
 end
