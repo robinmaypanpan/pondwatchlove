@@ -12,6 +12,9 @@ function Level:initialize(data, builder)
 
     self.id = data.identifier
     self.uid = data.uid
+    self.iid = data.iid
+
+    self.neighbors = data.__neighbours
 
     self.x = data.worldX
     self.y = data.worldY
