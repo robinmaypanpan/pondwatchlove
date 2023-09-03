@@ -14,6 +14,12 @@ function Player:initialize(data, level)
     self.level = level
     self.data = data
 
+    self.fields = {}
+
+    for _, field in pairs(data.fieldInstances) do
+        self.fields[field.__identifier] = field.__value
+    end
+
     self.id = data.__identifier
     self.x = data.__worldX
     self.y = data.__worldY
@@ -69,12 +75,12 @@ function Player:checkForCollisions(x, y)
 end
 
 function Player:update(updates)
-    local MaxXSpeed = 2
-    local Accel = 0.1
-    local Friction = 0.2
-    local MaxYSpeed = 2
-    local JumpAccel = 0.5
-    local Gravity = 0.2
+    local MaxXSpeed = self.fields.MaxXSpeed
+    local Accel = self.fields.Accel
+    local Friction = self.fields.Friction
+    local MaxYSpeed = self.fields.MaxYSpeed
+    local JumpAccel = self.fields.JumpAccel
+    local Gravity = self.fields.Gravity
 
     -- Update the player's horizontal velocity
     local impulse = 0
