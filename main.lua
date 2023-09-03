@@ -8,8 +8,6 @@ require('lib/math')
 local LevelBuilder = require('lib/ldtk/LevelBuilder')
 local Player = require('game/Player')
 
-FPSCAP = 60 -- change if you want higher/lower max fps
-
 local entityTable = {
     Player = function(data, level)
         player = Player:new(data, level)
