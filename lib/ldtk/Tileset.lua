@@ -1,13 +1,8 @@
 local class = require('lib/middleclass')
+local fixRelPath = require('lib/ldtk/fixRelPath')
 
 -- A Tileset is a collection of images that can be used for sprite batches and other sources
 local Tileset = class('Tileset')
-
--- Adjust the relative path so it points from the root
-function fixRelPath(path)
-    local result, _ = string.gsub(path, '%.%./', 'assets/')
-    return result
-end
 
 function Tileset:initialize(data)
     print(data)

@@ -3,6 +3,7 @@ local TileLayer = require('lib/ldtk/TileLayer')
 local EntityLayer = require('lib/ldtk/EntityLayer')
 local IntLayer = require('lib/ldtk/IntLayer')
 local colorFromValue = require('lib/colorFromValue')
+local fixRelPath = require('lib/ldtk/fixRelPath')
 
 local Level = class('Level')
 
@@ -21,7 +22,19 @@ function Level:initialize(data, builder)
     self.width = data.pxWid
     self.height = data.pxHei
 
-    self.bgColor = data.bgColor or data.__bgColor
+    local bgColor = data.bgColor or data.__bgColor
+
+    self.background = {
+        color = bgColor,
+    }
+
+    if data.bgRelPath then
+        local bgPath = fixRelPath(data.bgRelPath)
+        self.background.image = love.graphics.newImage(bgPath)
+        self.background.position = data.bgPos
+        self.background.pivotX = data.bgPivotX
+        self.background.pivotY = data.bgPivotY
+    end
 
     self.layers = {}
     self.drawLayers = {}
@@ -60,11 +73,51 @@ function Level:isWithinLevel(x, y)
         and y < self.y + self.height
 end
 
--- Draws this level at the indicated position
-function Level:draw()
-    love.graphics.setColor(colorFromValue(self.bgColor))
+-- Calculate the correct position based on the pivot
+function calculatePivot(pivot, source, destination)
+    return destination * pivot - source * pivot
+end
+
+-- Draws the background to the various layers
+function Level:drawBackground()
+    local bg = self.background
+
+    love.graphics.setColor(colorFromValue(bg.color))
     love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 
+    if bg.image then
+        if bg.position == 'repeat' then
+            -- TODO: Implementing repeating backgrounds
+        else
+            if bg.position == 'Cover' then
+                scaleX = world.levelWidth / bg.image:getWidth()
+                scaleY = world.levelHeight / bg.image:getHeight()
+                scaleX = math.max(scaleX, scaleY)
+                scaleY = scaleX
+            elseif bg.position == 'Contain' then
+                scaleX = world.levelWidth / bg.image:getWidth()
+                scaleY = world.levelHeight / bg.image:getHeight()
+                scaleX = math.min(scaleX, scaleY)
+                scaleY = scaleX
+            elseif bg.position == 'CoverDirty' then
+                scaleX = world.levelWidth / bg.image:getWidth()
+                scaleY = world.levelHeight / bg.image:getHeight()
+            elseif bg.position == 'Unscaled' then
+                scaleX = 1
+                scaleY = 1
+            end
+            x = calculatePivot(bg.pivotX, scaleX * bg.image:getWidth(), world.levelWidth)
+            y = calculatePivot(bg.pivotY, scaleY * bg.image:getHeight(), world.levelHeight)
+
+            love.graphics.setColor(1, 1, 1, 1);
+            love.graphics.draw(bg.image, self.x + x, self.y + y, 0, scaleX, scaleY, bg.pivotX, bg.pivotY)
+        end
+    end
+end
+
+-- Draws this level at the indicated position
+function Level:draw()
+    self:drawBackground()
     love.graphics.setColor(1, 1, 1, 1);
     for _, layer in ipairs(self.drawLayers) do
         if layer.visible then
