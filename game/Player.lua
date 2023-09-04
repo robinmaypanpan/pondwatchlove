@@ -35,43 +35,63 @@ function Player:initialize(data, level)
     self.height = self.image:getHeight()
 end
 
--- Checks for collision at the indicated position
-function Player:checkCollision(x, y)
-    if not self.level:isWithinLevel(x, y) then
-        return CollisionType.OutsideLevel
-    end
-
-    local collisionLayer = self.level:getLayer('Collision')
-    local collideTile = collisionLayer:getTileInWorld(x, y)
-    if collideTile.value == 1 or collideTile.value == 2 then
-        return CollisionType.Wall
-    else
-        return CollisionType.None
-    end
-end
-
 -- Check for collisions in all the right places
-function Player:checkForCollisions(x, y)
+function Player:checkForCollisions(direction, distance)
+    local collisionLayer = self.level:getLayer('Collision')
+
+    local newX = self.x
+    local newY = self.y
+
+    if direction == 'x' then
+        newX = newX + distance
+    elseif direction == 'y' then
+        newY = newY + distance
+    end
+
+    local upperRightRow, upperRightCol = collisionLayer:convertWorldToGrid(newX + self.width, newY)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(newX + self.width, newY + self.height)
+    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(newX, newY)
+    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(newX, newY + self.height)
+
     local results = {}
+    if direction == 'x' and distance > 0 then
+        results = collisionLayer:getTilesInRange(upperRightRow, upperRightCol, lowerRightRow, lowerRightCol)
+    elseif direction == 'x' and distance < 0 then
+        results = collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, lowerLeftRow, lowerLeftCol)
+    elseif direction == 'y' and distance > 0 then
+        results = collisionLayer:getTilesInRange(lowerLeftRow, lowerLeftCol, lowerRightRow, lowerRightCol)
+    elseif direction == 'y' and distance < 0 then
+        results = collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, upperRightRow, upperRightCol)
+    else
+        return {
+            type = CollisionType.None
+        }
+    end
 
-    table.insert(results, self:checkCollision(x, y))
-    table.insert(results, self:checkCollision(x + self.width, y))
-    table.insert(results, self:checkCollision(x, y + self.height))
-    table.insert(results, self:checkCollision(x + self.width, y + self.height))
+    assert(#results > 0, 'No tiles found to collide with')
 
-    for _, result in ipairs(results) do
-        if result == CollisionType.Wall then
-            return result
+    for _, tile in ipairs(results) do
+        if tile.value == 1 or tile.value == 2 then
+            return {
+                type = CollisionType.Wall
+            }
         end
     end
 
-    for _, result in ipairs(results) do
-        if result == CollisionType.OutsideLevel then
-            return result
+    for _, tile in ipairs(results) do
+        if tile.value == -1 then
+            local outsideX, outsideY = collisionLayer:convertGridToWorld(tile.row, tile.col)
+            local newLevel = world:getLevelAt(outsideX, outsideY)
+            return {
+                type = CollisionType.OutsideLevel,
+                level = newLevel,
+            }
         end
     end
 
-    return CollisionType.None
+    return {
+        type = CollisionType.None
+    }
 end
 
 function Player:update(updates)
@@ -108,12 +128,14 @@ function Player:update(updates)
 
     self.xSpeed = math.mid(-MaxXSpeed, self.xSpeed + impulse, MaxXSpeed)
 
-    local result = self:checkForCollisions(self.x + self.xSpeed, self.y)
-    if result ~= CollisionType.Wall then
+    local result = self:checkForCollisions('x', self.xSpeed)
+    if result.type == CollisionType.OutsideLevel then
+        if result.level and result.level ~= self.level then
+            self:changeLevels(result.level)
+            self.x = self.x + self.xSpeed
+        end
+    elseif result.type == CollisionType.None then
         self.x = self.x + self.xSpeed
-    end
-    if result == CollisionType.OutsideLevel then
-        self:changeLevels()
     end
 
     -- Now do the vertical component
@@ -138,14 +160,14 @@ function Player:update(updates)
 
     self.ySpeed = math.mid(-MaxYSpeed, self.ySpeed + impulse, MaxYSpeed)
 
-    local result = self:checkForCollisions(self.x, self.y + self.ySpeed)
-    if result ~= CollisionType.Wall then
+    local result = self:checkForCollisions('y', self.ySpeed)
+    if result.type == CollisionType.OutsideLevel then
+        if result.level then
+            self:changeLevels(result.level)
+            self.y = self.y + self.ySpeed
+        end
+    elseif result.type == CollisionType.None then
         self.y = self.y + self.ySpeed
-    elseif result == CollisionType.Wall then
-        self.ySpeed = 0
-    end
-    if result == CollisionType.OutsideLevel then
-        self:changeLevels()
     end
 end
 
@@ -157,24 +179,26 @@ function Player:isOnGround()
 end
 
 -- Used to trigger a level change
-function Player:changeLevels()
-    local newLevel = world:getLevelAt(self.x, self.y)
-
-    if newLevel == nil then
-        -- do nothing
-        return
-    end
+function Player:changeLevels(newLevel)
+    assert(newLevel ~= nil, 'Cannot change to an empty level')
 
     local oldLevel = self.level
     local entityLayer = oldLevel:getLayer('Entities')
     entityLayer:unbindEntity(self)
 
-    local newLevel = world:getLevelAt(self.x, self.y)
+    -- connect to the new level
     self.level = newLevel
     entityLayer = newLevel:getLayer('Entities')
     entityLayer:bindEntity(self)
 
     world:setActiveLevel(newLevel.id)
+
+    -- Reposition inside the new level
+    self.x = math.mid(newLevel.x, self.x, newLevel.x + newLevel.width - self.width)
+    self.y = math.mid(newLevel.y, self.y, newLevel.y + newLevel.height - self.height)
+
+    -- Cancel momentum
+    -- self.xSpeed = 0
 end
 
 function Player:draw()

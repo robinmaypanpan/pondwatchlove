@@ -30,6 +30,13 @@ function LayerWithTiles:getTilesInRange(row1, col1, row2, col2)
             local tile = self:getTile(row, col)
             if tile then
                 table.insert(tiles, tile)
+            else
+                table.insert(tiles, {
+                    value = -1,
+                    id = 'Missing',
+                    row = row,
+                    col = col
+                })
             end
         end
     end
@@ -57,6 +64,23 @@ function LayerWithTiles:convertLevelToGrid(x, y)
     local row = math.floor(y / self.tileSize)
     local col = math.floor(x / self.tileSize)
     return row, col
+end
+
+-- Converts world-relative x,y coordinate to row,col coordinates on the local grid
+function LayerWithTiles:convertWorldToGrid(x, y)
+    return self:convertLevelToGrid(self.level:convertWorldToLevel(x, y))
+end
+
+-- Get the level-relative x,y coordinates of the provided row,col coordinates on the local grid
+function LayerWithTiles:convertGridToLevel(row, col)
+    local x = col * self.tileSize
+    local y = row * self.tileSize
+    return x, y
+end
+
+-- Get the world-relative x,y coordinates of the provided row,col coordinates on the local grid
+function LayerWithTiles:convertGridToWorld(row, col)
+    return self.level:convertLevelToWorld(self:convertGridToLevel(row, col))
 end
 
 -- Super function that should be overriden
