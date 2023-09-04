@@ -96,17 +96,17 @@ function Player:checkForCollisions(direction, distance)
 end
 
 function Player:update(updates)
-    local maxXSpeed = self.fields.maxXSpeed or 2
-    local accel = self.fields.accel or 0.1
-    local friction = self.fields.friction or 0.2
-    local maxYSpeed = self.fields.maxYSpeed or 3
-    local jumpAccel = self.fields.jumpAccel or 0.5
-    local gravity = self.fields.gravity or 0.4
-    local initialGravityMultiplier = self.fields.initialGravityMultiplier or 0.3
-    local gravityDecay = self.fields.gravityDecay or 0.09
+    local maxXSpeed = self.fields.maxXSpeed
+    local accel = self.fields.accel
+    local friction = self.fields.friction
+    local maxYSpeed = self.fields.maxYSpeed
+    local jumpAccel = self.fields.jumpAccel
+    local gravity = self.fields.gravity
+    local initialGravityMultiplier = self.fields.initialGravityMultiplier
+    local gravityDecay = self.fields.gravityDecay
 
     local collisionLayer = self.level:getLayer('Collision')
-    local jumpHeight = (self.fields.jumpHeight or 3) * collisionLayer.tileSize
+    local jumpHeight = self.fields.jumpHeight * collisionLayer.tileSize
 
     -- Update the player's horizontal velocity
     local impulse = 0
