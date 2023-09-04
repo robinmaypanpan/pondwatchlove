@@ -23,6 +23,7 @@ function Player:initialize(data, level)
     self.id = data.__identifier
     self.x = data.__worldX
     self.y = data.__worldY
+    self.jumpStart = self.y
 
     self.xSpeed = 0
     self.ySpeed = 0
@@ -95,38 +96,43 @@ function Player:checkForCollisions(direction, distance)
 end
 
 function Player:update(updates)
-    local MaxXSpeed = self.fields.MaxXSpeed
-    local Accel = self.fields.Accel
-    local Friction = self.fields.Friction
-    local MaxYSpeed = self.fields.MaxYSpeed
-    local JumpAccel = self.fields.JumpAccel
-    local Gravity = self.fields.Gravity
+    local maxXSpeed = self.fields.maxXSpeed or 2
+    local accel = self.fields.accel or 0.1
+    local friction = self.fields.friction or 0.2
+    local maxYSpeed = self.fields.maxYSpeed or 3
+    local jumpAccel = self.fields.jumpAccel or 0.5
+    local gravity = self.fields.gravity or 0.4
+    local initialGravityMultiplier = self.fields.initialGravityMultiplier or 0.3
+    local gravityDecay = self.fields.gravityDecay or 0.09
+
+    local collisionLayer = self.level:getLayer('Collision')
+    local jumpHeight = (self.fields.jumpHeight or 3) * collisionLayer.tileSize
 
     -- Update the player's horizontal velocity
     local impulse = 0
     if updates.moveLeft then
         if self.xSpeed > 0 then
-            impulse = -Friction
+            impulse = -friction
         else
-            impulse = -Accel
+            impulse = -accel
         end
         self.flipImage = true
     elseif updates.moveRight then
         if self.xSpeed < 0 then
-            impulse = Friction
+            impulse = friction
         else
-            impulse = Accel
+            impulse = accel
         end
         self.flipImage = false
     else
-        local frictionEffect = Friction
-        if math.abs(self.xSpeed) < Friction then
+        local frictionEffect = friction
+        if math.abs(self.xSpeed) < friction then
             frictionEffect = math.abs(self.xSpeed)
         end
         impulse = -1 * math.sign(self.xSpeed) * frictionEffect
     end
 
-    self.xSpeed = math.mid(-MaxXSpeed, self.xSpeed + impulse, MaxXSpeed)
+    self.xSpeed = math.mid(-maxXSpeed, self.xSpeed + impulse, maxXSpeed)
 
     local result = self:checkForCollisions('x', self.xSpeed)
     if result.type == CollisionType.OutsideLevel then
@@ -139,35 +145,39 @@ function Player:update(updates)
     end
 
     -- Now do the vertical component
-    local startGravity = Gravity * self.fields.InitialGravityMultiplier
+    local startGravity = gravity * initialGravityMultiplier
     self.currentGravity = startGravity
     impulse = 0
-    self.jump = updates.jump
     if updates.jump and self:isOnGround() then
         self.isJumping = true
         self.currentGravity = startGravity
-        impulse = -JumpAccel
-    elseif updates.jump and self.isJumping then
+        impulse = -jumpAccel
+        self.jumpStart = self.y
+    elseif updates.jump and self.isJumping and self.jumpStart - self.y < jumpHeight then
         self.currentGravity = startGravity
-        impulse = -JumpAccel
+        impulse = -jumpAccel
     else
         self.isJumping = false
-        if self.currentGravity < Gravity then
-            self.currentGravity = self.currentGravity + Gravity * self.fields.GravityDecay
+        if self.currentGravity < gravity then
+            self.currentGravity = self.currentGravity + gravity * gravityDecay
         end
         impulse = self.currentGravity
     end
 
-    self.ySpeed = math.mid(-MaxYSpeed, self.ySpeed + impulse, MaxYSpeed)
+    self.ySpeed = math.mid(-maxYSpeed, self.ySpeed + impulse, maxYSpeed)
 
     local result = self:checkForCollisions('y', self.ySpeed)
     if result.type == CollisionType.OutsideLevel then
         if result.level then
             self:changeLevels(result.level)
             self.y = self.y + self.ySpeed
+        else
+            self.isJumping = false
         end
     elseif result.type == CollisionType.None then
         self.y = self.y + self.ySpeed
+    else
+        self.isJumping = false
     end
 end
 
@@ -175,7 +185,22 @@ end
 function Player:isOnGround()
     local collisionLayer = self.level:getLayer('Collision')
 
-    return true
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(self.x + self.width,
+        self.y + self.height + collisionLayer.tileSize / 2)
+    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(self.x,
+        self.y + self.height + collisionLayer.tileSize / 2)
+
+    local results = collisionLayer:getTilesInRange(lowerLeftRow, lowerLeftCol, lowerRightRow, lowerRightCol)
+
+    assert(#results > 0, "No tiles found to detect ground")
+
+    for _, tile in ipairs(results) do
+        if tile.value == 1 or tile.value == 2 then
+            return true
+        end
+    end
+
+    return false
 end
 
 -- Used to trigger a level change

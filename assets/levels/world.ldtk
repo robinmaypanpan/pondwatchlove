@@ -11,7 +11,7 @@
 	"iid": "82c3b630-3b70-11ee-9b71-cb89db194432",
 	"jsonVersion": "1.3.4",
 	"appBuildId": 470178,
-	"nextUid": 343,
+	"nextUid": 344,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "GridVania",
@@ -2572,7 +2572,7 @@
 			"pivotY": 0.5,
 			"fieldDefs": [
 				{
-					"identifier": "MaxXSpeed",
+					"identifier": "maxXSpeed",
 					"doc": "Maximum Horizontal Movement Speed",
 					"__type": "Float",
 					"uid": 242,
@@ -2607,7 +2607,7 @@
 					"tilesetUid": null
 				},
 				{
-					"identifier": "MaxYSpeed",
+					"identifier": "maxYSpeed",
 					"doc": "Maximum vertical speed that can be achieved",
 					"__type": "Float",
 					"uid": 243,
@@ -2642,7 +2642,7 @@
 					"tilesetUid": null
 				},
 				{
-					"identifier": "Gravity",
+					"identifier": "gravity",
 					"doc": "Impulse of falling",
 					"__type": "Float",
 					"uid": 244,
@@ -2677,7 +2677,7 @@
 					"tilesetUid": null
 				},
 				{
-					"identifier": "Accel",
+					"identifier": "accel",
 					"doc": "Horizontal acceleration when pressing left or right",
 					"__type": "Float",
 					"uid": 245,
@@ -2712,7 +2712,7 @@
 					"tilesetUid": null
 				},
 				{
-					"identifier": "Friction",
+					"identifier": "friction",
 					"doc": "Horizontal slow down",
 					"__type": "Float",
 					"uid": 246,
@@ -2747,7 +2747,7 @@
 					"tilesetUid": null
 				},
 				{
-					"identifier": "JumpAccel",
+					"identifier": "jumpAccel",
 					"doc": "Speed the player accelerates upwards",
 					"__type": "Float",
 					"uid": 247,
@@ -2782,7 +2782,7 @@
 					"tilesetUid": null
 				},
 				{
-					"identifier": "InitialGravityMultiplier",
+					"identifier": "initialGravityMultiplier",
 					"doc": "Multiplies the gravity by this amount to get the initial falling gravity",
 					"__type": "Float",
 					"uid": 253,
@@ -2817,7 +2817,7 @@
 					"tilesetUid": null
 				},
 				{
-					"identifier": "GravityDecay",
+					"identifier": "gravityDecay",
 					"doc": "The speed at which InitialGravity reaches Gravity",
 					"__type": "Float",
 					"uid": 254,
@@ -2842,6 +2842,41 @@
 					"regex": null,
 					"acceptFileTypes": null,
 					"defaultOverride": { "id": "V_Float", "params": [0.1] },
+					"textLanguageMode": null,
+					"symmetricalRef": false,
+					"autoChainRef": true,
+					"allowOutOfLevelRef": true,
+					"allowedRefs": "OnlySame",
+					"allowedRefsEntityUid": null,
+					"allowedRefTags": [],
+					"tilesetUid": null
+				},
+				{
+					"identifier": "jumpHeight",
+					"doc": "Maximum distance player can jump in tiles",
+					"__type": "Float",
+					"uid": 343,
+					"type": "F_Float",
+					"isArray": false,
+					"canBeNull": false,
+					"arrayMinLength": null,
+					"arrayMaxLength": null,
+					"editorDisplayMode": "Hidden",
+					"editorDisplayScale": 1,
+					"editorDisplayPos": "Above",
+					"editorLinkStyle": "StraightArrow",
+					"editorDisplayColor": null,
+					"editorAlwaysShow": false,
+					"editorShowInWorld": true,
+					"editorCutLongValues": true,
+					"editorTextSuffix": null,
+					"editorTextPrefix": null,
+					"useForSmartColor": false,
+					"min": 0,
+					"max": 20,
+					"regex": null,
+					"acceptFileTypes": null,
+					"defaultOverride": { "id": "V_Float", "params": [3] },
 					"textLanguageMode": null,
 					"symmetricalRef": false,
 					"autoChainRef": true,
