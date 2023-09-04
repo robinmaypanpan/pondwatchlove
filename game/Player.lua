@@ -99,6 +99,11 @@ function Player:checkForCollisions(direction, distance)
 end
 
 function Player:update(updates)
+    local dt = love.timer.getDelta()
+    local targetFPS = 60
+    local fixItFactor = 1.5
+    local timeMultiplier = dt * targetFPS * fixItFactor
+
     local maxXSpeed = self.fields.maxXSpeed
     local accel = self.fields.accel
     local friction = self.fields.friction
@@ -131,22 +136,24 @@ function Player:update(updates)
         self.flipImage = false
     else
         local frictionEffect = friction
-        if math.abs(self.xSpeed) < friction then
-            frictionEffect = math.abs(self.xSpeed)
+        local xDistance = self.xSpeed * timeMultiplier
+        if math.abs(xDistance) < friction then
+            frictionEffect = math.abs(xDistance)
         end
         impulse = -1 * math.sign(self.xSpeed) * frictionEffect
     end
 
     self.xSpeed = math.mid(-maxXSpeed, self.xSpeed + impulse, maxXSpeed)
+    local xDistance = self.xSpeed * timeMultiplier
 
-    local result = self:checkForCollisions('x', self.xSpeed)
+    local result = self:checkForCollisions('x', xDistance)
     if result.type == CollisionType.OutsideLevel then
         if result.level and result.level ~= self.level then
             self:changeLevels(result.level)
-            self.x = self.x + self.xSpeed
+            self.x = self.x + xDistance
         end
     elseif result.type == CollisionType.None then
-        self.x = self.x + self.xSpeed
+        self.x = self.x + xDistance
     end
 
     -- Now do the vertical component
@@ -167,7 +174,7 @@ function Player:update(updates)
     elseif self.isClimbing and not self.isJumping and self:isOnClimbable() and not self:isOnGround() then
         -- Stopping while on a climbable
         self.ySpeed = 0
-    elseif updates.jump and (self:isOnGround() or self.isClimbing) then
+    elseif not self.isJumping and updates.jump and (self:isOnGround() or self.isClimbing) then
         -- Start jumping
         self.isClimbing = false
         self.isJumping = true
@@ -182,23 +189,24 @@ function Player:update(updates)
         self.isClimbing = false
         self.isJumping = false
         if self.currentGravity < gravity then
-            self.currentGravity = self.currentGravity + gravity * gravityDecay
+            self.currentGravity = self.currentGravity + gravity * gravityDecay * timeMultiplier
         end
         impulse = self.currentGravity
     end
 
     self.ySpeed = math.mid(-maxYSpeed, self.ySpeed + impulse, maxYSpeed)
+    local yDistance = self.ySpeed * timeMultiplier
 
-    local result = self:checkForCollisions('y', self.ySpeed)
+    local result = self:checkForCollisions('y', yDistance)
     if result.type == CollisionType.OutsideLevel then
         if result.level then
             self:changeLevels(result.level)
-            self.y = self.y + self.ySpeed
+            self.y = self.y + yDistance
         else
             self.isJumping = false
         end
     elseif result.type == CollisionType.None then
-        self.y = self.y + self.ySpeed
+        self.y = self.y + yDistance
     else
         self.isJumping = false
     end
