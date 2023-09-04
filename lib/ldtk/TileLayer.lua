@@ -1,21 +1,11 @@
 local class = require('lib/middleclass')
 
-local TileLayer = class('TileLayer')
+local LayerWithTiles = require('lib/ldtk/LayerWithTiles')
+
+local TileLayer = class('TileLayer', LayerWithTiles)
 
 function TileLayer:initialize(data, builder, level)
-    self.level = level
-
-    self.id = data.__identifier
-    self.numRows = data.__cHei
-    self.numCols = data.__cWid
-
-    self.tileSize = data.__gridSize
-
-    self.tileset = builder.tilesets[data.__tilesetDefUid]
-
-    self.visible = data.visible
-    self.opacity = data.__opacity
-
+    LayerWithTiles.initialize(self, data, builder, level)
     self.drawTiles = {}
     self.tiles = {}
 
@@ -67,20 +57,6 @@ function TileLayer:getTile(row, col)
     end
 
     return self.tiles[row][col]
-end
-
--- Returns the tile at the specified x,y level coordinates
-function TileLayer:getTileInLevel(x, y)
-    local row = math.floor(y / self.tileSize)
-    local col = math.floor(x / self.tileSize)
-
-    return self:getTile(row, col)
-end
-
--- Returns the tile at the specified x,y world coordinates
--- NB: Returns nil outside the level
-function TileLayer:getTileInWorld(x, y)
-    return self:getTileInLevel(x - self.level.x, y - self.level.y)
 end
 
 -- Draws this current tile layer
