@@ -35,39 +35,46 @@ function Player:initialize(data, level)
     self.height = self.image:getHeight()
 end
 
--- Checks for collision at the indicated position
-function Player:checkCollision(x, y)
-    if not self.level:isWithinLevel(x, y) then
-        return CollisionType.OutsideLevel
-    end
-
-    local collisionLayer = self.level:getLayer('Collision')
-    local collideTile = collisionLayer:getTileInWorld(x, y)
-    if collideTile.value == 1 or collideTile.value == 2 then
-        return CollisionType.Wall
-    else
-        return CollisionType.None
-    end
-end
-
 -- Check for collisions in all the right places
-function Player:checkForCollisions(x, y)
+function Player:checkForCollisions(direction, distance)
+    local collisionLayer = self.level:getLayer('Collision')
+
+    local newX = self.x
+    local newY = self.y
+
+    if direction == 'x' then
+        newX = newX + distance
+    elseif direction == 'y' then
+        newY = newY + distance
+    end
+
+    local upperRightRow, upperRightCol = collisionLayer:convertWorldToGrid(newX + self.width, newY)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(newX + self.width, newY + self.height)
+    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(newX, newY)
+    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(newX, newY + self.height)
+
     local results = {}
+    if direction == 'x' and distance >= 0 then
+        results = collisionLayer:getTilesInRange(upperRightRow, upperRightCol, lowerRightRow, lowerRightCol)
+    elseif direction == 'x' and distance < 0 then
+        results = collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, lowerLeftRow, lowerLeftCol)
+    elseif direction == 'y' and distance >= 0 then
+        results = collisionLayer:getTilesInRange(lowerLeftRow, lowerLeftCol, lowerRightRow, lowerRightCol)
+    elseif direction == 'y' and distance < 0 then
+        results = collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, upperRightRow, upperRightCol)
+    end
 
-    table.insert(results, self:checkCollision(x, y))
-    table.insert(results, self:checkCollision(x + self.width, y))
-    table.insert(results, self:checkCollision(x, y + self.height))
-    table.insert(results, self:checkCollision(x + self.width, y + self.height))
+    assert(#results > 0, 'No tiles found to collide with')
 
-    for _, result in ipairs(results) do
-        if result == CollisionType.Wall then
-            return result
+    for _, tile in ipairs(results) do
+        if tile.value == 1 or tile.value == 2 then
+            return CollisionType.Wall
         end
     end
 
-    for _, result in ipairs(results) do
-        if result == CollisionType.OutsideLevel then
-            return result
+    for _, tile in ipairs(results) do
+        if tile.value == -1 then
+            return CollisionType.OutsideLevel
         end
     end
 
@@ -108,7 +115,7 @@ function Player:update(updates)
 
     self.xSpeed = math.mid(-MaxXSpeed, self.xSpeed + impulse, MaxXSpeed)
 
-    local result = self:checkForCollisions(self.x + self.xSpeed, self.y)
+    local result = self:checkForCollisions('x', self.xSpeed)
     if result ~= CollisionType.Wall then
         self.x = self.x + self.xSpeed
     end
@@ -138,7 +145,7 @@ function Player:update(updates)
 
     self.ySpeed = math.mid(-MaxYSpeed, self.ySpeed + impulse, MaxYSpeed)
 
-    local result = self:checkForCollisions(self.x, self.y + self.ySpeed)
+    local result = self:checkForCollisions('y', self.ySpeed)
     if result ~= CollisionType.Wall then
         self.y = self.y + self.ySpeed
     elseif result == CollisionType.Wall then
