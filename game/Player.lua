@@ -151,6 +151,8 @@ end
 
 -- Returns true if the player is on the ground
 function Player:isOnGround()
+    local collisionLayer = self.level:getLayer('Collision')
+
     return true
 end
 
