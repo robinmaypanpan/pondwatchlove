@@ -29,7 +29,8 @@
 	"fieldInstances": [
 		{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": true, "__tile": null, "defUid": 339, "realEditorValues": [] },
 		{ "__identifier": "BackgroundParallaxFactorX", "__type": "Float", "__value": null, "__tile": null, "defUid": 340, "realEditorValues": [] },
-		{ "__identifier": "BackgroundParallaxFactorY", "__type": "Float", "__value": null, "__tile": null, "defUid": 341, "realEditorValues": [] }
+		{ "__identifier": "BackgroundParallaxFactorX2", "__type": "Float", "__value": null, "__tile": null, "defUid": 342, "realEditorValues": [] },
+		{ "__identifier": "BackgroundZoomFactorY", "__type": "Float", "__value": null, "__tile": null, "defUid": 341, "realEditorValues": [] }
 	],
 	"layerInstances": [
 		{
