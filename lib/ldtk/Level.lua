@@ -84,6 +84,11 @@ function Level:convertWorldToLevel(x, y)
     return x - self.x, y - self.y
 end
 
+-- Converts level-relative x,y coordinates to world-relative x,y coordinates
+function Level:convertLevelToWorld(x, y)
+    return x + self.x, y + self.y
+end
+
 -- Calculate the correct position based on the pivot
 function calculatePivot(pivot, source, destination)
     return destination * pivot - source * pivot

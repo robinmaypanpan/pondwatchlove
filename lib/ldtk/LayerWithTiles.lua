@@ -71,6 +71,18 @@ function LayerWithTiles:convertWorldToGrid(x, y)
     return self:convertLevelToGrid(self.level:convertWorldToLevel(x, y))
 end
 
+-- Get the level-relative x,y coordinates of the provided row,col coordinates on the local grid
+function LayerWithTiles:convertGridToLevel(row, col)
+    local x = col * self.tileSize
+    local y = row * self.tileSize
+    return x, y
+end
+
+-- Get the world-relative x,y coordinates of the provided row,col coordinates on the local grid
+function LayerWithTiles:convertGridToWorld(row, col)
+    return self.level:convertLevelToWorld(self:convertGridToLevel(row, col))
+end
+
 -- Super function that should be overriden
 function LayerWithTiles:draw()
     assert(false, 'draw method not implemented for child class')
