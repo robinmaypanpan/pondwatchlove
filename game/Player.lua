@@ -41,6 +41,8 @@ end
 
 -- Check for collisions in all the right places
 function Player:checkForCollisions(direction, distance)
+    local hitboxMargin = 0 - (self.fields.hitboxMargin or -2)
+
     local collisionLayer = self.level:getLayer('Collision')
 
     local newX = self.x
@@ -52,10 +54,13 @@ function Player:checkForCollisions(direction, distance)
         newY = newY + distance
     end
 
-    local upperRightRow, upperRightCol = collisionLayer:convertWorldToGrid(newX + self.width, newY)
-    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(newX + self.width, newY + self.height)
-    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(newX, newY)
-    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(newX, newY + self.height)
+    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(newX + hitboxMargin, newY + hitboxMargin)
+    local upperRightRow, upperRightCol = collisionLayer:convertWorldToGrid(newX + self.width - hitboxMargin,
+        newY + hitboxMargin)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(newX + self.width - hitboxMargin,
+        newY + self.height - hitboxMargin)
+    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(newX + hitboxMargin,
+        newY + self.height - hitboxMargin)
 
     local results = {}
     if direction == 'x' and distance > 0 then
@@ -159,19 +164,23 @@ function Player:update(updates)
     -- Now do the vertical component
     impulse = 0
 
-    if updates.moveUp and self:isOnClimbable() then
+    local climbableTile = self:getNearestClimbable()
+
+    if updates.moveUp and climbableTile then
         -- Start Climbing up a climbable
+        self.x = climbableTile.x + collisionLayer.tileSize / 2 - self.width / 2
         self.xSpeed = 0
         self.ySpeed = -climbSpeed
         self.isJumping = false
         self.isClimbing = true
-    elseif updates.moveDown and self:isOnClimbable() then
+    elseif updates.moveDown and climbableTile then
         -- Start climbing down a climbable
+        self.x = climbableTile.x + collisionLayer.tileSize / 2 - self.width / 2
         self.xSpeed = 0
         self.ySpeed = climbSpeed
         self.isJumping = false
         self.isClimbing = true
-    elseif self.isClimbing and not self.isJumping and self:isOnClimbable() and not self:isOnGround() then
+    elseif self.isClimbing and not self.isJumping and climbableTile and not self:isOnGround() then
         -- Stopping while on a climbable
         self.ySpeed = 0
     elseif not self.isJumping and updates.jump and (self:isOnGround() or self.isClimbing) then
@@ -207,38 +216,50 @@ function Player:update(updates)
         end
     elseif result.type == CollisionType.None then
         self.y = self.y + yDistance
-    else
+    elseif result.type == CollisionType.Wall then
         self.isJumping = false
     end
 end
 
--- Returns true if the player is on a Climbable object
-function Player:isOnClimbable()
+-- Returns the nearest climbable tile in range
+function Player:getNearestClimbable()
     local collisionLayer = self.level:getLayer('Collision')
+
     local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(self.x, self.y)
-    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(self.x + self.width,
-        self.y + self.height + collisionLayer.tileSize / 2)
-    local results = collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, lowerRightRow, lowerRightCol)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(self.x + self.width, self.y + self.height)
+    local results = collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, lowerRightRow + 1, lowerRightCol)
+
+    local centerRow, centerCol = collisionLayer:convertWorldToGrid(self.x + self.width / 2, self.y + self.height / 2)
+
+    local selectedTile = {
+        tile = nil,
+        distance = 99999
+    }
 
     for _, tile in ipairs(results) do
         if tile.value == 4 then
-            return true
+            local distance = math.distance(centerRow, centerCol, tile.row, tile.col)
+            if distance < selectedTile.distance then
+                selectedTile =
+                {
+                    tile = tile,
+                    distance = distance
+                }
+            end
         end
     end
 
-    return false
+    return selectedTile.tile
 end
 
 -- Returns true if the player is on the ground
 function Player:isOnGround()
     local collisionLayer = self.level:getLayer('Collision')
 
-    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(self.x + self.width,
-        self.y + self.height + collisionLayer.tileSize / 2)
-    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(self.x,
-        self.y + self.height + collisionLayer.tileSize / 2)
+    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(self.x, self.y + self.height)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(self.x + self.width, self.y + self.height)
 
-    local results = collisionLayer:getTilesInRange(lowerLeftRow, lowerLeftCol, lowerRightRow, lowerRightCol)
+    local results = collisionLayer:getTilesInRange(lowerLeftRow + 1, lowerLeftCol, lowerRightRow + 1, lowerRightCol)
 
     assert(#results > 0, "No tiles found to detect ground")
 

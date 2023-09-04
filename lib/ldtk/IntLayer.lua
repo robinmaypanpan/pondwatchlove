@@ -48,8 +48,10 @@ function IntLayer:getTile(row, col)
         value = self.intGrid[row][col],
         xLevel = row * self.tileSize,
         yLevel = col * self.tileSize,
-        xWorld = row * self.tileSize + self.level.x,
-        yWorld = col * self.tileSize + self.level.y
+        x = col * self.tileSize + self.level.x,
+        y = row * self.tileSize + self.level.y,
+        row = row,
+        col = col
     }
 
     local intValue = self.intValues[tileData.value]

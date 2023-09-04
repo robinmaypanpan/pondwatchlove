@@ -33,7 +33,9 @@ function LayerWithTiles:getTilesInRange(row1, col1, row2, col2)
                     value = -1,
                     id = 'Missing',
                     row = row,
-                    col = col
+                    col = col,
+                    x = col * self.tileSize + self.level.x,
+                    y = row * self.tileSize + self.level.y
                 })
             end
         end
