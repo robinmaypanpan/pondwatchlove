@@ -180,7 +180,7 @@ function Player:update(updates)
         self.ySpeed = climbSpeed
         self.isJumping = false
         self.isClimbing = true
-    elseif self.isClimbing and not self.isJumping and climbableTile and not self:isOnGround() then
+    elseif self.isClimbing and not self.isJumping and climbableTile then
         -- Stopping while on a climbable
         self.ySpeed = 0
     elseif not self.isJumping and updates.jump and (self:isOnGround() or self.isClimbing) then
@@ -223,10 +223,12 @@ end
 
 -- Returns the nearest climbable tile in range
 function Player:getNearestClimbable()
+    local hitboxMargin = 0 - (self.fields.hitboxMargin or -2)
     local collisionLayer = self.level:getLayer('Collision')
 
-    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(self.x, self.y)
-    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(self.x + self.width, self.y + self.height)
+    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(self.x + hitboxMargin, self.y + hitboxMargin)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(self.x + self.width - hitboxMargin,
+        self.y + self.height - hitboxMargin)
     local results = collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, lowerRightRow + 1, lowerRightCol)
 
     local centerRow, centerCol = collisionLayer:convertWorldToGrid(self.x + self.width / 2, self.y + self.height / 2)
