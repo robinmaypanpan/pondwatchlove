@@ -28,12 +28,15 @@ function Player:initialize(data, level)
     self.xSpeed = 0
     self.ySpeed = 0
 
+    self.isClimbing = false
     self.isJumping = false
     self.flipImage = false
 
     self.image = love.graphics.newImage('assets/sprites/birb.png')
     self.width = self.image:getWidth()
     self.height = self.image:getHeight()
+
+    self.currentGravity = 0
 end
 
 -- Check for collisions in all the right places
@@ -104,6 +107,8 @@ function Player:update(updates)
     local gravity = self.fields.gravity
     local initialGravityMultiplier = self.fields.initialGravityMultiplier
     local gravityDecay = self.fields.gravityDecay
+    local climbSpeed = self.fields.climbSpeed
+    local startGravity = gravity * initialGravityMultiplier
 
     local collisionLayer = self.level:getLayer('Collision')
     local jumpHeight = self.fields.jumpHeight * collisionLayer.tileSize
@@ -145,18 +150,36 @@ function Player:update(updates)
     end
 
     -- Now do the vertical component
-    local startGravity = gravity * initialGravityMultiplier
-    self.currentGravity = startGravity
     impulse = 0
-    if updates.jump and self:isOnGround() then
+
+    if updates.moveUp and self:isOnClimbable() then
+        -- Start Climbing up a climbable
+        self.xSpeed = 0
+        self.ySpeed = -climbSpeed
+        self.isJumping = false
+        self.isClimbing = true
+    elseif updates.moveDown and self:isOnClimbable() then
+        -- Start climbing down a climbable
+        self.xSpeed = 0
+        self.ySpeed = climbSpeed
+        self.isJumping = false
+        self.isClimbing = true
+    elseif self.isClimbing and not self.isJumping and self:isOnClimbable() and not self:isOnGround() then
+        -- Stopping while on a climbable
+        self.ySpeed = 0
+    elseif updates.jump and (self:isOnGround() or self.isClimbing) then
+        -- Start jumping
+        self.isClimbing = false
         self.isJumping = true
         self.currentGravity = startGravity
         impulse = -jumpAccel
         self.jumpStart = self.y
     elseif updates.jump and self.isJumping and self.jumpStart - self.y < jumpHeight then
-        self.currentGravity = startGravity
+        -- Continue jumping upwards
         impulse = -jumpAccel
     else
+        -- Let gravity bring us down!
+        self.isClimbing = false
         self.isJumping = false
         if self.currentGravity < gravity then
             self.currentGravity = self.currentGravity + gravity * gravityDecay
@@ -179,6 +202,23 @@ function Player:update(updates)
     else
         self.isJumping = false
     end
+end
+
+-- Returns true if the player is on a Climbable object
+function Player:isOnClimbable()
+    local collisionLayer = self.level:getLayer('Collision')
+    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(self.x, self.y)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(self.x + self.width,
+        self.y + self.height + collisionLayer.tileSize / 2)
+    local results = collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, lowerRightRow, lowerRightCol)
+
+    for _, tile in ipairs(results) do
+        if tile.value == 4 then
+            return true
+        end
+    end
+
+    return false
 end
 
 -- Returns true if the player is on the ground

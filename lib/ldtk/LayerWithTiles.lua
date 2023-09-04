@@ -22,8 +22,6 @@ end
 
 -- Ask for all the tiles between these two locations
 function LayerWithTiles:getTilesInRange(row1, col1, row2, col2)
-    assert(row1 == row2 or col1 == col2,
-        'getTilesInRange only supports horizontally or vertically aligned lines of tiles at this time')
     local tiles = {}
     for row = row1, row2 do
         for col = col1, col2 do
