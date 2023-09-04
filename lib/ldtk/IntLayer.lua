@@ -1,29 +1,19 @@
 local class = require('lib/middleclass')
 
 local TileLayer = require('lib/ldtk/TileLayer')
+local LayerWithTiles = require('lib/ldtk/LayerWithTiles')
 
-local IntLayer = class('IntLayer')
+local IntLayer = class('IntLayer', LayerWithTiles)
 
 function IntLayer:initialize(data, builder, level)
-    self.level = level
-
-    self.id = data.__identifier
-    self.numRows = data.__cHei
-    self.numCols = data.__cWid
-
-    self.tileSize = data.__gridSize
-
-    self.visible = data.visible
-    self.opacity = data.__opacity
-
-    local layerDef = builder:getLayerDefinition(self.id)
+    LayerWithTiles.initialize(self, data, builder, level)
 
     self.intValues = {}
     self.intValues[0] = {
         id = 'Nothing',
         color = '#000000'
     }
-    for _, gridValue in ipairs(layerDef.intGridValues) do
+    for _, gridValue in ipairs(self.layerDef.intGridValues) do
         self.intValues[gridValue.value] = {
             id = gridValue.identifier,
             color = gridValue.color
@@ -75,20 +65,6 @@ function IntLayer:getTile(row, col)
     end
 
     return tileData
-end
-
--- Returns the tile at the specified x,y level coordinates
-function IntLayer:getTileInLevel(x, y)
-    local row = math.floor(y / self.tileSize)
-    local col = math.floor(x / self.tileSize)
-
-    return self:getTile(row, col)
-end
-
--- Returns the tile at the specified x,y world coordinates
--- NB: Returns nil outside the level
-function IntLayer:getTileInWorld(x, y)
-    return self:getTileInLevel(x - self.level.x, y - self.level.y)
 end
 
 -- This int layer can be drawn if it doesn't have tiles
