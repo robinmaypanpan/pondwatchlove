@@ -435,37 +435,10 @@
 						{ "__identifier": "jumpHeight", "__type": "Float", "__value": 3, "__tile": null, "defUid": 343, "realEditorValues": [] },
 						{ "__identifier": "climbSpeed", "__type": "Float", "__value": 3, "__tile": null, "defUid": 344, "realEditorValues": [] },
 						{ "__identifier": "hitboxMargin", "__type": "Int", "__value": null, "__tile": null, "defUid": 345, "realEditorValues": [] },
-						{ "__identifier": "birbWalk", "__type": "Array<Tile>", "__value": [
-							{ "tilesetUid": 248, "x": 0, "y": 0, "w": 24, "h": 24 },
-							{ "tilesetUid": 248, "x": 24, "y": 0, "w": 24, "h": 24 },
-							{ "tilesetUid": 248, "x": 48, "y": 0, "w": 24, "h": 24 },
-							{ "tilesetUid": 248, "x": 72, "y": 0, "w": 24, "h": 24 },
-							{ "tilesetUid": 248, "x": 96, "y": 0, "w": 24, "h": 24 },
-							{ "tilesetUid": 248, "x": 120, "y": 0, "w": 24, "h": 24 }
-						], "__tile": { "tilesetUid": 248, "x": 0, "y": 0, "w": 24, "h": 24 }, "defUid": 346, "realEditorValues": [
-							null,
-							{
-								"id": "V_String",
-								"params": ["24,0,24,24"]
-							},
-							{
-								"id": "V_String",
-								"params": ["48,0,24,24"]
-							},
-							{
-								"id": "V_String",
-								"params": ["72,0,24,24"]
-							},
-							{
-								"id": "V_String",
-								"params": ["96,0,24,24"]
-							},
-							{
-								"id": "V_String",
-								"params": ["120,0,24,24"]
-							}
-						] },
-						{ "__identifier": "birbSquish", "__type": "Tile", "__value": { "tilesetUid": 248, "x": 24, "y": 0, "w": 24, "h": 24 }, "__tile": { "tilesetUid": 248, "x": 24, "y": 0, "w": 24, "h": 24 }, "defUid": 348, "realEditorValues": [] }
+						{ "__identifier": "spritesheet", "__type": "FilePath", "__value": "../sprites/birb_spritesheet.png", "__tile": null, "defUid": 349, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["../sprites/birb_spritesheet.png"]
+						}] }
 					]
 				}
 			]
