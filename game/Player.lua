@@ -4,6 +4,8 @@ local Player = class('Player')
 
 local MoveSpeed = 2
 
+
+
 local CollisionType = {
     None = 0,
     Wall = 1,
@@ -13,21 +15,20 @@ local CollisionType = {
 function Player:initialize(data, level)
     self.level = level
     self.data = data
-
     self.fields = {}
-
+    
     for _, field in pairs(data.fieldInstances) do
         self.fields[field.__identifier] = field.__value
     end
-
+    
     self.id = data.__identifier
     self.x = data.__worldX
     self.y = data.__worldY
     self.jumpStart = self.y
-
+    
     self.xSpeed = 0
     self.ySpeed = 0
-
+    
     self.isClimbing = false
     self.isJumping = false
     self.flipImage = false
@@ -35,8 +36,14 @@ function Player:initialize(data, level)
     self.image = love.graphics.newImage('assets/sprites/birb.png')
     self.width = self.image:getWidth()
     self.height = self.image:getHeight()
+    self.walkSpritesheet = love.graphics.newImage('assets/sprites/birb_spritesheet.png')
+    self.walkWidth = self.walkSpritesheet:getWidth()
+    self.walkHeight = self.walkSpritesheet:getHeight()
+    self.walkQuads = self:getSpritesheetQuads()
+    --self.walkQuads = love.graphics.newQuad(0,4, self.width, self.height, self.walkWidth, self.walkHeight)
 
     self.currentGravity = 0
+    currentFrame = 1
 end
 
 -- Check for collisions in all the right places
@@ -122,6 +129,9 @@ function Player:update(updates)
 
     local collisionLayer = self.level:getLayer('Collision')
     local jumpHeight = self.fields.jumpHeight * collisionLayer.tileSize
+
+    
+
 
     -- Update the player's horizontal velocity
     local impulse = 0
@@ -304,7 +314,8 @@ function Player:draw()
         scale = -1
         width = self.width
     end
-    love.graphics.draw(self.image, self.x, self.y, 0, scale, 1, width)
+    --love.graphics.draw(self.image, self.x, self.y, 0, scale, 1, width)
+    love.graphics.draw(self.walkSpritesheet, self.quad, self.x, self.y, 0, scale, 1, width)
 end
 
 return Player
