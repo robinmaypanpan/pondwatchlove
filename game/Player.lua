@@ -124,7 +124,7 @@ function Player:checkForCollisions(direction, distance)
     assert(#results > 0, 'No tiles found to collide with')
 
     for _, tile in ipairs(results) do
-        if tile.value == 1 or tile.value == 2 then
+        if Tiles.isImpassable(tile) then
             return {
                 type = CollisionType.Wall
             }
@@ -310,7 +310,7 @@ function Player:getNearestClimbable()
     }
 
     for _, tile in ipairs(results) do
-        if tile.value == 4 then
+        if Tiles.isClimbable(tile) then
             local distance = math.distance(centerRow, centerCol, tile.row, tile.col)
             if distance < selectedTile.distance then
                 selectedTile =
