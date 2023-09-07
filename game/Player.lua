@@ -60,14 +60,10 @@ end
 -- Returns a list of the tiles that are currently below the player's feet, assuming the player is at x,y
 -- Only returns actual tiles and not non-empty tiles
 function Player:getGroundTiles(x, y)
-    local hitboxMargin = 0 - (self.fields.hitboxMargin or -2)
-
     local collisionLayer = self.level:getLayer('Collision')
 
-    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(x + self.width - hitboxMargin,
-        y + self.height - hitboxMargin)
-    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(x + hitboxMargin,
-        y + self.height - hitboxMargin)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(x + self.width, y + self.height)
+    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(x, y + self.height)
 
     -- Get all the tiles below the player
     local results = collisionLayer:getTilesInRange(lowerLeftRow, lowerLeftCol, lowerRightRow, lowerRightCol)
@@ -81,6 +77,19 @@ function Player:getGroundTiles(x, y)
     end
 
     return results
+end
+
+-- Return all the tiles around the player
+function Player:getPlayerTiles(x, y)
+    local hitboxMargin = 0 - (self.fields.hitboxMargin or -2)
+
+    local collisionLayer = self.level:getLayer('Collision')
+
+    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(x + hitboxMargin, y + hitboxMargin)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(x + self.width - hitboxMargin,
+        y + self.height - hitboxMargin)
+
+    return collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, lowerRightRow, lowerRightCol)
 end
 
 -- Check for collisions in all the right places

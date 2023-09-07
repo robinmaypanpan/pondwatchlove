@@ -47,7 +47,9 @@ function IntLayer:getTile(row, col)
             row = row,
             col = col,
             x = col * self.tileSize + self.level.x,
-            y = row * self.tileSize + self.level.y
+            y = row * self.tileSize + self.level.y,
+            width = self.tileSize,
+            height = self.tileSize
         }
     end
 
@@ -58,7 +60,9 @@ function IntLayer:getTile(row, col)
         x = col * self.tileSize + self.level.x,
         y = row * self.tileSize + self.level.y,
         row = row,
-        col = col
+        col = col,
+        width = self.tileSize,
+        height = self.tileSize
     }
 
     local intValue = self.intValues[tileData.value]

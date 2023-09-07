@@ -96,4 +96,18 @@ function love.draw()
     camera:draw()
 
     world:draw()
+
+    -- Draw character tiles
+    love.graphics.setColor(0, 0, 1, 1)
+    local groundTiles = player:getPlayerTiles(player.x, player.y)
+    for _, tile in ipairs(groundTiles) do
+        love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
+    end
+
+    -- Draw ground tiles
+    love.graphics.setColor(0, 1, 0, 1)
+    local groundTiles = player:getGroundTiles(player.x, player.y)
+    for _, tile in ipairs(groundTiles) do
+        love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
+    end
 end
