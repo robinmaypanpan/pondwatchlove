@@ -97,29 +97,29 @@ function love.draw()
 
     world:draw()
 
-    -- Draw character tiles
-    love.graphics.setColor(0, 0, 1, 1)
-    local playerTiles = player:getPlayerTiles(player.x, player.y)
-    for _, tile in ipairs(playerTiles) do
-        love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
-    end
+    -- -- Draw character tiles
+    -- love.graphics.setColor(0, 0, 1, 1)
+    -- local playerTiles = player:getPlayerTiles(player.x, player.y)
+    -- for _, tile in ipairs(playerTiles) do
+    --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
+    -- end
 
-    -- Draw ground tiles
-    love.graphics.setColor(0, 1, 0, 1)
-    local groundTiles = player:getGroundTiles(player.x, player.y)
-    for _, tile in ipairs(groundTiles) do
-        love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
-    end
+    -- -- Draw ground tiles
+    -- love.graphics.setColor(0, 1, 0, 1)
+    -- local groundTiles = player:getGroundTiles(player.x, player.y)
+    -- for _, tile in ipairs(groundTiles) do
+    --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
+    -- end
 
-    -- Draw collision tiles
-    love.graphics.setColor(1, 0, 0, 1)
-    local edgeTiles = player:getEdgeTiles('x', player.xSpeed)
-    for _, tile in ipairs(edgeTiles) do
-        love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
-    end
+    -- -- Draw collision tiles
+    -- love.graphics.setColor(1, 0, 0, 1)
+    -- local edgeTiles = player:getEdgeTiles('x', player.xSpeed)
+    -- for _, tile in ipairs(edgeTiles) do
+    --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
+    -- end
 
-    local edgeTiles = player:getEdgeTiles('y', player.ySpeed)
-    for _, tile in ipairs(edgeTiles) do
-        love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
-    end
+    -- local edgeTiles = player:getEdgeTiles('y', player.ySpeed)
+    -- for _, tile in ipairs(edgeTiles) do
+    --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
+    -- end
 end

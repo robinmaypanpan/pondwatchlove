@@ -100,7 +100,7 @@ end
 
 -- Returns a list of tiles on the edge of the player
 function Player:getEdgeTiles(direction, distance)
-    local hitboxMargin = 0 - (self.fields.hitboxMargin or -2)
+    local hitboxMargin = 0 - self.fields.hitboxMargin
 
     local collisionLayer = self.level:getLayer('Collision')
 
