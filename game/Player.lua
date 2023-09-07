@@ -85,6 +85,25 @@ function Player:getGroundTiles(x, y)
     return finalResults
 end
 
+-- Get a hitbox assuming the player is at x,y
+function Player:getHitbox(x, y)
+    local hitboxSize = self.fields.hitboxSize
+
+    local hitbox = {
+        x = x + self.width / 2 - hitboxSize / 2,
+        y = y + self.height / 2 - hitboxSize / 2,
+        width = hitboxSize,
+        height = hitboxSize
+    }
+
+    hitbox.top = hitbox.y
+    hitbox.left = hitbox.x
+    hitbox.right = hitbox.x + hitbox.width
+    hitbox.bottom = hitbox.y + hitbox.height
+
+    return hitbox
+end
+
 -- Return all the tiles around the player
 function Player:getPlayerTiles(x, y)
     local hitboxMargin = 0 - (self.fields.hitboxMargin or -2)
@@ -100,8 +119,6 @@ end
 
 -- Returns a list of tiles on the edge of the player
 function Player:getEdgeTiles(direction, distance)
-    local hitboxMargin = 0 - self.fields.hitboxMargin
-
     local collisionLayer = self.level:getLayer('Collision')
 
     local newX = self.x
@@ -113,13 +130,12 @@ function Player:getEdgeTiles(direction, distance)
         newY = newY + distance
     end
 
-    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(newX + hitboxMargin, newY + hitboxMargin)
-    local upperRightRow, upperRightCol = collisionLayer:convertWorldToGrid(newX + self.width - hitboxMargin,
-        newY + hitboxMargin)
-    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(newX + self.width - hitboxMargin,
-        newY + self.height - hitboxMargin)
-    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(newX + hitboxMargin,
-        newY + self.height - hitboxMargin)
+    local hitbox = self:getHitbox(newX, newY)
+
+    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(hitbox.left, hitbox.top)
+    local upperRightRow, upperRightCol = collisionLayer:convertWorldToGrid(hitbox.right, hitbox.top)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(hitbox.right, hitbox.bottom)
+    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(hitbox.left, hitbox.bottom)
 
     local results = {}
     if direction == 'x' and distance > 0 then

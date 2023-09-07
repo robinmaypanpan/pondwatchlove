@@ -2984,7 +2984,7 @@
 					"tilesetUid": null
 				},
 				{
-					"identifier": "hitboxMargin",
+					"identifier": "hitboxSize",
 					"doc": "Margin to shring (or grow) the player's hitbox from the sprite",
 					"__type": "Int",
 					"uid": 345,
@@ -3004,11 +3004,11 @@
 					"editorTextSuffix": null,
 					"editorTextPrefix": null,
 					"useForSmartColor": false,
-					"min": -50,
-					"max": 50,
+					"min": 0,
+					"max": 100,
 					"regex": null,
 					"acceptFileTypes": null,
-					"defaultOverride": { "id": "V_Float", "params": [-2] },
+					"defaultOverride": { "id": "V_Int", "params": [10] },
 					"textLanguageMode": null,
 					"symmetricalRef": false,
 					"autoChainRef": true,
