@@ -98,8 +98,8 @@ function Player:getPlayerTiles(x, y)
     return collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, lowerRightRow, lowerRightCol)
 end
 
--- Check for collisions in all the right places
-function Player:checkForCollisions(direction, distance)
+-- Returns a list of tiles on the edge of the player
+function Player:getEdgeTiles(direction, distance)
     local hitboxMargin = 0 - (self.fields.hitboxMargin or -2)
 
     local collisionLayer = self.level:getLayer('Collision')
@@ -130,13 +130,14 @@ function Player:checkForCollisions(direction, distance)
         results = collisionLayer:getTilesInRange(lowerLeftRow, lowerLeftCol, lowerRightRow, lowerRightCol)
     elseif direction == 'y' and distance < 0 then
         results = collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, upperRightRow, upperRightCol)
-    else
-        return {
-            type = CollisionType.None
-        }
     end
 
-    assert(#results > 0, 'No tiles found to collide with')
+    return results
+end
+
+-- Check for collisions in all the right places
+function Player:checkForCollisions(direction, distance)
+    local results = self:getEdgeTiles(direction, distance)
 
     for _, tile in ipairs(results) do
         if Tiles.isImpassable(tile) then
@@ -148,6 +149,7 @@ function Player:checkForCollisions(direction, distance)
 
     for _, tile in ipairs(results) do
         if tile.value == -1 then
+            local collisionLayer = self.level:getLayer('Collision')
             local outsideX, outsideY = collisionLayer:convertGridToWorld(tile.row, tile.col)
             local newLevel = world:getLevelAt(outsideX, outsideY)
             return {
