@@ -2,9 +2,9 @@ local class = require('lib/middleclass')
 
 local Player = class('Player')
 
+local Tiles = require('game/Tiles')
+
 local MoveSpeed = 2
-
-
 
 local CollisionType = {
     None = 0,
@@ -16,19 +16,19 @@ function Player:initialize(data, level)
     self.level = level
     self.data = data
     self.fields = {}
-    
+
     for _, field in pairs(data.fieldInstances) do
         self.fields[field.__identifier] = field.__value
     end
-    
+
     self.id = data.__identifier
     self.x = data.__worldX
     self.y = data.__worldY
     self.jumpStart = self.y
-    
+
     self.xSpeed = 0
     self.ySpeed = 0
-    
+
     self.isClimbing = false
     self.isJumping = false
     self.flipImage = false
@@ -52,14 +52,55 @@ function Player:getSpritesheetQuads(image, frameCount, frameWidth, frameHeight)
     local sheetWidth = image:getWidth()
     local sheetHeight = image:getHeight()
     for i = 0, frameCount, 1 do
-        quadData[i+1] = love.graphics.newQuad(frameWidth * i, 0, frameWidth, frameHeight, sheetWidth, sheetHeight) 
+        quadData[i + 1] = love.graphics.newQuad(frameWidth * i, 0, frameWidth, frameHeight, sheetWidth, sheetHeight)
     end
     return quadData
 end
 
--- Check for collisions in all the right places
-function Player:checkForCollisions(direction, distance)
+-- Returns a list of the tiles that are currently below the player's feet, assuming the player is at x,y
+-- Only returns actual tiles and not non-empty tiles
+function Player:getGroundTiles(x, y)
+    local collisionLayer = self.level:getLayer('Collision')
+
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(x + self.width, y + self.height)
+    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(x, y + self.height)
+
+    -- Get all the tiles below the player
+    local results = collisionLayer:getTilesInRange(lowerLeftRow, lowerLeftCol, lowerRightRow, lowerRightCol)
+
+    local finalResults = {}
+
+    -- Look through all the tiles to make sure there's nothing above them.
+    for _, tile in ipairs(results) do
+        print('tile: ' .. tile.id)
+        local tileAbove = collisionLayer:getTile(tile.row - 1, tile.col)
+        if Tiles.isImpassable(tileAbove) or Tiles.isEmpty(tile) then
+        else
+            table.insert(finalResults, tile)
+        end
+    end
+
+    print('Remaining tiles ' .. #finalResults)
+
+    return finalResults
+end
+
+-- Return all the tiles around the player
+function Player:getPlayerTiles(x, y)
     local hitboxMargin = 0 - (self.fields.hitboxMargin or -2)
+
+    local collisionLayer = self.level:getLayer('Collision')
+
+    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(x + hitboxMargin, y + hitboxMargin)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(x + self.width - hitboxMargin,
+        y + self.height - hitboxMargin)
+
+    return collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, lowerRightRow, lowerRightCol)
+end
+
+-- Returns a list of tiles on the edge of the player
+function Player:getEdgeTiles(direction, distance)
+    local hitboxMargin = 0 - self.fields.hitboxMargin
 
     local collisionLayer = self.level:getLayer('Collision')
 
@@ -89,16 +130,17 @@ function Player:checkForCollisions(direction, distance)
         results = collisionLayer:getTilesInRange(lowerLeftRow, lowerLeftCol, lowerRightRow, lowerRightCol)
     elseif direction == 'y' and distance < 0 then
         results = collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, upperRightRow, upperRightCol)
-    else
-        return {
-            type = CollisionType.None
-        }
     end
 
-    assert(#results > 0, 'No tiles found to collide with')
+    return results
+end
+
+-- Check for collisions in all the right places
+function Player:checkForCollisions(direction, distance)
+    local results = self:getEdgeTiles(direction, distance)
 
     for _, tile in ipairs(results) do
-        if tile.value == 1 or tile.value == 2 then
+        if Tiles.isImpassable(tile) then
             return {
                 type = CollisionType.Wall
             }
@@ -107,6 +149,7 @@ function Player:checkForCollisions(direction, distance)
 
     for _, tile in ipairs(results) do
         if tile.value == -1 then
+            local collisionLayer = self.level:getLayer('Collision')
             local outsideX, outsideY = collisionLayer:convertGridToWorld(tile.row, tile.col)
             local newLevel = world:getLevelAt(outsideX, outsideY)
             return {
@@ -121,27 +164,14 @@ function Player:checkForCollisions(direction, distance)
     }
 end
 
-function Player:update(updates)
+-- Performs updates in the X direction
+function Player:updateX(updates, timeMultiplier)
     local dt = love.timer.getDelta()
-    local targetFPS = 60
-    local fixItFactor = 1.5
-    local timeMultiplier = dt * targetFPS * fixItFactor
 
-    local maxXSpeed = self.fields.maxXSpeed
     local accel = self.fields.accel
     local friction = self.fields.friction
-    local maxYSpeed = self.fields.maxYSpeed
-    local jumpAccel = self.fields.jumpAccel
-    local gravity = self.fields.gravity
-    local initialGravityMultiplier = self.fields.initialGravityMultiplier
-    local gravityDecay = self.fields.gravityDecay
-    local climbSpeed = self.fields.climbSpeed
-    local startGravity = gravity * initialGravityMultiplier
-
-    local collisionLayer = self.level:getLayer('Collision')
-    local jumpHeight = self.fields.jumpHeight * collisionLayer.tileSize
-    
     local animSpeed = 12
+
     -- Update the player's horizontal velocity
     local impulse = 0
     if updates.moveLeft then
@@ -151,7 +181,7 @@ function Player:update(updates)
             impulse = -accel
         end
         if self.animProgress >= 7 then
-            self.animProgress = 1 
+            self.animProgress = 1
         end
         self.animFrame = math.floor(self.animProgress)
         self.animProgress = self.animProgress + dt * animSpeed
@@ -163,10 +193,10 @@ function Player:update(updates)
             impulse = accel
         end
         if self.animProgress >= 7 then -- this is to account for the fact that the animation is only 6 frames, not the right way to do this, but I just wanted to make it work for now
-            self.animProgress = 1 
+            self.animProgress = 1
         end
         self.animFrame = math.floor(self.animProgress)
-        self.animProgress = self.animProgress + dt * animSpeed     
+        self.animProgress = self.animProgress + dt * animSpeed
         self.flipImage = false
     else
         local frictionEffect = friction
@@ -178,7 +208,8 @@ function Player:update(updates)
         self.animFrame = 1
         impulse = -1 * math.sign(self.xSpeed) * frictionEffect
     end
-    
+
+    local maxXSpeed = self.fields.maxXSpeed
     self.xSpeed = math.mid(-maxXSpeed, self.xSpeed + impulse, maxXSpeed)
     local xDistance = self.xSpeed * timeMultiplier
 
@@ -191,11 +222,24 @@ function Player:update(updates)
     elseif result.type == CollisionType.None then
         self.x = self.x + xDistance
     end
+end
 
-    -- Now do the vertical component
-    impulse = 0
+-- Update vertical component
+function Player:updateY(updates, timeMultiplier)
+    local jumpAccel = self.fields.jumpAccel
+    local gravity = self.fields.gravity
+    local initialGravityMultiplier = self.fields.initialGravityMultiplier
+    local gravityDecay = self.fields.gravityDecay
+    local climbSpeed = self.fields.climbSpeed
+    local startGravity = gravity * initialGravityMultiplier
+
+    local collisionLayer = self.level:getLayer('Collision')
+    local jumpHeight = self.fields.jumpHeight * collisionLayer.tileSize
+
+    local impulse = 0
 
     local climbableTile = self:getNearestClimbable()
+    local currentGroundTiles = self:getGroundTiles(self.x, self.y)
 
     if updates.moveUp and climbableTile then
         -- Start Climbing up a climbable
@@ -214,7 +258,7 @@ function Player:update(updates)
     elseif self.isClimbing and not self.isJumping and climbableTile then
         -- Stopping while on a climbable
         self.ySpeed = 0
-    elseif not self.isJumping and updates.jump and (self:isOnGround() or self.isClimbing) then
+    elseif not self.isJumping and updates.jump and (#currentGroundTiles > 0 or self.isClimbing) then
         -- Start jumping
         self.isClimbing = false
         self.isJumping = true
@@ -234,10 +278,13 @@ function Player:update(updates)
         impulse = self.currentGravity
     end
 
+    local maxYSpeed = self.fields.maxYSpeed
     self.ySpeed = math.mid(-maxYSpeed, self.ySpeed + impulse, maxYSpeed)
+
     local yDistance = self.ySpeed * timeMultiplier
 
     local result = self:checkForCollisions('y', yDistance)
+
     if result.type == CollisionType.OutsideLevel then
         if result.level then
             self:changeLevels(result.level)
@@ -250,6 +297,16 @@ function Player:update(updates)
     elseif result.type == CollisionType.Wall then
         self.isJumping = false
     end
+end
+
+function Player:update(updates)
+    local dt = love.timer.getDelta()
+    local targetFPS = 60
+    local fixItFactor = 1.5
+    local timeMultiplier = dt * targetFPS * fixItFactor
+
+    self:updateX(updates, timeMultiplier)
+    self:updateY(updates, timeMultiplier)
 end
 
 -- Returns the nearest climbable tile in range
@@ -270,7 +327,7 @@ function Player:getNearestClimbable()
     }
 
     for _, tile in ipairs(results) do
-        if tile.value == 4 then
+        if Tiles.isClimbable(tile) then
             local distance = math.distance(centerRow, centerCol, tile.row, tile.col)
             if distance < selectedTile.distance then
                 selectedTile =
@@ -283,26 +340,6 @@ function Player:getNearestClimbable()
     end
 
     return selectedTile.tile
-end
-
--- Returns true if the player is on the ground
-function Player:isOnGround()
-    local collisionLayer = self.level:getLayer('Collision')
-
-    local lowerLeftRow, lowerLeftCol = collisionLayer:convertWorldToGrid(self.x, self.y + self.height)
-    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(self.x + self.width, self.y + self.height)
-
-    local results = collisionLayer:getTilesInRange(lowerLeftRow + 1, lowerLeftCol, lowerRightRow + 1, lowerRightCol)
-
-    assert(#results > 0, "No tiles found to detect ground")
-
-    for _, tile in ipairs(results) do
-        if tile.value == 1 or tile.value == 2 then
-            return true
-        end
-    end
-
-    return false
 end
 
 -- Used to trigger a level change

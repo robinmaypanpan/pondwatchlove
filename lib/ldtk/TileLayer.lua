@@ -25,7 +25,9 @@ function TileLayer:initialize(data, builder, level)
             flipX = tileData.f == 1 or tileData.f == 3,
             flipY = tileData.f == 2 or tileData.f == 3,
             opacity = tileData.a,
-            data = tileData
+            data = tileData,
+            width = self.tileSize,
+            height = self.tileSize
         }
 
         tile.quad = self.tileset:getTileQuad(tileData.t)
@@ -48,12 +50,23 @@ end
 -- Retrieves the tile at the indicated location
 -- Returns the grid value at a given location
 function TileLayer:getTile(row, col)
+    local nullTile = {
+        value = -1,
+        id = 'Missing',
+        row = row,
+        col = col,
+        x = col * self.tileSize + self.level.x,
+        y = row * self.tileSize + self.level.y,
+        width = self.tileSize,
+        height = self.tileSizes
+    }
+
     if row < 0 or col < 0 or row >= self.numRows or col >= self.numCols then
-        return nil
+        return nullTile
     end
 
     if not self.tiles[row] then
-        return nil
+        return nullTile
     end
 
     return self.tiles[row][col]
