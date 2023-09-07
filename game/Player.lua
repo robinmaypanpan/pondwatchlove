@@ -40,12 +40,14 @@ function Player:initialize(data, level)
     self.height = self.image:getHeight()
     self.spritesheet = love.graphics.newImage('assets/sprites/birb_spritesheet.png')
     self.walkQuads = self:getSpritesheetQuads(self.spritesheet, 6, self.width, self.height)
-    --self.walkQuads = love.graphics.newQuad(0,4, self.width, self.height, self.sheetWidth, self.sheetHeight)
 
     self.currentGravity = 0
     self.animFrame = 1
 end
 
+-- takes an image, and using the other variables, creates a table of x,y coords to use
+-- for quads in the for loop.
+-- currently, this code only works for a 6 cell, horizintal animation
 function Player:getSpritesheetQuads(image, frameCount, frameWidth, frameHeight)
     local quadData = {}
     local sheetWidth = image:getWidth()
@@ -161,7 +163,7 @@ function Player:update(updates)
         else
             impulse = accel
         end
-        if animFrame >= 7 then
+        if animFrame >= 7 then -- this is to account for the fact that the animation is only 6 frames, not the right way to do this, but I just wanted to make it work for now
             animFrame = 1 
         end
         self.animFrame = math.floor(animFrame)
@@ -335,7 +337,6 @@ function Player:draw()
         width = self.width
     end
 
-    --love.graphics.draw(self.image, self.x, self.y, 0, scale, 1, width)
     love.graphics.draw(self.spritesheet, self.walkQuads[self.animFrame], self.x, self.y, 0, scale, 1, width)
 end
 
