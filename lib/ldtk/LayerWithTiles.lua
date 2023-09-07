@@ -26,18 +26,7 @@ function LayerWithTiles:getTilesInRange(row1, col1, row2, col2)
     for row = row1, row2 do
         for col = col1, col2 do
             local tile = self:getTile(row, col)
-            if tile then
-                table.insert(tiles, tile)
-            else
-                table.insert(tiles, {
-                    value = -1,
-                    id = 'Missing',
-                    row = row,
-                    col = col,
-                    x = col * self.tileSize + self.level.x,
-                    y = row * self.tileSize + self.level.y
-                })
-            end
+            table.insert(tiles, tile)
         end
     end
     return tiles
