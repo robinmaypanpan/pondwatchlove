@@ -434,7 +434,7 @@
 						{ "__identifier": "gravityDecay", "__type": "Float", "__value": 0.09, "__tile": null, "defUid": 254, "realEditorValues": [{ "id": "V_Float", "params": [0.09] }] },
 						{ "__identifier": "jumpHeight", "__type": "Float", "__value": 3, "__tile": null, "defUid": 343, "realEditorValues": [] },
 						{ "__identifier": "climbSpeed", "__type": "Float", "__value": 1.5, "__tile": null, "defUid": 344, "realEditorValues": [{ "id": "V_Float", "params": [1.5] }] },
-						{ "__identifier": "hitboxMargin", "__type": "Int", "__value": -5, "__tile": null, "defUid": 345, "realEditorValues": [{ "id": "V_Int", "params": [-5] }] }
+						{ "__identifier": "hitboxSize", "__type": "Int", "__value": 10, "__tile": null, "defUid": 345, "realEditorValues": [{ "id": "V_Int", "params": [10] }] }
 					]
 				}
 			]
