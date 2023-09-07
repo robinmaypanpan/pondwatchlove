@@ -4,8 +4,6 @@ local Player = class('Player')
 
 local MoveSpeed = 2
 
-local animFrame = 1
-
 
 
 local CollisionType = {
@@ -42,6 +40,7 @@ function Player:initialize(data, level)
     self.walkQuads = self:getSpritesheetQuads(self.spritesheet, 6, self.width, self.height)
 
     self.currentGravity = 0
+    self.animProgress = 1
     self.animFrame = 1
 end
 
@@ -151,11 +150,11 @@ function Player:update(updates)
         else
             impulse = -accel
         end
-        if animFrame >= 7 then
-            animFrame = 1 
+        if self.animProgress >= 7 then
+            self.animProgress = 1 
         end
-        self.animFrame = math.floor(animFrame)
-        animFrame = animFrame + dt * animSpeed
+        self.animFrame = math.floor(self.animProgress)
+        self.animProgress = self.animProgress + dt * animSpeed
         self.flipImage = true
     elseif updates.moveRight then
         if self.xSpeed < 0 then
@@ -163,11 +162,11 @@ function Player:update(updates)
         else
             impulse = accel
         end
-        if animFrame >= 7 then -- this is to account for the fact that the animation is only 6 frames, not the right way to do this, but I just wanted to make it work for now
-            animFrame = 1 
+        if self.animProgress >= 7 then -- this is to account for the fact that the animation is only 6 frames, not the right way to do this, but I just wanted to make it work for now
+            self.animProgress = 1 
         end
-        self.animFrame = math.floor(animFrame)
-        animFrame = animFrame + dt * animSpeed     
+        self.animFrame = math.floor(self.animProgress)
+        self.animProgress = self.animProgress + dt * animSpeed     
         self.flipImage = false
     else
         local frictionEffect = friction
@@ -175,7 +174,7 @@ function Player:update(updates)
         if math.abs(xDistance) < friction then
             frictionEffect = math.abs(xDistance)
         end
-        animFrame = 1
+        self.animProgress = 1
         self.animFrame = 1
         impulse = -1 * math.sign(self.xSpeed) * frictionEffect
     end
