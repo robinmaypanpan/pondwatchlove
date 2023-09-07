@@ -4,6 +4,8 @@ local Player = class('Player')
 
 local MoveSpeed = 2
 
+
+
 local CollisionType = {
     None = 0,
     Wall = 1,
@@ -13,21 +15,20 @@ local CollisionType = {
 function Player:initialize(data, level)
     self.level = level
     self.data = data
-
     self.fields = {}
-
+    
     for _, field in pairs(data.fieldInstances) do
         self.fields[field.__identifier] = field.__value
     end
-
+    
     self.id = data.__identifier
     self.x = data.__worldX
     self.y = data.__worldY
     self.jumpStart = self.y
-
+    
     self.xSpeed = 0
     self.ySpeed = 0
-
+    
     self.isClimbing = false
     self.isJumping = false
     self.flipImage = false
@@ -35,8 +36,25 @@ function Player:initialize(data, level)
     self.image = love.graphics.newImage('assets/sprites/birb.png')
     self.width = self.image:getWidth()
     self.height = self.image:getHeight()
+    self.spritesheet = love.graphics.newImage('assets/sprites/birb_spritesheet.png')
+    self.walkQuads = self:getSpritesheetQuads(self.spritesheet, 6, self.width, self.height)
 
     self.currentGravity = 0
+    self.animProgress = 1
+    self.animFrame = 1
+end
+
+-- takes an image, and using the other variables, creates a table of x,y coords to use
+-- for quads in the for loop.
+-- currently, this code only works for a 6 cell, horizintal animation
+function Player:getSpritesheetQuads(image, frameCount, frameWidth, frameHeight)
+    local quadData = {}
+    local sheetWidth = image:getWidth()
+    local sheetHeight = image:getHeight()
+    for i = 0, frameCount, 1 do
+        quadData[i+1] = love.graphics.newQuad(frameWidth * i, 0, frameWidth, frameHeight, sheetWidth, sheetHeight) 
+    end
+    return quadData
 end
 
 -- Check for collisions in all the right places
@@ -122,7 +140,8 @@ function Player:update(updates)
 
     local collisionLayer = self.level:getLayer('Collision')
     local jumpHeight = self.fields.jumpHeight * collisionLayer.tileSize
-
+    
+    local animSpeed = 12
     -- Update the player's horizontal velocity
     local impulse = 0
     if updates.moveLeft then
@@ -131,6 +150,11 @@ function Player:update(updates)
         else
             impulse = -accel
         end
+        if self.animProgress >= 7 then
+            self.animProgress = 1 
+        end
+        self.animFrame = math.floor(self.animProgress)
+        self.animProgress = self.animProgress + dt * animSpeed
         self.flipImage = true
     elseif updates.moveRight then
         if self.xSpeed < 0 then
@@ -138,6 +162,11 @@ function Player:update(updates)
         else
             impulse = accel
         end
+        if self.animProgress >= 7 then -- this is to account for the fact that the animation is only 6 frames, not the right way to do this, but I just wanted to make it work for now
+            self.animProgress = 1 
+        end
+        self.animFrame = math.floor(self.animProgress)
+        self.animProgress = self.animProgress + dt * animSpeed     
         self.flipImage = false
     else
         local frictionEffect = friction
@@ -145,9 +174,11 @@ function Player:update(updates)
         if math.abs(xDistance) < friction then
             frictionEffect = math.abs(xDistance)
         end
+        self.animProgress = 1
+        self.animFrame = 1
         impulse = -1 * math.sign(self.xSpeed) * frictionEffect
     end
-
+    
     self.xSpeed = math.mid(-maxXSpeed, self.xSpeed + impulse, maxXSpeed)
     local xDistance = self.xSpeed * timeMultiplier
 
@@ -304,7 +335,8 @@ function Player:draw()
         scale = -1
         width = self.width
     end
-    love.graphics.draw(self.image, self.x, self.y, 0, scale, 1, width)
+
+    love.graphics.draw(self.spritesheet, self.walkQuads[self.animFrame], self.x, self.y, 0, scale, 1, width)
 end
 
 return Player
