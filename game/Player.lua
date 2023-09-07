@@ -68,15 +68,21 @@ function Player:getGroundTiles(x, y)
     -- Get all the tiles below the player
     local results = collisionLayer:getTilesInRange(lowerLeftRow, lowerLeftCol, lowerRightRow, lowerRightCol)
 
+    local finalResults = {}
+
     -- Look through all the tiles to make sure there's nothing above them.
-    for index, tile in ipairs(results) do
+    for _, tile in ipairs(results) do
+        print('tile: ' .. tile.id)
         local tileAbove = collisionLayer:getTile(tile.row - 1, tile.col)
         if Tiles.isImpassable(tileAbove) or Tiles.isEmpty(tile) then
-            table.remove(results, index)
+        else
+            table.insert(finalResults, tile)
         end
     end
 
-    return results
+    print('Remaining tiles ' .. #finalResults)
+
+    return finalResults
 end
 
 -- Return all the tiles around the player

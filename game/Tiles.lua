@@ -14,7 +14,7 @@ function isClimbable(tile)
 end
 
 function isEmpty(tile)
-    return tile.value == Empty or tile.value == Water
+    return tile.value == Empty or tile.value == Water or tile.value == -1
 end
 
 return {
