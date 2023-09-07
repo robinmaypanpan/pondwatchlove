@@ -4,8 +4,6 @@ local Player = class('Player')
 
 local Tiles = require('game/Tiles')
 
-local MoveSpeed = 2
-
 local CollisionType = {
     None = 0,
     Wall = 1,
