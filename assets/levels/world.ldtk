@@ -3287,63 +3287,7 @@
 			"__neighbours": [ { "levelIid": "7c3f2680-3b70-11ee-b5ed-c7a97be26d8e", "dir": "e" }, { "levelIid": "3e20acf0-3b70-11ee-b5ed-c953ba717d80", "dir": "n" } ]
 		},
 		{
-			"identifier": "Entrance2",
-			"iid": "7d5b1340-3b70-11ee-b5ed-5756fadee34e",
-			"uid": 320,
-			"worldX": -1600,
-			"worldY": -672,
-			"worldDepth": 0,
-			"pxWid": 640,
-			"pxHei": 368,
-			"__bgColor": "#57361A",
-			"bgColor": "#57361A",
-			"useAutoIdentifier": false,
-			"bgRelPath": null,
-			"bgPos": null,
-			"bgPivotX": 0.5,
-			"bgPivotY": 0.5,
-			"__smartColor": "#A39081",
-			"__bgPos": null,
-			"externalRelPath": "world/Entrance2.ldtkl",
-			"fieldInstances": [
-				{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": true, "__tile": null, "defUid": 339, "realEditorValues": [] },
-				{ "__identifier": "BackgroundParallaxFactorX", "__type": "Float", "__value": null, "__tile": null, "defUid": 340, "realEditorValues": [] },
-				{ "__identifier": "BackgroundParallaxFactorX2", "__type": "Float", "__value": null, "__tile": null, "defUid": 342, "realEditorValues": [] },
-				{ "__identifier": "BackgroundZoomFactorY", "__type": "Float", "__value": null, "__tile": null, "defUid": 341, "realEditorValues": [] }
-			],
-			"layerInstances": null,
-			"__neighbours": []
-		},
-		{
-			"identifier": "Entrance_2",
-			"iid": "ef142b50-3b70-11ee-8d2f-fb0add9796e2",
-			"uid": 200,
-			"worldX": -800,
-			"worldY": -672,
-			"worldDepth": 0,
-			"pxWid": 640,
-			"pxHei": 368,
-			"__bgColor": "#57361A",
-			"bgColor": "#57361A",
-			"useAutoIdentifier": false,
-			"bgRelPath": null,
-			"bgPos": null,
-			"bgPivotX": 0.5,
-			"bgPivotY": 0.5,
-			"__smartColor": "#A39081",
-			"__bgPos": null,
-			"externalRelPath": "world/Entrance_2.ldtkl",
-			"fieldInstances": [
-				{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": true, "__tile": null, "defUid": 339, "realEditorValues": [] },
-				{ "__identifier": "BackgroundParallaxFactorX", "__type": "Float", "__value": null, "__tile": null, "defUid": 340, "realEditorValues": [] },
-				{ "__identifier": "BackgroundParallaxFactorX2", "__type": "Float", "__value": null, "__tile": null, "defUid": 342, "realEditorValues": [] },
-				{ "__identifier": "BackgroundZoomFactorY", "__type": "Float", "__value": null, "__tile": null, "defUid": 341, "realEditorValues": [] }
-			],
-			"layerInstances": null,
-			"__neighbours": []
-		},
-		{
-			"identifier": "Level_4",
+			"identifier": "Level_2",
 			"iid": "7c3f2680-3b70-11ee-b5ed-c7a97be26d8e",
 			"uid": 321,
 			"worldX": 400,
@@ -3360,7 +3304,7 @@
 			"bgPivotY": 0.5,
 			"__smartColor": "#A39081",
 			"__bgPos": { "topLeftPx": [0,0], "scale": [0.4065040650406504,0.4065040650406504], "cropRect": [0,264.48,1968,551.04] },
-			"externalRelPath": "world/Level_4.ldtkl",
+			"externalRelPath": "world/Level_2.ldtkl",
 			"fieldInstances": [
 				{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": true, "__tile": null, "defUid": 339, "realEditorValues": [] },
 				{ "__identifier": "BackgroundParallaxFactorX", "__type": "Float", "__value": null, "__tile": null, "defUid": 340, "realEditorValues": [] },
@@ -3371,7 +3315,7 @@
 			"__neighbours": [ { "levelIid": "4b640660-3b70-11ee-8d2f-553f8aafb481", "dir": "w" }, { "levelIid": "3e20acf0-3b70-11ee-b5ed-c953ba717d80", "dir": "n" } ]
 		},
 		{
-			"identifier": "Level_5",
+			"identifier": "Level_3",
 			"iid": "3e20acf0-3b70-11ee-b5ed-c953ba717d80",
 			"uid": 322,
 			"worldX": 0,
@@ -3388,7 +3332,7 @@
 			"bgPivotY": 0.5,
 			"__smartColor": "#ADADB5",
 			"__bgPos": { "topLeftPx": [0,0], "scale": [4,4], "cropRect": [0,56,400,112] },
-			"externalRelPath": "world/Level_5.ldtkl",
+			"externalRelPath": "world/Level_3.ldtkl",
 			"fieldInstances": [
 				{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": true, "__tile": null, "defUid": 339, "realEditorValues": [{
 					"id": "V_Bool",
@@ -3402,7 +3346,7 @@
 			"__neighbours": [ { "levelIid": "4b640660-3b70-11ee-8d2f-553f8aafb481", "dir": "s" }, { "levelIid": "7c3f2680-3b70-11ee-b5ed-c7a97be26d8e", "dir": "s" }, { "levelIid": "ed45b100-3b70-11ee-a0cf-b5b6cdc4ca65", "dir": "e" } ]
 		},
 		{
-			"identifier": "Level_6",
+			"identifier": "Level_4",
 			"iid": "ed45b100-3b70-11ee-a0cf-b5b6cdc4ca65",
 			"uid": 338,
 			"worldX": 1600,
@@ -3419,7 +3363,7 @@
 			"bgPivotY": 0.5,
 			"__smartColor": "#ADADB5",
 			"__bgPos": { "topLeftPx": [0,0], "scale": [4,4], "cropRect": [0,56,400,112] },
-			"externalRelPath": "world/Level_6.ldtkl",
+			"externalRelPath": "world/Level_4.ldtkl",
 			"fieldInstances": [
 				{ "__identifier": "LockBGToCamera", "__type": "Bool", "__value": true, "__tile": null, "defUid": 339, "realEditorValues": [] },
 				{ "__identifier": "BackgroundParallaxFactorX", "__type": "Float", "__value": null, "__tile": null, "defUid": 340, "realEditorValues": [null] },
