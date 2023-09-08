@@ -15,6 +15,11 @@
             "options": {
                 "cwd": "${workspaceRoot}"
             },
+            "args": [
+                "--console",
+                "${workspaceRoot}",
+                "assets/levels/test1.ldtk"
+            ],
             "problemMatcher": [],
             "group": {
                 "kind": "build",
