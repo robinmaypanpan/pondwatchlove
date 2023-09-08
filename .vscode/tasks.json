@@ -10,13 +10,8 @@
                 "command": "C:\\Program Files\\LOVE\\love.exe"
             },
             "osx": {
-                "command": "open -n -a love ./",
+                "command": "/Applications/love.app/Contents/MacOS/love ./",
             },
-            "args": [
-                "--console",
-                "${workspaceRoot}",
-                "assets/levels/test1.ldtk"
-            ],
             "options": {
                 "cwd": "${workspaceRoot}"
             },
