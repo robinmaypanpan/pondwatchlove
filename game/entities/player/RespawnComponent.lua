@@ -1,9 +1,10 @@
 local class = require('lib/middleclass')
+local PlayerComponent = require('game/entities/player/PlayerComponent')
 
-local RespawnComponent = class('RespawnComponent')
+local RespawnComponent = class('RespawnComponent', PlayerComponent)
 
 function RespawnComponent:initialize(player)
-    self.player = player
+    PlayerComponent.initialize(self, player)
     self.x = player.x
     self.y = player.y
     self.level = player.level
@@ -22,12 +23,6 @@ function RespawnComponent:update(updates)
         self.player.y = self.y
         self.player.stamina:reset()
     end
-end
-
-function RespawnComponent:changeLevel(oldLevel, newLevel)
-end
-
-function RespawnComponent:draw()
 end
 
 return RespawnComponent

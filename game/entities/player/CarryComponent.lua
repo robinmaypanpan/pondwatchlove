@@ -1,9 +1,10 @@
 local class = require('lib/middleclass')
+local PlayerComponent = require('game/entities/player/PlayerComponent')
 
-local CarryComponent = class('CarryComponent')
+local CarryComponent = class('CarryComponent', PlayerComponent)
 
 function CarryComponent:initialize(player)
-    self.player = player
+    PlayerComponent.initialize(self, player)
     self.itemCarrying = nil
 end
 
@@ -39,9 +40,6 @@ function CarryComponent:changeLevel(oldLevel, newLevel)
         self.itemCarrying:unbindFromLevel()
         self.itemCarrying:bindToLevel(newLevel)
     end
-end
-
-function CarryComponent:draw()
 end
 
 return CarryComponent

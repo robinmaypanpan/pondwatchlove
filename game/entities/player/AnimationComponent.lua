@@ -1,12 +1,12 @@
 local class = require('lib/middleclass')
+local PlayerComponent = require('game/entities/player/PlayerComponent')
 
-local AnimationComponent = class('AnimationComponent')
+local AnimationComponent = class('AnimationComponent', PlayerComponent)
 
 local AnimationSpeed = 12
 
 function AnimationComponent:initialize(player)
-    self.player = player
-
+    PlayerComponent.initialize(self, player)
     -- BUG: We shouldn't be drawing the width and height from the image
     self.image = love.graphics.newImage('assets/sprites/birb.png')
     self.width = self.image:getWidth()
@@ -44,9 +44,6 @@ function AnimationComponent:update(updates)
         self.animProgress = 1
         self.animFrame = 1
     end
-end
-
-function AnimationComponent:changeLevel(oldLevel, newLevel)
 end
 
 -- Draw the player's componetn

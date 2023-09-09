@@ -1,11 +1,12 @@
 local class = require('lib/middleclass')
+local PlayerComponent = require('game/entities/player/PlayerComponent')
 
-local UseableComponent = class('UseableComponent')
+local UseableComponent = class('UseableComponent', PlayerComponent)
 
 local Range = 20
 
 function UseableComponent:initialize(player)
-    self.player = player
+    PlayerComponent.initialize(self, player)
 end
 
 -- Returns all entities in range that can be used
@@ -43,12 +44,6 @@ function UseableComponent:update(updates)
             end
         end
     end
-end
-
-function UseableComponent:changeLevel(oldLevel, newLevel)
-end
-
-function UseableComponent:draw()
 end
 
 return UseableComponent

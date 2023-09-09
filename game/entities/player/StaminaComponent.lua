@@ -1,11 +1,12 @@
 local class = require('lib/middleclass')
+local PlayerComponent = require('game/entities/player/PlayerComponent')
 
-local StaminaComponent = class('StaminaComponent')
+local StaminaComponent = class('StaminaComponent', PlayerComponent)
 
 function StaminaComponent:initialize(player)
-    self.player = player
-    self.stamina = 100
+    PlayerComponent.initialize(self, player)
     self.maxStamina = 100
+    self.stamina = self.maxStamina
     self.font = love.graphics.newFont(60)
 end
 
@@ -17,7 +18,7 @@ end
 -- Boosts the stamina by the indicated amount
 function StaminaComponent:boost(amount)
     self.stamina = self.stamina + amount
-    self.stamina = math.min(self.stamina, 100)
+    self.stamina = math.min(self.stamina, self.maxStamina)
 end
 
 --Reduces the stamina by the amount specified by the level
@@ -35,9 +36,6 @@ function StaminaComponent:update(updates)
         love.graphics.setFont(self.font)
         love.graphics.print('' .. self.stamina, 50, 50)
     end)
-end
-
-function StaminaComponent:draw()
 end
 
 return StaminaComponent
