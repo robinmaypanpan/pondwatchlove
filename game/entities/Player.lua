@@ -209,7 +209,7 @@ function Player:updateX(updates, timeMultiplier)
     local result = self:checkForCollisions('x', xDistance)
     if result.type == CollisionType.OutsideLevel then
         if result.level and result.level ~= self.level then
-            self:changeLevels(result.level)
+            self:changeLevel(result.level)
             self.x = self.x + xDistance
         end
     elseif result.type == CollisionType.None then
@@ -280,7 +280,7 @@ function Player:updateY(updates, timeMultiplier)
 
     if result.type == CollisionType.OutsideLevel then
         if result.level then
-            self:changeLevels(result.level)
+            self:changeLevel(result.level)
             self.y = self.y + yDistance
         else
             self.isJumping = false
@@ -340,13 +340,16 @@ function Player:getNearestClimbable()
 end
 
 -- Used to trigger a level change
-function Player:changeLevels(newLevel)
+function Player:changeLevel(newLevel)
     assert(newLevel ~= nil, 'Cannot change to an empty level')
 
     local oldLevel = self.level
     local entityLayer = oldLevel:getLayer('Entities')
     entityLayer:unbindEntity(self)
-    self.stamina:reduceStamina(oldLevel)
+
+    for _, component in pairs(self.components) do
+        component:changeLevel(oldLevel, newLevel)
+    end
 
     -- connect to the new level
     self.level = newLevel

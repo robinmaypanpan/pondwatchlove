@@ -13,9 +13,9 @@ function StaminaComponent:reset()
 end
 
 --Reduces the stamina by the amount specified by the level
-function StaminaComponent:reduceStamina(level)
-    if level and level.fields.staminaCost then
-        self.stamina = self.stamina - level.fields.staminaCost
+function StaminaComponent:changeLevel(oldLevel, newLevel)
+    if oldLevel and oldLevel.fields.staminaCost then
+        self.stamina = self.stamina - oldLevel.fields.staminaCost
     else
         self.stamina = self.stamina - 10
     end

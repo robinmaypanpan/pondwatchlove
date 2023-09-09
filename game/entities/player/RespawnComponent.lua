@@ -24,6 +24,9 @@ function RespawnComponent:update(updates)
     end
 end
 
+function RespawnComponent:changeLevel(oldLevel, newLevel)
+end
+
 function RespawnComponent:draw()
 end
 

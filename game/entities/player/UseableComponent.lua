@@ -41,6 +41,9 @@ function UseableComponent:update(updates)
     end
 end
 
+function UseableComponent:changeLevel(oldLevel, newLevel)
+end
+
 function UseableComponent:draw()
 end
 

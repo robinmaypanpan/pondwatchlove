@@ -25,6 +25,16 @@ function CarryComponent:update(updates)
     end
 end
 
+function CarryComponent:changeLevel(oldLevel, newLevel)
+    if self.itemCarrying then
+        local oldEntityLayer = oldLevel:getLayer('Entities')
+        local newEntityLayer = newLevel:getLayer('Entities')
+
+        oldEntityLayer:unbindEntity(self.itemCarrying)
+        newEntityLayer:bindEntity(self.itemCarrying)
+    end
+end
+
 function CarryComponent:draw()
 end
 
