@@ -16,6 +16,9 @@ local Camp = require('game/entities/Camp')
 local ItemDispenser = require('game/entities/ItemDispenser')
 local Entity = require('game/entities/Entity')
 
+local useTime
+local useDelay = 0.5
+
 local entityTable = {
     Player = function(data, level)
         assert(player == nil, "Player was already created")
@@ -54,6 +57,8 @@ function love.load(arg)
 
     camera = Camera:new(player, world)
 
+    useTime = love.timer.getTime()
+
     -- Create our window locked canvases
     uiCanvas = love.graphics.newCanvas()
     backgroundCanvas = love.graphics.newCanvas()
@@ -64,6 +69,7 @@ local isLevelTransition = false
 -- Called before calling draw each time a frame updates
 function love.update(dt)
     flux.update(dt)
+    local currentTime = love.timer.getTime()
 
     -- Clear canvas layers
     uiCanvas:renderTo(function()
@@ -81,7 +87,12 @@ function love.update(dt)
 
         local jump = love.keyboard.isDown('space')
 
-        local use = moveDown or love.keyboard.isDown('e')
+        local useKeyDown = moveDown or love.keyboard.isDown('e')
+        local use = useKeyDown and currentTime - useTime > useDelay
+
+        if use then
+            useTime = currentTime
+        end
 
         player:update({
             moveLeft = moveLeft,
