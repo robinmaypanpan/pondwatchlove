@@ -13,6 +13,7 @@ local Camera = require('game/Camera')
 
 local Player = require('game/entities/Player')
 local Camp = require('game/entities/Camp')
+local ItemDispenser = require('game/entities/ItemDispenser')
 
 local entityTable = {
     Player = function(data, level)
@@ -23,6 +24,10 @@ local entityTable = {
     Camp = function(data, level)
         local camp = Camp:new(data, level)
         return camp
+    end,
+    ItemDispenser = function(data, level)
+        local itemDispenser = ItemDispenser:new(data, level)
+        return itemDispenser
     end
 }
 
@@ -37,7 +42,7 @@ function love.load(arg)
         levelFileName = arg[2]
     end
 
-    local builder = LevelBuilder:new(entityTable)
+    builder = LevelBuilder:new(entityTable)
     world = builder:load(levelFilename)
 
     world:setActiveLevel('Entrance')

@@ -1198,6 +1198,87 @@
 					"defUid": 385,
 					"px": [1232,320],
 					"fieldInstances": []
+				},
+				{
+					"__identifier": "ItemDispenser",
+					"__grid": [60,22],
+					"__pivot": [0,0],
+					"__tags": ["Useable"],
+					"__tile": { "tilesetUid": 1, "x": 96, "y": 176, "w": 16, "h": 16 },
+					"__smartColor": "#EAD4AA",
+					"__worldX": 960,
+					"__worldY": 352,
+					"iid": "10cf35e0-3b70-11ee-a4d0-23574ad5ab05",
+					"width": 16,
+					"height": 16,
+					"defUid": 389,
+					"px": [960,352],
+					"fieldInstances": [
+						{ "__identifier": "Items", "__type": "LocalEnum.Items", "__value": "YellowBerry", "__tile": null, "defUid": 391, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["YellowBerry"]
+						}] },
+						{ "__identifier": "fullTile", "__type": "Tile", "__value": { "tilesetUid": 1, "x": 96, "y": 176, "w": 16, "h": 16 }, "__tile": { "tilesetUid": 1, "x": 96, "y": 176, "w": 16, "h": 16 }, "defUid": 392, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["96,176,16,16"]
+						}] },
+						{ "__identifier": "emptyTile", "__type": "Tile", "__value": { "tilesetUid": 1, "x": 0, "y": 176, "w": 16, "h": 16 }, "__tile": null, "defUid": 393, "realEditorValues": [] },
+						{ "__identifier": "quantity", "__type": "Int", "__value": 2, "__tile": null, "defUid": 394, "realEditorValues": [{ "id": "V_Int", "params": [2] }] }
+					]
+				},
+				{
+					"__identifier": "ItemDispenser",
+					"__grid": [56,22],
+					"__pivot": [0,0],
+					"__tags": ["Useable"],
+					"__tile": { "tilesetUid": 1, "x": 64, "y": 176, "w": 16, "h": 16 },
+					"__smartColor": "#EAD4AA",
+					"__worldX": 896,
+					"__worldY": 352,
+					"iid": "2be80230-3b70-11ee-a4d0-45dd93d7c455",
+					"width": 16,
+					"height": 16,
+					"defUid": 389,
+					"px": [896,352],
+					"fieldInstances": [
+						{ "__identifier": "Items", "__type": "LocalEnum.Items", "__value": "RedBerry", "__tile": null, "defUid": 391, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["RedBerry"]
+						}] },
+						{ "__identifier": "fullTile", "__type": "Tile", "__value": { "tilesetUid": 1, "x": 64, "y": 176, "w": 16, "h": 16 }, "__tile": { "tilesetUid": 1, "x": 64, "y": 176, "w": 16, "h": 16 }, "defUid": 392, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["64,176,16,16"]
+						}] },
+						{ "__identifier": "emptyTile", "__type": "Tile", "__value": { "tilesetUid": 1, "x": 0, "y": 176, "w": 16, "h": 16 }, "__tile": null, "defUid": 393, "realEditorValues": [] },
+						{ "__identifier": "quantity", "__type": "Int", "__value": 1, "__tile": null, "defUid": 394, "realEditorValues": [] }
+					]
+				},
+				{
+					"__identifier": "ItemDispenser",
+					"__grid": [63,22],
+					"__pivot": [0,0],
+					"__tags": ["Useable"],
+					"__tile": { "tilesetUid": 1, "x": 80, "y": 176, "w": 16, "h": 16 },
+					"__smartColor": "#EAD4AA",
+					"__worldX": 1008,
+					"__worldY": 352,
+					"iid": "2d24ef00-3b70-11ee-a4d0-77b337afbd2e",
+					"width": 16,
+					"height": 16,
+					"defUid": 389,
+					"px": [1008,352],
+					"fieldInstances": [
+						{ "__identifier": "Items", "__type": "LocalEnum.Items", "__value": "BlueBerry", "__tile": null, "defUid": 391, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["BlueBerry"]
+						}] },
+						{ "__identifier": "fullTile", "__type": "Tile", "__value": { "tilesetUid": 1, "x": 80, "y": 176, "w": 16, "h": 16 }, "__tile": { "tilesetUid": 1, "x": 80, "y": 176, "w": 16, "h": 16 }, "defUid": 392, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["80,176,16,16"]
+						}] },
+						{ "__identifier": "emptyTile", "__type": "Tile", "__value": { "tilesetUid": 1, "x": 0, "y": 176, "w": 16, "h": 16 }, "__tile": null, "defUid": 393, "realEditorValues": [] },
+						{ "__identifier": "quantity", "__type": "Int", "__value": 1, "__tile": null, "defUid": 394, "realEditorValues": [] }
+					]
 				}
 			]
 		},

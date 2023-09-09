@@ -28,20 +28,34 @@ function Tileset:initialize(data)
     self.tileQuads = {}
 end
 
+-- Returns a tile quad based on the provided x,y,w,h source
+function Tileset:getTileQuadByData(tileData)
+    if tileData.w == self.tileSize and tileData.h == self.tileSize then
+        local col = (tileData.x - self.padding) / (self.tileSize + self.spacing)
+        local row = (tileData.y - self.padding) / (self.tileSize + self.spacing)
+        local tileId = col + self.numCols * row
+        return self:getTileQuad(tileId)
+    else
+        return love.graphics.newQuad(tileData.x, tileData.y,
+            tileData.w, tileData.h,
+            self.width, self.height)
+    end
+end
+
 -- Create or retrieve a tile quad for a given tile
 function Tileset:getTileQuad(tileId)
     if self.tileQuads[tileId] == nil then
         -- Get "grid-based" coordinate of the tileId
-        local gridTileX = tileId - self.numCols * math.floor(tileId / self.numCols);
+        local col = tileId - self.numCols * math.floor(tileId / self.numCols);
 
         -- Get the atlas pixel coordinate
-        local pixelTileX = self.padding + gridTileX * (self.tileSize + self.spacing);
+        local pixelTileX = self.padding + col * (self.tileSize + self.spacing);
 
         -- Get "grid-based" coordinate of the tileId
-        local gridTileY = math.floor(tileId / self.numCols)
+        local row = math.floor(tileId / self.numCols)
 
         -- Get the atlas pixel coordinate
-        local pixelTileY = self.padding + gridTileY * (self.tileSize + self.spacing);
+        local pixelTileY = self.padding + row * (self.tileSize + self.spacing);
 
         self.tileQuads[tileId] = love.graphics.newQuad(pixelTileX, pixelTileY,
             self.tileSize, self.tileSize,
