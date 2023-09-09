@@ -342,6 +342,7 @@ function Player:changeLevels(newLevel)
     local oldLevel = self.level
     local entityLayer = oldLevel:getLayer('Entities')
     entityLayer:unbindEntity(self)
+    self.stamina:reduceStamina(oldLevel)
 
     -- connect to the new level
     self.level = newLevel
