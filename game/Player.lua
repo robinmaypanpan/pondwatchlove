@@ -17,6 +17,7 @@ local CollisionType = {
 function Player:initialize(data, level)
     self.level = level
     self.data = data
+
     self.fields = {}
 
     for _, field in pairs(data.fieldInstances) do
@@ -26,16 +27,12 @@ function Player:initialize(data, level)
     self.id = data.__identifier
     self.x = data.__worldX
     self.y = data.__worldY
-    self.jumpStart = self.y
 
     self.xSpeed = 0
     self.ySpeed = 0
 
     self.isClimbing = false
-    self.isJumping = false
     self.flipImage = false
-
-    self.currentGravity = 0
 
     -- Create our sub components
     self.components = {}
@@ -218,6 +215,28 @@ function Player:updateX(updates, timeMultiplier)
     end
 end
 
+function Player:accelY(impulse, timeMultiplier)
+    local maxYSpeed = self.fields.maxYSpeed
+    self.ySpeed = math.mid(-maxYSpeed, self.ySpeed + impulse, maxYSpeed)
+
+    local yDistance = self.ySpeed * timeMultiplier
+
+    local result = self:checkForCollisions('y', yDistance)
+
+    if result.type == CollisionType.OutsideLevel then
+        if result.level then
+            self:changeLevels(result.level)
+            self.y = self.y + yDistance
+        else
+            self.jump:endJumping()
+        end
+    elseif result.type == CollisionType.None then
+        self.y = self.y + yDistance
+    elseif result.type == CollisionType.Wall then
+        self.jump:endJumping()
+    end
+end
+
 -- Update vertical component
 function Player:updateY(updates, timeMultiplier)
     local jumpAccel = self.fields.jumpAccel
@@ -303,7 +322,7 @@ function Player:update(updates)
     self:updateY(updates, timeMultiplier)
 
     for _, component in ipairs(self.components) do
-        component:update(updates)
+        component:update(updates, timeMultiplier)
     end
 end
 
