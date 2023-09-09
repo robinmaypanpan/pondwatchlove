@@ -14,11 +14,10 @@ end
 
 -- Creates an entity from the provided data
 function LevelBuilder:createEntity(data, level)
-    for _, tag in ipairs(data.__tags) do
-        if self.entityTable[tag] then
-            local entityGenerator = self.entityTable[tag]
-            return entityGenerator(data, level)
-        end
+    local id = data.__identifier
+    if self.entityTable[id] then
+        local entityGenerator = self.entityTable[id]
+        return entityGenerator(data, level)
     end
     return nil
 end
@@ -43,9 +42,11 @@ function LevelBuilder:load(filename)
 
     -- Create sprite batches from tilesets
     for _, tilesetData in ipairs(self.data.defs.tilesets) do
-        local tileset = Tileset:new(tilesetData)
-        self.tilesets[tileset.id] = tileset
-        self.tilesets[tileset.uid] = tileset
+        if tilesetData.relPath then
+            local tileset = Tileset:new(tilesetData)
+            self.tilesets[tileset.id] = tileset
+            self.tilesets[tileset.uid] = tileset
+        end
     end
 
     for _, levelData in ipairs(self.data.levels) do

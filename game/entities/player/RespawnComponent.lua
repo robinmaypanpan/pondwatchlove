@@ -9,6 +9,12 @@ function RespawnComponent:initialize(player)
     self.level = player.level
 end
 
+function RespawnComponent:setNewCamp(camp)
+    self.x = camp.x
+    self.y = camp.y
+    self.level = camp.level
+end
+
 function RespawnComponent:update(updates)
     if self.player.stamina.stamina <= 0 then
         self.player:changeLevels(self.level)

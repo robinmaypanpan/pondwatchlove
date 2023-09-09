@@ -1166,7 +1166,40 @@
 			"seed": 6438375,
 			"overrideTilesetUid": null,
 			"gridTiles": [],
-			"entityInstances": []
+			"entityInstances": [
+				{
+					"__identifier": "Camp",
+					"__grid": [77,21],
+					"__pivot": [0,0],
+					"__tags": ["Useable"],
+					"__tile": { "tilesetUid": 388, "x": 0, "y": 32, "w": 16, "h": 16 },
+					"__smartColor": "#D77643",
+					"__worldX": 1240,
+					"__worldY": 336,
+					"iid": "bdc6a3d0-3b70-11ee-ab51-afcd45f2cc65",
+					"width": 16,
+					"height": 16,
+					"defUid": 385,
+					"px": [1240,336],
+					"fieldInstances": []
+				},
+				{
+					"__identifier": "Camp",
+					"__grid": [77,20],
+					"__pivot": [0,0],
+					"__tags": ["Useable"],
+					"__tile": { "tilesetUid": 388, "x": 0, "y": 32, "w": 16, "h": 16 },
+					"__smartColor": "#D77643",
+					"__worldX": 1232,
+					"__worldY": 320,
+					"iid": "2c9ebac0-3b70-11ee-a434-1d9f37b6ae13",
+					"width": 16,
+					"height": 16,
+					"defUid": 385,
+					"px": [1232,320],
+					"fieldInstances": []
+				}
+			]
 		},
 		{
 			"__identifier": "Auto_vines",

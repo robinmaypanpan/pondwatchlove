@@ -54,6 +54,7 @@ function AnimationComponent:draw()
         scale = -1
         width = self.width
     end
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.draw(self.spritesheet, self.walkQuads[self.animFrame], self.player.x, self.player.y, 0, scale, 1, width)
 end
 

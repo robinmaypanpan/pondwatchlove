@@ -9,13 +9,20 @@ require('lib/string')
 local flux = require('lib/flux')
 
 local LevelBuilder = require('lib/ldtk/LevelBuilder')
-local Player = require('game/Player')
 local Camera = require('game/Camera')
+
+local Player = require('game/entities/Player')
+local Camp = require('game/entities/Camp')
 
 local entityTable = {
     Player = function(data, level)
+        assert(player == nil, "Player was already created")
         player = Player:new(data, level)
         return player
+    end,
+    Camp = function(data, level)
+        local camp = Camp:new(data, level)
+        return camp
     end
 }
 
@@ -64,12 +71,15 @@ function love.update(dt)
 
         local jump = love.keyboard.isDown('space')
 
+        local use = moveDown or love.keyboard.isDown('e')
+
         player:update({
             moveLeft = moveLeft,
             moveRight = moveRight,
             moveUp = moveUp,
             moveDown = moveDown,
-            jump = jump
+            jump = jump,
+            use = use
         })
     end
 
