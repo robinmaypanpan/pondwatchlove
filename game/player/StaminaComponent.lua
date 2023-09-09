@@ -8,7 +8,7 @@ function StaminaComponent:initialize(player)
     self.font = love.graphics.newFont(60)
 end
 
-function StaminaComponent:update()
+function StaminaComponent:update(updates)
     uiCanvas:renderTo(function()
         love.graphics.setFont(self.font)
         love.graphics.print('' .. self.stamina, 50, 50)
