@@ -5,6 +5,7 @@ local StaminaComponent = class('StaminaComponent')
 function StaminaComponent:initialize(player)
     self.player = player
     self.stamina = 100
+    self.maxStamina = 100
     self.font = love.graphics.newFont(60)
 end
 
@@ -16,6 +17,7 @@ end
 -- Boosts the stamina by the indicated amount
 function StaminaComponent:boost(amount)
     self.stamina = self.stamina + amount
+    self.stamina = math.min(self.stamina, 100)
 end
 
 --Reduces the stamina by the amount specified by the level
