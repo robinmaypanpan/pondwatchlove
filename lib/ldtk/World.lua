@@ -1,4 +1,5 @@
 local class = require('lib/middleclass')
+local getFields = require('lib/ldtk/getFields')
 
 -- The World class contains a definition of the world and all its levels
 -- It can be used to activate and deactivate certain levels from the world
@@ -13,6 +14,7 @@ function World:initialize(data)
     self.activeLevels = {}
 
     self.levels = {}
+    self.fields = getFields(data)
 end
 
 -- Adds the provided level data as an inactive level in the world

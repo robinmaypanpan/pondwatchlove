@@ -4,6 +4,7 @@ local EntityLayer = require('lib/ldtk/EntityLayer')
 local IntLayer = require('lib/ldtk/IntLayer')
 local colorFromValue = require('lib/colorFromValue')
 local fixRelPath = require('lib/ldtk/fixRelPath')
+local getFields = require('lib/ldtk/getFields')
 
 local Level = class('Level')
 
@@ -22,11 +23,7 @@ function Level:initialize(data, builder)
     self.width = data.pxWid
     self.height = data.pxHei
 
-    self.fields = {}
-
-    for _, field in pairs(data.fieldInstances) do
-        self.fields[field.__identifier] = field.__value
-    end
+    self.fields = getFields(data)
 
     local bgColor = data.bgColor or data.__bgColor
 

@@ -1,4 +1,5 @@
 local class = require('lib/middleclass')
+local getFields = require('lib/ldtk/getFields')
 
 -- Super class for layers that can contain tiles, including IntLayers and TileLayers
 local LayerWithTiles = class('LayerWithTiles')
@@ -18,6 +19,8 @@ function LayerWithTiles:initialize(data, builder, level)
     self.opacity = data.__opacity
 
     self.layerDef = builder:getLayerDefinition(self.id)
+
+    self.fields = getFields(data)
 end
 
 -- Ask for all the tiles between these two locations
