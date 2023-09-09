@@ -18,7 +18,7 @@ end
 
 function RespawnComponent:update(updates)
     if self.player.stamina.stamina <= 0 then
-        self.player:changeLevels(self.level)
+        self.player:changeLevel(self.level)
         self.player.x = self.x
         self.player.y = self.y
         self.player.stamina:reset()
