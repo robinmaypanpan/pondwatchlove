@@ -9,6 +9,7 @@ local StaminaComponent = require('game/entities/player/StaminaComponent')
 local AnimationComponent = require('game/entities/player/AnimationComponent')
 local RespawnComponent = require('game/entities/player/RespawnComponent')
 local UseableComponent = require('game/entities/player/UseableComponent')
+local CarryComponent = require('game/entities/player/CarryComponent')
 
 local CollisionType = {
     None = 0,
@@ -43,6 +44,9 @@ function Player:initialize(data, level)
     table.insert(self.components, self.respawn)
 
     table.insert(self.components, UseableComponent:new(self))
+
+    self.carry = CarryComponent:new(self)
+    table.insert(self.components, self.carry)
 
     self.width = self.animation.width
     self.height = self.animation.height

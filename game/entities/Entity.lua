@@ -9,10 +9,10 @@ function Entity:initialize(data, level)
 
     self.id = data.__identifier
 
-    self.x = data.__worldX
-    self.y = data.__worldY
-    self.width = data.width
-    self.height = data.height
+    self.x = data.__worldX or 0
+    self.y = data.__worldY or 0
+    self.width = data.width or 0
+    self.height = data.height or 0
 
     self.fields = getFields(data)
 end
