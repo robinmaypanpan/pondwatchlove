@@ -9,6 +9,7 @@ local StaminaComponent = require('game/entities/player/StaminaComponent')
 local AnimationComponent = require('game/entities/player/AnimationComponent')
 local RespawnComponent = require('game/entities/player/RespawnComponent')
 local UseableComponent = require('game/entities/player/UseableComponent')
+local CarryComponent = require('game/entities/player/CarryComponent')
 
 local CollisionType = {
     None = 0,
@@ -43,6 +44,9 @@ function Player:initialize(data, level)
     table.insert(self.components, self.respawn)
 
     table.insert(self.components, UseableComponent:new(self))
+
+    self.carry = CarryComponent:new(self)
+    table.insert(self.components, self.carry)
 
     self.width = self.animation.width
     self.height = self.animation.height
@@ -205,7 +209,7 @@ function Player:updateX(updates, timeMultiplier)
     local result = self:checkForCollisions('x', xDistance)
     if result.type == CollisionType.OutsideLevel then
         if result.level and result.level ~= self.level then
-            self:changeLevels(result.level)
+            self:changeLevel(result.level)
             self.x = self.x + xDistance
         end
     elseif result.type == CollisionType.None then
@@ -276,7 +280,7 @@ function Player:updateY(updates, timeMultiplier)
 
     if result.type == CollisionType.OutsideLevel then
         if result.level then
-            self:changeLevels(result.level)
+            self:changeLevel(result.level)
             self.y = self.y + yDistance
         else
             self.isJumping = false
@@ -336,18 +340,17 @@ function Player:getNearestClimbable()
 end
 
 -- Used to trigger a level change
-function Player:changeLevels(newLevel)
+function Player:changeLevel(newLevel)
     assert(newLevel ~= nil, 'Cannot change to an empty level')
 
     local oldLevel = self.level
-    local entityLayer = oldLevel:getLayer('Entities')
-    entityLayer:unbindEntity(self)
-    self.stamina:reduceStamina(oldLevel)
 
-    -- connect to the new level
-    self.level = newLevel
-    entityLayer = newLevel:getLayer('Entities')
-    entityLayer:bindEntity(self)
+    for _, component in pairs(self.components) do
+        component:changeLevel(oldLevel, newLevel)
+    end
+
+    self:unbindFromLevel()
+    self:bindToLevel(newLevel)
 
     world:setActiveLevel(newLevel.id)
 

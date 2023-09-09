@@ -34,11 +34,18 @@ end
 
 function UseableComponent:update(updates)
     if updates.use then
-        local entity = self:getClosestUseableEntityInRange()
-        if entity then
-            entity:use(self.player)
+        if self.player.carry:hasItem() then
+            self.player.carry:useItem()
+        else
+            local entity = self:getClosestUseableEntityInRange()
+            if entity then
+                entity:use(self.player)
+            end
         end
     end
+end
+
+function UseableComponent:changeLevel(oldLevel, newLevel)
 end
 
 function UseableComponent:draw()

@@ -9,6 +9,7 @@ local LevelBuilder = class('LevelBuilder')
 
 function LevelBuilder:initialize(entityTable)
     self.tilesets = {}
+    self.enumSets = {}
     self.entityTable = entityTable
 end
 
@@ -54,6 +55,30 @@ function LevelBuilder:load(filename)
         end
     end
 
+    -- Create enums
+    for _, enumSetData in ipairs(self.data.defs.enums) do
+        local enumSet = {
+            id = enumSetData.identifier,
+            uid = enumSetData.uid
+        }
+
+        for _, enumValueData in ipairs(enumSetData.values) do
+            local tileset = self.tilesets[enumValueData.tileRect.tilesetUid]
+            local newValue = {
+                id = enumValueData.id,
+                tileset = tileset,
+                quad = tileset:getTileQuadByData(enumValueData.tileRect),
+                width = enumValueData.tileRect.w,
+                height = enumValueData.tileRect.h,
+            }
+            enumSet[newValue.id] = newValue
+        end
+
+        self.enumSets[enumSet.id] = enumSet
+        self.enumSets[enumSet.uid] = enumSet
+    end
+
+    -- Create levels
     for _, levelData in ipairs(self.data.levels) do
         local realData = levelData
         if levelData.externalRelPath then

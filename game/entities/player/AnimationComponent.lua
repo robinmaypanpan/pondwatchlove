@@ -46,6 +46,9 @@ function AnimationComponent:update(updates)
     end
 end
 
+function AnimationComponent:changeLevel(oldLevel, newLevel)
+end
+
 -- Draw the player's componetn
 function AnimationComponent:draw()
     local scale = 1

@@ -1,5 +1,6 @@
 local class = require('lib/middleclass')
 local Entity = require('game/entities/Entity')
+local Item = require('game/entities/Item')
 
 local ItemDispenser = class('ItemDispenser', Entity)
 
@@ -18,8 +19,12 @@ function ItemDispenser:initialize(data, level)
 end
 
 function ItemDispenser:use(player)
-    if self.quantity > 0 then
+    if self.quantity > 0 and not player.carry:hasItem() then
         self.quantity = self.quantity - 1
+        local item = Item.generateItem(self.item, self.level)
+        local entityLayer = self.level:getLayer('Entities')
+        entityLayer:bindEntity(item)
+        player.carry:pickupItem(item)
     end
 end
 
