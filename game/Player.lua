@@ -3,6 +3,7 @@ local class = require('lib/middleclass')
 local Player = class('Player')
 
 local Tiles = require('game/Tiles')
+local StaminaComponent = require('game/player/StaminaComponent')
 
 local CollisionType = {
     None = 0,
@@ -40,6 +41,11 @@ function Player:initialize(data, level)
     self.currentGravity = 0
     self.animProgress = 1
     self.animFrame = 1
+
+    -- Create our sub components
+    self.components = {}
+    self.stamina = StaminaComponent:new(self)
+    table.insert(self.components, self.stamina)
 end
 
 -- takes an image, and using the other variables, creates a table of x,y coords to use
@@ -321,6 +327,10 @@ function Player:update(updates)
 
     self:updateX(updates, timeMultiplier)
     self:updateY(updates, timeMultiplier)
+
+    for _, component in ipairs(self.components) do
+        component:update()
+    end
 end
 
 -- Returns the nearest climbable tile in range
@@ -379,15 +389,24 @@ function Player:changeLevels(newLevel)
     -- self.xSpeed = 0
 end
 
-function Player:draw()
+-- Draws the player sprite
+function Player:drawSprite()
     local scale = 1
     local width = 0
     if self.flipImage then
         scale = -1
         width = self.width
     end
-
     love.graphics.draw(self.spritesheet, self.walkQuads[self.animFrame], self.x, self.y, 0, scale, 1, width)
+end
+
+-- Draws the player
+function Player:draw()
+    self:drawSprite()
+
+    for _, component in ipairs(self.components) do
+        component:draw()
+    end
 end
 
 return Player
