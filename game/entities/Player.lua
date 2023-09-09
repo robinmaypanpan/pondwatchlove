@@ -344,17 +344,13 @@ function Player:changeLevel(newLevel)
     assert(newLevel ~= nil, 'Cannot change to an empty level')
 
     local oldLevel = self.level
-    local entityLayer = oldLevel:getLayer('Entities')
-    entityLayer:unbindEntity(self)
 
     for _, component in pairs(self.components) do
         component:changeLevel(oldLevel, newLevel)
     end
 
-    -- connect to the new level
-    self.level = newLevel
-    entityLayer = newLevel:getLayer('Entities')
-    entityLayer:bindEntity(self)
+    self:unbindFromLevel()
+    self:bindToLevel(newLevel)
 
     world:setActiveLevel(newLevel.id)
 

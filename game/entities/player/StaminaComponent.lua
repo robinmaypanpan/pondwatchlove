@@ -8,8 +8,14 @@ function StaminaComponent:initialize(player)
     self.font = love.graphics.newFont(60)
 end
 
+-- Resets stamina to maximum
 function StaminaComponent:reset()
     self.stamina = 100
+end
+
+-- Boosts the stamina by the indicated amount
+function StaminaComponent:boost(amount)
+    self.stamina = self.stamina + amount
 end
 
 --Reduces the stamina by the amount specified by the level

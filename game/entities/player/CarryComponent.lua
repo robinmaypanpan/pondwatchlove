@@ -12,10 +12,19 @@ function CarryComponent:hasItem()
     return self.itemCarrying ~= nil
 end
 
+-- Picks up the provided item
 function CarryComponent:pickupItem(itemEntity)
     self.itemCarrying = itemEntity
     itemEntity.x = self.player.x + self.player.width / 2 - itemEntity.width / 2
     itemEntity.y = self.player.y - itemEntity.height
+end
+
+-- Uses the item (currently just a stamina boost)
+function CarryComponent:useItem()
+    assert(self.itemCarrying ~= nil, 'Cannot use an item. None in hand')
+    self.itemCarrying:unbindFromLevel()
+    self.itemCarrying = nil
+    self.player.stamina:boost(50)
 end
 
 function CarryComponent:update(updates)
@@ -27,11 +36,8 @@ end
 
 function CarryComponent:changeLevel(oldLevel, newLevel)
     if self.itemCarrying then
-        local oldEntityLayer = oldLevel:getLayer('Entities')
-        local newEntityLayer = newLevel:getLayer('Entities')
-
-        oldEntityLayer:unbindEntity(self.itemCarrying)
-        newEntityLayer:bindEntity(self.itemCarrying)
+        self.itemCarrying:unbindFromLevel()
+        self.itemCarrying:bindToLevel(newLevel)
     end
 end
 

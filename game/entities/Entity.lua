@@ -20,6 +20,20 @@ end
 function Entity:update(updates, timeMultiplier)
 end
 
+function Entity:unbindFromLevel()
+    local entityLayer = self.level:getLayer('Entities')
+
+    entityLayer:unbindEntity(self)
+    self.level = nil
+end
+
+function Entity:bindToLevel(newLevel)
+    local entityLayer = newLevel:getLayer('Entities')
+
+    entityLayer:bindEntity(self)
+    self.level = newLevel
+end
+
 function Entity:draw()
     love.graphics.setColor(1, 0, 0, 1)
     love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
