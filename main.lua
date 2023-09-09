@@ -169,6 +169,11 @@ function love.draw()
     --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
     -- end
 
+    -- Draw hitbox
+    -- love.graphics.setColor(1, 0, 0, 1)
+    -- local hitbox = player:getHitbox(player.x, player.y)
+    -- love.graphics.rectangle('line', hitbox.x, hitbox.y, hitbox.width, hitbox.height)
+
     love.graphics.origin()
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.draw(uiCanvas)
