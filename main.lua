@@ -118,8 +118,8 @@ function drawStaticBackground()
     local bg = player.level.background
     if bg.image and player.level.fields.LockBGToCamera then
         local scaleX, scaleY
-        scaleX = world.levelWidth / bg.image:getWidth()
-        scaleY = world.levelHeight / bg.image:getHeight()
+        scaleX = backgroundCanvas:getWidth() / bg.image:getWidth()
+        scaleY = backgroundCanvas:getHeight() / bg.image:getHeight()
         scaleX = math.max(scaleX, scaleY)
         scaleY = scaleX
 
@@ -132,10 +132,12 @@ end
 
 -- Called after calling update each frame.
 function love.draw()
+    love.graphics.origin()
+    love.graphics.draw(backgroundCanvas)
+
     local scale = love.graphics.getWidth() / world.levelWidth
     love.graphics.scale(scale)
 
-    love.graphics.draw(backgroundCanvas)
 
     camera:draw()
 
