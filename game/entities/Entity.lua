@@ -6,7 +6,7 @@ local Entity = class('Entity')
 function Entity:initialize(data, level)
     self.level = level
     self.data = data
-    
+
     self.id = data.__identifier
 
     self.x = data.__worldX
@@ -22,7 +22,7 @@ end
 
 function Entity:draw()
     love.graphics.setColor(1, 0, 0, 1)
-    love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
+    love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
 end
 
 return Entity

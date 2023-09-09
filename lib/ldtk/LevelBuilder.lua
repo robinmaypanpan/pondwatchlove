@@ -19,7 +19,12 @@ function LevelBuilder:createEntity(data, level)
         local entityGenerator = self.entityTable[id]
         return entityGenerator(data, level)
     end
-    return nil
+
+    if self.entityTable.default then
+        return self.entityTable.default(data, level)
+    else
+        return nil
+    end
 end
 
 -- Returns the definition for the indicated layer

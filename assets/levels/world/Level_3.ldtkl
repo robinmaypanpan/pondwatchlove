@@ -1255,18 +1255,18 @@
 				},
 				{
 					"__identifier": "ItemDispenser",
-					"__grid": [63,22],
+					"__grid": [54,22],
 					"__pivot": [0,0],
 					"__tags": ["Useable"],
 					"__tile": { "tilesetUid": 1, "x": 80, "y": 176, "w": 16, "h": 16 },
 					"__smartColor": "#EAD4AA",
-					"__worldX": 1008,
+					"__worldX": 864,
 					"__worldY": 352,
 					"iid": "2d24ef00-3b70-11ee-a4d0-77b337afbd2e",
 					"width": 16,
 					"height": 16,
 					"defUid": 389,
-					"px": [1008,352],
+					"px": [864,352],
 					"fieldInstances": [
 						{ "__identifier": "Items", "__type": "LocalEnum.Items", "__value": "BlueBerry", "__tile": null, "defUid": 391, "realEditorValues": [{
 							"id": "V_String",
@@ -1279,6 +1279,54 @@
 						{ "__identifier": "emptyTile", "__type": "Tile", "__value": { "tilesetUid": 1, "x": 0, "y": 176, "w": 16, "h": 16 }, "__tile": null, "defUid": 393, "realEditorValues": [] },
 						{ "__identifier": "quantity", "__type": "Int", "__value": 1, "__tile": null, "defUid": 394, "realEditorValues": [] }
 					]
+				},
+				{
+					"__identifier": "Entity",
+					"__grid": [54,14],
+					"__pivot": [0,0],
+					"__tags": [],
+					"__tile": { "tilesetUid": 388, "x": 272, "y": 48, "w": 16, "h": 16 },
+					"__smartColor": "#E4A672",
+					"__worldX": 864,
+					"__worldY": 224,
+					"iid": "60363600-3b70-11ee-add6-89e9cc504170",
+					"width": 112,
+					"height": 112,
+					"defUid": 395,
+					"px": [864,224],
+					"fieldInstances": []
+				},
+				{
+					"__identifier": "Entity",
+					"__grid": [50,17],
+					"__pivot": [0,0],
+					"__tags": [],
+					"__tile": { "tilesetUid": 388, "x": 272, "y": 48, "w": 16, "h": 16 },
+					"__smartColor": "#E4A672",
+					"__worldX": 800,
+					"__worldY": 272,
+					"iid": "7e9098c0-3b70-11ee-add6-bf6b6f66fc1a",
+					"width": 16,
+					"height": 16,
+					"defUid": 395,
+					"px": [800,272],
+					"fieldInstances": []
+				},
+				{
+					"__identifier": "Entity",
+					"__grid": [71,20],
+					"__pivot": [0,0],
+					"__tags": [],
+					"__tile": { "tilesetUid": 388, "x": 272, "y": 48, "w": 16, "h": 16 },
+					"__smartColor": "#E4A672",
+					"__worldX": 1136,
+					"__worldY": 320,
+					"iid": "7fee7b10-3b70-11ee-add6-1b5c6b4d67d1",
+					"width": 16,
+					"height": 16,
+					"defUid": 395,
+					"px": [1136,320],
+					"fieldInstances": []
 				}
 			]
 		},

@@ -11,7 +11,7 @@
 	"iid": "82c3b630-3b70-11ee-9b71-cb89db194432",
 	"jsonVersion": "1.3.4",
 	"appBuildId": 470178,
-	"nextUid": 395,
+	"nextUid": 396,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "GridVania",
@@ -3665,6 +3665,39 @@
 					"tilesetUid": null
 				}
 			]
+		},
+		{
+			"identifier": "Entity",
+			"uid": 395,
+			"tags": [],
+			"exportToToc": false,
+			"doc": "A generic entity",
+			"width": 16,
+			"height": 16,
+			"resizableX": true,
+			"resizableY": true,
+			"minWidth": 16,
+			"maxWidth": null,
+			"minHeight": 16,
+			"maxHeight": null,
+			"keepAspectRatio": false,
+			"tileOpacity": 1,
+			"fillOpacity": 0.08,
+			"lineOpacity": 0,
+			"hollow": false,
+			"color": "#E4A672",
+			"renderMode": "Tile",
+			"showName": true,
+			"tilesetId": 388,
+			"tileRenderMode": "NineSlice",
+			"tileRect": { "tilesetUid": 388, "x": 272, "y": 48, "w": 16, "h": 16 },
+			"nineSliceBorders": [5,5,5,5],
+			"maxCount": 0,
+			"limitScope": "PerLevel",
+			"limitBehavior": "MoveLastOne",
+			"pivotX": 0,
+			"pivotY": 0,
+			"fieldDefs": []
 		}
 	], "tilesets": [
 		{

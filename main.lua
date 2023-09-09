@@ -14,6 +14,7 @@ local Camera = require('game/Camera')
 local Player = require('game/entities/Player')
 local Camp = require('game/entities/Camp')
 local ItemDispenser = require('game/entities/ItemDispenser')
+local Entity = require('game/entities/Entity')
 
 local entityTable = {
     Player = function(data, level)
@@ -28,6 +29,10 @@ local entityTable = {
     ItemDispenser = function(data, level)
         local itemDispenser = ItemDispenser:new(data, level)
         return itemDispenser
+    end,
+    default = function(data, level)
+        local entity = Entity:new(data, level)
+        return entity
     end
 }
 
