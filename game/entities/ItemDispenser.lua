@@ -22,6 +22,8 @@ function ItemDispenser:use(player)
     if self.quantity > 0 and not player.carry:hasItem() then
         self.quantity = self.quantity - 1
         local item = Item.generateItem(self.item, self.level)
+        local entityLayer = self.level:getLayer('Entities')
+        entityLayer:bindEntity(item)
         player.carry:pickupItem(item)
     end
 end
