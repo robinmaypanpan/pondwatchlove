@@ -57,7 +57,7 @@ end
 
 -- Updates the camera position to the latest x and y
 function Camera:draw()
-    love.graphics.translate(-self.x, -self.y)
+    love.graphics.translate(-math.floor(self.x), -math.floor(self.y))
 end
 
 return Camera
