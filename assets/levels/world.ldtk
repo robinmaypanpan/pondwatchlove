@@ -1602,7 +1602,7 @@
 						"uid": 365,
 						"active": true,
 						"size": 3,
-						"tileIds": [35,275],
+						"tileIds": [248,249,250],
 						"alpha": 1,
 						"chance": 1,
 						"breakOnMatch": true,
