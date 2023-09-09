@@ -3,8 +3,10 @@ local class = require('lib/middleclass')
 local Player = class('Player')
 
 local Tiles = require('game/Tiles')
+
 local StaminaComponent = require('game/player/StaminaComponent')
 local AnimationComponent = require('game/player/AnimationComponent')
+local RespawnComponent = require('game/player/RespawnComponent')
 
 local CollisionType = {
     None = 0,
@@ -43,6 +45,9 @@ function Player:initialize(data, level)
 
     self.animation = AnimationComponent:new(self)
     table.insert(self.components, self.animation)
+
+    self.respawn = RespawnComponent:new(self)
+    table.insert(self.components, self.respawn)
 
     self.width = self.animation.width
     self.height = self.animation.height

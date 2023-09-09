@@ -8,6 +8,10 @@ function StaminaComponent:initialize(player)
     self.font = love.graphics.newFont(60)
 end
 
+function StaminaComponent:reset()
+    self.stamina = 100
+end
+
 --Reduces the stamina by the amount specified by the level
 function StaminaComponent:reduceStamina(level)
     if level and level.fields.staminaCost then
