@@ -33,7 +33,8 @@
 		}] },
 		{ "__identifier": "BackgroundParallaxFactorX", "__type": "Float", "__value": null, "__tile": null, "defUid": 340, "realEditorValues": [] },
 		{ "__identifier": "BackgroundParallaxFactorX2", "__type": "Float", "__value": null, "__tile": null, "defUid": 342, "realEditorValues": [] },
-		{ "__identifier": "BackgroundZoomFactorY", "__type": "Float", "__value": null, "__tile": null, "defUid": 341, "realEditorValues": [] }
+		{ "__identifier": "BackgroundZoomFactorY", "__type": "Float", "__value": null, "__tile": null, "defUid": 341, "realEditorValues": [] },
+		{ "__identifier": "staminaCost", "__type": "Int", "__value": 10, "__tile": null, "defUid": 384, "realEditorValues": [] }
 	],
 	"layerInstances": [
 		{
