@@ -4,6 +4,7 @@ local Player = class('Player')
 
 local Tiles = require('game/Tiles')
 local StaminaComponent = require('game/player/StaminaComponent')
+local AnimationComponent = require('game/player/AnimationComponent')
 
 local CollisionType = {
     None = 0,
@@ -32,33 +33,19 @@ function Player:initialize(data, level)
     self.isJumping = false
     self.flipImage = false
 
-    self.image = love.graphics.newImage('assets/sprites/birb.png')
-    self.width = self.image:getWidth()
-    self.height = self.image:getHeight()
-    self.spritesheet = love.graphics.newImage('assets/sprites/birb_spritesheet.png')
-    self.walkQuads = self:getSpritesheetQuads(self.spritesheet, 6, self.width, self.height)
-
     self.currentGravity = 0
-    self.animProgress = 1
-    self.animFrame = 1
 
     -- Create our sub components
     self.components = {}
+
     self.stamina = StaminaComponent:new(self)
     table.insert(self.components, self.stamina)
-end
 
--- takes an image, and using the other variables, creates a table of x,y coords to use
--- for quads in the for loop.
--- currently, this code only works for a 6 cell, horizintal animation
-function Player:getSpritesheetQuads(image, frameCount, frameWidth, frameHeight)
-    local quadData = {}
-    local sheetWidth = image:getWidth()
-    local sheetHeight = image:getHeight()
-    for i = 0, frameCount, 1 do
-        quadData[i + 1] = love.graphics.newQuad(frameWidth * i, 0, frameWidth, frameHeight, sheetWidth, sheetHeight)
-    end
-    return quadData
+    self.animation = AnimationComponent:new(self)
+    table.insert(self.components, self.animation)
+
+    self.width = self.animation.width
+    self.height = self.animation.height
 end
 
 -- Returns a list of the tiles that are currently below the player's feet, assuming the player is at x,y
@@ -76,15 +63,12 @@ function Player:getGroundTiles(x, y)
 
     -- Look through all the tiles to make sure there's nothing above them.
     for _, tile in ipairs(results) do
-        print('tile: ' .. tile.id)
         local tileAbove = collisionLayer:getTile(tile.row - 1, tile.col)
         if Tiles.isImpassable(tileAbove) or Tiles.isEmpty(tile) then
         else
             table.insert(finalResults, tile)
         end
     end
-
-    print('Remaining tiles ' .. #finalResults)
 
     return finalResults
 end
@@ -186,11 +170,8 @@ end
 
 -- Performs updates in the X direction
 function Player:updateX(updates, timeMultiplier)
-    local dt = love.timer.getDelta()
-
     local accel = self.fields.accel
     local friction = self.fields.friction
-    local animSpeed = 12
 
     -- Update the player's horizontal velocity
     local impulse = 0
@@ -200,11 +181,6 @@ function Player:updateX(updates, timeMultiplier)
         else
             impulse = -accel
         end
-        if self.animProgress >= 7 then
-            self.animProgress = 1
-        end
-        self.animFrame = math.floor(self.animProgress)
-        self.animProgress = self.animProgress + dt * animSpeed
         self.flipImage = true
     elseif updates.moveRight then
         if self.xSpeed < 0 then
@@ -212,11 +188,6 @@ function Player:updateX(updates, timeMultiplier)
         else
             impulse = accel
         end
-        if self.animProgress >= 7 then -- this is to account for the fact that the animation is only 6 frames, not the right way to do this, but I just wanted to make it work for now
-            self.animProgress = 1
-        end
-        self.animFrame = math.floor(self.animProgress)
-        self.animProgress = self.animProgress + dt * animSpeed
         self.flipImage = false
     else
         local frictionEffect = friction
@@ -224,8 +195,6 @@ function Player:updateX(updates, timeMultiplier)
         if math.abs(xDistance) < friction then
             frictionEffect = math.abs(xDistance)
         end
-        self.animProgress = 1
-        self.animFrame = 1
         impulse = -1 * math.sign(self.xSpeed) * frictionEffect
     end
 
@@ -329,7 +298,7 @@ function Player:update(updates)
     self:updateY(updates, timeMultiplier)
 
     for _, component in ipairs(self.components) do
-        component:update()
+        component:update(updates)
     end
 end
 
@@ -389,21 +358,8 @@ function Player:changeLevels(newLevel)
     -- self.xSpeed = 0
 end
 
--- Draws the player sprite
-function Player:drawSprite()
-    local scale = 1
-    local width = 0
-    if self.flipImage then
-        scale = -1
-        width = self.width
-    end
-    love.graphics.draw(self.spritesheet, self.walkQuads[self.animFrame], self.x, self.y, 0, scale, 1, width)
-end
-
 -- Draws the player
 function Player:draw()
-    self:drawSprite()
-
     for _, component in ipairs(self.components) do
         component:draw()
     end
