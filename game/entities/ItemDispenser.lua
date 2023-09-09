@@ -1,32 +1,20 @@
 local class = require('lib/middleclass')
+local Entity = require('game/entities/Entity')
 
-local ItemDispenser = class('ItemDispenser')
+local ItemDispenser = class('ItemDispenser', Entity)
 
 function ItemDispenser:initialize(data, level)
-    self.level = level
-    self.data = data
+    Entity.initialize(self, data, level)
+    self.maxQuantity = self.fields.quantity
+    self.quantity = self.fields.quantity
 
-    self.x = data.__worldX
-    self.y = data.__worldY
-    self.width = data.width
-    self.height = data.height
+    self.item = self.fields.Items
 
-    local fields = {}
+    self.tileset = builder.tilesets[self.fields.fullTile.tilesetUid]
+    self.tileQuad = self.tileset:getTileQuadByData(self.fields.fullTile)
 
-    for _, field in pairs(data.fieldInstances) do
-        fields[field.__identifier] = field.__value
-    end
-
-    self.maxQuantity = fields.quantity
-    self.quantity = fields.quantity
-
-    self.item = fields.Items
-
-    self.tileset = builder.tilesets[fields.fullTile.tilesetUid]
-    self.tileQuad = self.tileset:getTileQuadByData(fields.fullTile)
-
-    self.emptyTileset = builder.tilesets[fields.emptyTile.tilesetUid]
-    self.emptyTileQuad = self.tileset:getTileQuadByData(fields.emptyTile)
+    self.emptyTileset = builder.tilesets[self.fields.emptyTile.tilesetUid]
+    self.emptyTileQuad = self.tileset:getTileQuadByData(self.fields.emptyTile)
 end
 
 function ItemDispenser:use(player)

@@ -1,6 +1,7 @@
 local class = require('lib/middleclass')
+local Entity = require('game/entities/Entity')
 
-local Player = class('Player')
+local Player = class('Player', Entity)
 
 local Tiles = require('game/Tiles')
 
@@ -16,17 +17,8 @@ local CollisionType = {
 }
 
 function Player:initialize(data, level)
-    self.level = level
-    self.data = data
-    self.fields = {}
+    Entity.initialize(self, data, level)
 
-    for _, field in pairs(data.fieldInstances) do
-        self.fields[field.__identifier] = field.__value
-    end
-
-    self.id = data.__identifier
-    self.x = data.__worldX
-    self.y = data.__worldY
     self.jumpStart = self.y
 
     self.xSpeed = 0

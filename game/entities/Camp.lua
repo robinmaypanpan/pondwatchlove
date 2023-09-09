@@ -1,15 +1,10 @@
 local class = require('lib/middleclass')
+local Entity = require('game/entities/Entity')
 
-local Camp = class('Camp')
+local Camp = class('Camp', Entity)
 
 function Camp:initialize(data, level)
-    self.level = level
-    self.data = data
-
-    self.x = data.__worldX
-    self.y = data.__worldY
-    self.width = data.width
-    self.height = data.height
+    Entity.initialize(self, data, level)
 end
 
 function Camp:use(player)
