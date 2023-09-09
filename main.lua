@@ -170,5 +170,6 @@ function love.draw()
     -- end
 
     love.graphics.origin()
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.draw(uiCanvas)
 end
