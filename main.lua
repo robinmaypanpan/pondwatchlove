@@ -12,9 +12,6 @@ local LevelBuilder = require('lib/ldtk/LevelBuilder')
 local Player = require('game/Player')
 local Camera = require('game/Camera')
 
-local player
-local camera
-
 local entityTable = {
     Player = function(data, level)
         player = Player:new(data, level)
@@ -39,6 +36,10 @@ function love.load(arg)
     world:setActiveLevel('Entrance')
 
     camera = Camera:new(player, world)
+
+    -- Create our window locked canvases
+    uiCanvas = love.graphics.newCanvas()
+    backgroundCanvas = love.graphics.newCanvas()
 end
 
 local isLevelTransition = false
@@ -46,6 +47,14 @@ local isLevelTransition = false
 -- Called before calling draw each time a frame updates
 function love.update(dt)
     flux.update(dt)
+
+    -- Clear canvas layers
+    uiCanvas:renderTo(function()
+        love.graphics.clear()
+    end)
+    backgroundCanvas:renderTo(function()
+        love.graphics.clear()
+    end)
 
     if player and not camera.isTransitioning then
         local moveLeft = love.keyboard.isDown('a') or love.keyboard.isDown('left')
@@ -65,6 +74,8 @@ function love.update(dt)
     end
 
     camera:update()
+
+    drawStaticBackground()
 end
 
 function drawStaticBackground()
@@ -81,8 +92,10 @@ function drawStaticBackground()
         scaleX = math.max(scaleX, scaleY)
         scaleY = scaleX
 
-        love.graphics.setColor(1, 1, 1, 1);
-        love.graphics.draw(bg.image, 0, 0, 0, scaleX, scaleY, bg.pivotX, bg.pivotY)
+        backgroundCanvas:renderTo(function()
+            love.graphics.setColor(1, 1, 1, 1);
+            love.graphics.draw(bg.image, 0, 0, 0, scaleX, scaleY, bg.pivotX, bg.pivotY)
+        end)
     end
 end
 
@@ -91,7 +104,7 @@ function love.draw()
     local scale = love.graphics.getWidth() / world.levelWidth
     love.graphics.scale(scale)
 
-    drawStaticBackground()
+    love.graphics.draw(backgroundCanvas)
 
     camera:draw()
 
@@ -122,4 +135,7 @@ function love.draw()
     -- for _, tile in ipairs(edgeTiles) do
     --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
     -- end
+
+    love.graphics.origin()
+    love.graphics.draw(uiCanvas)
 end
