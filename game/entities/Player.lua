@@ -265,12 +265,11 @@ function Player:update(updates)
     local fixItFactor = 1.5 -- Arbitrary factor that makes everything feel better
     local timeMultiplier = dt * targetFPS * fixItFactor
 
-    self:updateX(updates, timeMultiplier)
-
     for _, component in ipairs(self.components) do
         component:update(updates, timeMultiplier)
     end
 
+    self:updateX(updates, timeMultiplier)
     self:updateY(updates, timeMultiplier)
 end
 
