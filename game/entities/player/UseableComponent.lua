@@ -3,7 +3,7 @@ local PlayerComponent = require('game/entities/player/PlayerComponent')
 
 local UseableComponent = class('UseableComponent', PlayerComponent)
 
-local Range = 10
+local Range = 20
 
 function UseableComponent:initialize(player)
     PlayerComponent.initialize(self, player)
@@ -24,7 +24,7 @@ function UseableComponent:getClosestUseableEntityInRange()
         local entityCenterY = entity.y + entity.height / 2
 
         local distance = math.distance(centerX, centerY, entityCenterX, entityCenterY)
-        if distance < Range and distance < closestDistance and entity ~= self.player and entity.use then
+        if distance < closestDistance and entity ~= self.player and entity.use then
             closestDistance = distance
             closestEntity = entity
         end
