@@ -237,7 +237,10 @@ end
 function Player:changeYSpeed(impulse, timeMultiplier)
     local maxYSpeed = self.fields.maxYSpeed
     self.ySpeed = math.mid(-maxYSpeed, self.ySpeed + impulse, maxYSpeed)
+end
 
+-- Updates the player's y coordinate based on the current speed
+function Player:updateY(updates, timeMultiplier)
     local yDistance = self.ySpeed * timeMultiplier
 
     local result = self:checkForCollisions('y', yDistance)
@@ -259,7 +262,7 @@ end
 function Player:update(updates)
     local dt = love.timer.getDelta()
     local targetFPS = 60
-    local fixItFactor = 1.5
+    local fixItFactor = 1.5 -- Arbitrary factor that makes everything feel better
     local timeMultiplier = dt * targetFPS * fixItFactor
 
     self:updateX(updates, timeMultiplier)
@@ -267,6 +270,8 @@ function Player:update(updates)
     for _, component in ipairs(self.components) do
         component:update(updates, timeMultiplier)
     end
+
+    self:updateY(updates, timeMultiplier)
 end
 
 -- Used to trigger a level change

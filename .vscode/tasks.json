@@ -10,7 +10,7 @@
                 "command": "C:\\Program Files\\LOVE\\love.exe"
             },
             "osx": {
-                "command": "/Applications/love.app/Contents/MacOS/love ./",
+                "command": "/Applications/love.app/Contents/MacOS/love",
             },
             "options": {
                 "cwd": "${workspaceRoot}"
