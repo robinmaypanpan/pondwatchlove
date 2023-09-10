@@ -87,7 +87,7 @@ function love.update(dt)
 
         local jump = love.keyboard.isDown('space')
 
-        local useKeyDown = moveDown or love.keyboard.isDown('e')
+        local useKeyDown = love.keyboard.isDown('e')
         local use = useKeyDown and currentTime - useTime > useDelay
 
         if use then
@@ -151,11 +151,11 @@ function love.draw()
     -- end
 
     -- -- Draw ground tiles
-    -- love.graphics.setColor(0, 1, 0, 1)
-    -- local groundTiles = player:getGroundTiles(player.x, player.y)
-    -- for _, tile in ipairs(groundTiles) do
-    --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
-    -- end
+    love.graphics.setColor(0, 1, 0, 1)
+    local groundTiles = player:getGroundTiles(player.x, player.y)
+    for _, tile in ipairs(groundTiles) do
+        love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
+    end
 
     -- -- Draw collision tiles
     -- love.graphics.setColor(1, 0, 0, 1)
@@ -170,9 +170,9 @@ function love.draw()
     -- end
 
     -- Draw hitbox
-    -- love.graphics.setColor(1, 0, 0, 1)
-    -- local hitbox = player:getHitbox(player.x, player.y)
-    -- love.graphics.rectangle('line', hitbox.x, hitbox.y, hitbox.width, hitbox.height)
+    love.graphics.setColor(1, 0, 0, 1)
+    local hitbox = player:getHitbox(player.x, player.y)
+    love.graphics.rectangle('line', hitbox.x, hitbox.y, hitbox.width, hitbox.height)
 
     love.graphics.origin()
     love.graphics.setColor(1, 1, 1, 1)
