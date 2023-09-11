@@ -8,6 +8,8 @@ require('lib/string')
 
 local flux = require('lib/flux')
 
+local Tiles = require('game/Tiles')
+
 local LevelBuilder = require('lib/ldtk/LevelBuilder')
 local Camera = require('game/Camera')
 
@@ -143,26 +145,25 @@ function love.draw()
 
     world:draw()
 
-    -- -- Draw character tiles
-    -- love.graphics.setColor(0, 0, 1, 1)
-    -- local playerTiles = player:getPlayerTiles(player.x, player.y)
-    -- for _, tile in ipairs(playerTiles) do
-    --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
-    -- end
+    local font = love.graphics.newFont(12)
+    love.graphics.setFont(font)
 
     -- -- Draw ground tiles
-    love.graphics.setColor(0, 1, 0, 1)
-    local groundTiles = player:getGroundTiles(player.x, player.y)
-    for _, tile in ipairs(groundTiles) do
-        love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
-    end
-
-    -- -- Draw collision tiles
-    -- love.graphics.setColor(1, 0, 0, 1)
-    -- local edgeTiles = player:getEdgeTiles('x', player.xSpeed)
-    -- for _, tile in ipairs(edgeTiles) do
+    -- love.graphics.setColor(0, 1, 0, 1)
+    -- local groundTiles = player:getGroundTiles(player.x, player.y)
+    -- for _, tile in ipairs(groundTiles) do
     --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
     -- end
+
+    -- -- Draw collision tiles
+    love.graphics.setColor(1, 0, 0, 1)
+    local edgeTiles = player:getEdgeTiles('x', player.xSpeed)
+    for _, tile in ipairs(edgeTiles) do
+        if Tiles.isImpassable(tile) then
+            love.graphics.print('T: ' .. tile.x, player.x, player.y - 44)
+            love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
+        end
+    end
 
     -- local edgeTiles = player:getEdgeTiles('y', player.ySpeed)
     -- for _, tile in ipairs(edgeTiles) do
@@ -170,9 +171,12 @@ function love.draw()
     -- end
 
     -- Draw hitbox
-    love.graphics.setColor(1, 0, 0, 1)
+    love.graphics.setColor(0, 0, 1, 1)
     local hitbox = player:getHitbox(player.x, player.y)
     love.graphics.rectangle('line', hitbox.x, hitbox.y, hitbox.width, hitbox.height)
+
+    love.graphics.print('P:' .. player.x, player.x, player.y - 20)
+    love.graphics.print('S:' .. player.xSpeed, player.x, player.y - 32)
 
     love.graphics.origin()
     love.graphics.setColor(1, 1, 1, 1)

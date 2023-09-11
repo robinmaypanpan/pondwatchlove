@@ -32,7 +32,8 @@ function MoveComponent:update(updates, timeMultiplier)
         local frictionEffect = friction
         local xDistance = player.xSpeed * timeMultiplier
         if math.abs(xDistance) < friction then
-            frictionEffect = math.abs(xDistance)
+            player:setXSpeed(0)
+            return
         end
         impulse = -1 * math.sign(player.xSpeed) * frictionEffect
     end

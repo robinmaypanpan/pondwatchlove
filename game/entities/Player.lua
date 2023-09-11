@@ -183,16 +183,70 @@ end
 
 -- Performs updates in the X direction
 function Player:updateX(updates, timeMultiplier)
-    local xDistance = self.xSpeed * timeMultiplier
+    if self.xSpeed == 0 then
+        print('No movement')
+        return
+    end
 
-    local result = self:checkForCollisions('x', xDistance)
-    if result.type == CollisionType.OutsideLevel then
-        if result.level and result.level ~= self.level then
-            self:changeLevel(result.level)
-            self.x = self.x + xDistance
+    local collisionLayer = self.level:getLayer('Collision')
+    local xDistance = self.xSpeed * timeMultiplier
+    local hitboxSize = self.fields.hitboxSize
+    local hitboxMargin = (player.width - hitboxSize) / 2
+
+    local tilesToCheck = self:getEdgeTiles('x', xDistance)
+
+    local wallTiles = {}
+    local exitTiles = {}
+
+    for _, tile in ipairs(tilesToCheck) do
+        if Tiles.isImpassable(tile) then
+            table.insert(wallTiles, tile)
+        elseif tile.value == -1 then
+            -- Check if this leads to a level or not
+            local outsideX, outsideY = collisionLayer:convertGridToWorld(tile.row, tile.col)
+            local newLevel = world:getLevelAt(outsideX, outsideY)
+            if newLevel then
+                table.insert(exitTiles, {
+                    tile = tile,
+                    level = newLevel
+                })
+            else
+                table.insert(wallTiles, tile)
+            end
         end
-    elseif result.type == CollisionType.None then
-        self.x = self.x + xDistance
+    end
+
+    -- Update our position to the furthest x position we can
+    local newX
+    if #wallTiles == 0 then
+        newX = self.x + xDistance
+    else
+        -- We hit something
+        -- Get the left and right most x
+        local leftMostX = wallTiles[1].x
+        local rightMostX = wallTiles[1].x + wallTiles[1].width
+        for _, tile in ipairs(wallTiles) do
+            if tile.x < leftMostX then
+                leftMostX = tile.x
+            end
+            if tile.x + tile.width > rightMostX then
+                rightMostX = tile.x + tile.width
+            end
+        end
+
+        if xDistance > 0 then
+            newX = leftMostX - hitboxSize - hitboxMargin
+        elseif xDistance < 0 then
+            newX = rightMostX - hitboxMargin
+        end
+    end
+
+    self.x = newX
+
+    -- Change levels if appropriate
+    if #exitTiles > 0 then
+        -- Just pick one for now unless we get bugs
+        self:changeLevel(exitTiles[1].level)
     end
 end
 
