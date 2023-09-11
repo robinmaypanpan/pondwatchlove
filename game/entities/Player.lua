@@ -12,6 +12,7 @@ local UseableComponent = require('game/entities/player/UseableComponent')
 local CarryComponent = require('game/entities/player/CarryComponent')
 local JumpComponent = require('game/entities/player/JumpComponent')
 local ClimbComponent = require('game/entities/player/ClimbComponent')
+local MoveComponent = require('game/entities/player/MoveComponent')
 
 local CollisionType = {
     None = 0,
@@ -27,8 +28,6 @@ function Player:initialize(data, level)
     self.xSpeed = 0
     self.ySpeed = 0
 
-    self.isClimbing = false
-    self.isJumping = false
     self.flipImage = false
 
     self.currentGravity = 0
@@ -55,6 +54,9 @@ function Player:initialize(data, level)
 
     self.climb = ClimbComponent:new(self)
     table.insert(self.components, self.climb)
+
+    self.move = MoveComponent:new(self)
+    table.insert(self.components, self.move)
 
     self.width = self.animation.width
     self.height = self.animation.height
@@ -181,36 +183,6 @@ end
 
 -- Performs updates in the X direction
 function Player:updateX(updates, timeMultiplier)
-    local accel = self.fields.accel
-    local friction = self.fields.friction
-
-    -- Update the player's horizontal velocity
-    local impulse = 0
-    if updates.moveLeft then
-        if self.xSpeed > 0 then
-            impulse = -friction
-        else
-            impulse = -accel
-        end
-        self.flipImage = true
-    elseif updates.moveRight then
-        if self.xSpeed < 0 then
-            impulse = friction
-        else
-            impulse = accel
-        end
-        self.flipImage = false
-    else
-        local frictionEffect = friction
-        local xDistance = self.xSpeed * timeMultiplier
-        if math.abs(xDistance) < friction then
-            frictionEffect = math.abs(xDistance)
-        end
-        impulse = -1 * math.sign(self.xSpeed) * frictionEffect
-    end
-
-    local maxXSpeed = self.fields.maxXSpeed
-    self.xSpeed = math.mid(-maxXSpeed, self.xSpeed + impulse, maxXSpeed)
     local xDistance = self.xSpeed * timeMultiplier
 
     local result = self:checkForCollisions('x', xDistance)
@@ -229,12 +201,17 @@ function Player:setXSpeed(newSpeed)
     self.xSpeed = math.mid(-maxXSpeed, newSpeed, maxXSpeed)
 end
 
+function Player:changeXSpeed(impulse)
+    local maxXSpeed = self.fields.maxXSpeed
+    self.xSpeed = math.mid(-maxXSpeed, self.xSpeed + impulse, maxXSpeed)
+end
+
 function Player:setYSpeed(newSpeed)
     local maxYSpeed = self.fields.maxXSpeed
     self.ySpeed = math.mid(-maxYSpeed, newSpeed, maxYSpeed)
 end
 
-function Player:changeYSpeed(impulse, timeMultiplier)
+function Player:changeYSpeed(impulse)
     local maxYSpeed = self.fields.maxYSpeed
     self.ySpeed = math.mid(-maxYSpeed, self.ySpeed + impulse, maxYSpeed)
 end
