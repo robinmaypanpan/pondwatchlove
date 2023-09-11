@@ -10,6 +10,9 @@ local AnimationComponent = require('game/entities/player/AnimationComponent')
 local RespawnComponent = require('game/entities/player/RespawnComponent')
 local UseableComponent = require('game/entities/player/UseableComponent')
 local CarryComponent = require('game/entities/player/CarryComponent')
+local JumpComponent = require('game/entities/player/JumpComponent')
+local ClimbComponent = require('game/entities/player/ClimbComponent')
+local MoveComponent = require('game/entities/player/MoveComponent')
 
 local CollisionType = {
     None = 0,
@@ -25,8 +28,6 @@ function Player:initialize(data, level)
     self.xSpeed = 0
     self.ySpeed = 0
 
-    self.isClimbing = false
-    self.isJumping = false
     self.flipImage = false
 
     self.currentGravity = 0
@@ -48,8 +49,20 @@ function Player:initialize(data, level)
     self.carry = CarryComponent:new(self)
     table.insert(self.components, self.carry)
 
+    self.jump = JumpComponent:new(self)
+    table.insert(self.components, self.jump)
+
+    self.climb = ClimbComponent:new(self)
+    table.insert(self.components, self.climb)
+
+    self.move = MoveComponent:new(self)
+    table.insert(self.components, self.move)
+
     self.width = self.animation.width
     self.height = self.animation.height
+
+    self.xEdge = {}
+    self.yEdge = {}
 end
 
 -- Returns a list of the tiles that are currently below the player's feet, assuming the player is at x,y
@@ -98,13 +111,12 @@ end
 
 -- Return all the tiles around the player
 function Player:getPlayerTiles(x, y)
-    local hitboxMargin = 0 - (self.fields.hitboxMargin or -2)
-
     local collisionLayer = self.level:getLayer('Collision')
 
-    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(x + hitboxMargin, y + hitboxMargin)
-    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(x + self.width - hitboxMargin,
-        y + self.height - hitboxMargin)
+    local hitbox = self:getHitbox(self.x, self.y)
+
+    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(hitbox.x, hitbox.y)
+    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(hitbox.right, hitbox.bottom)
 
     return collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, lowerRightRow, lowerRightCol)
 end
@@ -143,200 +155,181 @@ function Player:getEdgeTiles(direction, distance)
     return results
 end
 
--- Check for collisions in all the right places
-function Player:checkForCollisions(direction, distance)
-    local results = self:getEdgeTiles(direction, distance)
-
-    for _, tile in ipairs(results) do
-        if Tiles.isImpassable(tile) then
-            return {
-                type = CollisionType.Wall
-            }
-        end
-    end
-
-    for _, tile in ipairs(results) do
-        if tile.value == -1 then
-            local collisionLayer = self.level:getLayer('Collision')
-            local outsideX, outsideY = collisionLayer:convertGridToWorld(tile.row, tile.col)
-            local newLevel = world:getLevelAt(outsideX, outsideY)
-            return {
-                type = CollisionType.OutsideLevel,
-                level = newLevel,
-            }
-        end
-    end
-
-    return {
-        type = CollisionType.None
-    }
-end
-
 -- Performs updates in the X direction
 function Player:updateX(updates, timeMultiplier)
-    local accel = self.fields.accel
-    local friction = self.fields.friction
-
-    -- Update the player's horizontal velocity
-    local impulse = 0
-    if updates.moveLeft then
-        if self.xSpeed > 0 then
-            impulse = -friction
-        else
-            impulse = -accel
-        end
-        self.flipImage = true
-    elseif updates.moveRight then
-        if self.xSpeed < 0 then
-            impulse = friction
-        else
-            impulse = accel
-        end
-        self.flipImage = false
-    else
-        local frictionEffect = friction
-        local xDistance = self.xSpeed * timeMultiplier
-        if math.abs(xDistance) < friction then
-            frictionEffect = math.abs(xDistance)
-        end
-        impulse = -1 * math.sign(self.xSpeed) * frictionEffect
+    if self.xSpeed == 0 then
+        print('No movement')
+        return
     end
 
-    local maxXSpeed = self.fields.maxXSpeed
-    self.xSpeed = math.mid(-maxXSpeed, self.xSpeed + impulse, maxXSpeed)
+    local collisionLayer = self.level:getLayer('Collision')
     local xDistance = self.xSpeed * timeMultiplier
+    local hitboxSize = self.fields.hitboxSize
+    local hitboxMargin = (player.width - hitboxSize) / 2
 
-    local result = self:checkForCollisions('x', xDistance)
-    if result.type == CollisionType.OutsideLevel then
-        if result.level and result.level ~= self.level then
-            self:changeLevel(result.level)
-            self.x = self.x + xDistance
+    local tilesToCheck = self:getEdgeTiles('x', xDistance)
+
+    local wallTiles = {}
+    local exitTiles = {}
+
+    for _, tile in ipairs(tilesToCheck) do
+        if Tiles.isImpassable(tile) then
+            table.insert(wallTiles, tile)
+        elseif tile.value == -1 then
+            -- Check if this leads to a level or not
+            local outsideX, outsideY = collisionLayer:convertGridToWorld(tile.row, tile.col)
+            local newLevel = world:getLevelAt(outsideX, outsideY)
+            if newLevel then
+                table.insert(exitTiles, {
+                    tile = tile,
+                    level = newLevel
+                })
+            else
+                table.insert(wallTiles, tile)
+            end
         end
-    elseif result.type == CollisionType.None then
-        self.x = self.x + xDistance
+    end
+
+    self.xEdge = wallTiles
+
+    -- Update our position to the furthest x position we can
+    local newX
+    if #wallTiles == 0 then
+        newX = self.x + xDistance
+    else
+        -- We hit something
+        -- Get the left and right most x
+        local leftMostX = wallTiles[1].x
+        local rightMostX = wallTiles[1].x + wallTiles[1].width
+        for _, tile in ipairs(wallTiles) do
+            if tile.x < leftMostX then
+                leftMostX = tile.x
+            end
+            if tile.x + tile.width > rightMostX then
+                rightMostX = tile.x + tile.width
+            end
+        end
+
+        if xDistance > 0 then
+            newX = leftMostX - hitboxSize - hitboxMargin - 1
+        elseif xDistance < 0 then
+            newX = rightMostX - hitboxMargin
+        end
+    end
+
+    self.x = newX
+
+    -- Change levels if appropriate
+    if #exitTiles > 0 then
+        -- Just pick one for now unless we get bugs
+        self:changeLevel(exitTiles[1].level)
     end
 end
 
--- Update vertical component
-function Player:updateY(updates, timeMultiplier)
-    local jumpAccel = self.fields.jumpAccel
-    local gravity = self.fields.gravity
-    local initialGravityMultiplier = self.fields.initialGravityMultiplier
-    local gravityDecay = self.fields.gravityDecay
-    local climbSpeed = self.fields.climbSpeed
-    local startGravity = gravity * initialGravityMultiplier
+function Player:setXSpeed(newSpeed)
+    local maxXSpeed = self.fields.maxXSpeed
+    self.xSpeed = math.mid(-maxXSpeed, newSpeed, maxXSpeed)
+end
 
-    local collisionLayer = self.level:getLayer('Collision')
-    local jumpHeight = self.fields.jumpHeight * collisionLayer.tileSize
+function Player:changeXSpeed(impulse)
+    local maxXSpeed = self.fields.maxXSpeed
+    self.xSpeed = math.mid(-maxXSpeed, self.xSpeed + impulse, maxXSpeed)
+end
 
-    local impulse = 0
+function Player:setYSpeed(newSpeed)
+    local maxYSpeed = self.fields.maxXSpeed
+    self.ySpeed = math.mid(-maxYSpeed, newSpeed, maxYSpeed)
+end
 
-    local climbableTile = self:getNearestClimbable()
-    local currentGroundTiles = self:getGroundTiles(self.x, self.y)
-
-    if updates.moveUp and climbableTile then
-        -- Start Climbing up a climbable
-        self.x = climbableTile.x + collisionLayer.tileSize / 2 - self.width / 2
-        self.xSpeed = 0
-        self.ySpeed = -climbSpeed
-        self.isJumping = false
-        self.isClimbing = true
-    elseif updates.moveDown and climbableTile then
-        -- Start climbing down a climbable
-        self.x = climbableTile.x + collisionLayer.tileSize / 2 - self.width / 2
-        self.xSpeed = 0
-        self.ySpeed = climbSpeed
-        self.isJumping = false
-        self.isClimbing = true
-    elseif self.isClimbing and not self.isJumping and climbableTile then
-        -- Stopping while on a climbable
-        self.ySpeed = 0
-    elseif not self.isJumping and updates.jump and (#currentGroundTiles > 0 or self.isClimbing) then
-        -- Start jumping
-        self.isClimbing = false
-        self.isJumping = true
-        self.currentGravity = startGravity
-        impulse = -jumpAccel
-        self.jumpStart = self.y
-    elseif updates.jump and self.isJumping and self.jumpStart - self.y < jumpHeight then
-        -- Continue jumping upwards
-        impulse = -jumpAccel
-    else
-        -- Let gravity bring us down!
-        self.isClimbing = false
-        self.isJumping = false
-        if self.currentGravity < gravity then
-            self.currentGravity = self.currentGravity + gravity * gravityDecay * timeMultiplier
-        end
-        impulse = self.currentGravity
-    end
-
+function Player:changeYSpeed(impulse)
     local maxYSpeed = self.fields.maxYSpeed
     self.ySpeed = math.mid(-maxYSpeed, self.ySpeed + impulse, maxYSpeed)
+end
 
+-- Updates the player's y coordinate based on the current speed
+function Player:updateY(updates, timeMultiplier)
+    if self.ySpeed == 0 then
+        return
+    end
+
+    local collisionLayer = self.level:getLayer('Collision')
     local yDistance = self.ySpeed * timeMultiplier
+    local hitboxSize = self.fields.hitboxSize
+    local hitboxMargin = (player.height - hitboxSize) / 2
 
-    local result = self:checkForCollisions('y', yDistance)
+    local tilesToCheck = self:getEdgeTiles('y', yDistance)
 
-    if result.type == CollisionType.OutsideLevel then
-        if result.level then
-            self:changeLevel(result.level)
-            self.y = self.y + yDistance
-        else
-            self.isJumping = false
+    local wallTiles = {}
+    local exitTiles = {}
+
+    for _, tile in ipairs(tilesToCheck) do
+        if Tiles.isImpassable(tile) then
+            table.insert(wallTiles, tile)
+        elseif tile.value == -1 then
+            -- Check if this leads to a level or not
+            local outsideX, outsideY = collisionLayer:convertGridToWorld(tile.row, tile.col)
+            local newLevel = world:getLevelAt(outsideX, outsideY)
+            if newLevel then
+                table.insert(exitTiles, {
+                    tile = tile,
+                    level = newLevel
+                })
+            else
+                table.insert(wallTiles, tile)
+            end
         end
-    elseif result.type == CollisionType.None then
-        self.y = self.y + yDistance
-    elseif result.type == CollisionType.Wall then
-        self.isJumping = false
+    end
+
+    self.yEdge = wallTiles
+
+    -- Update our position to the furthest x position we can
+    local newY
+    if #wallTiles == 0 then
+        newY = self.y + yDistance
+    else
+        -- We hit something
+        -- Get the top and bottom most y
+        local highestY = wallTiles[1].y
+        local lowestY = wallTiles[1].y + wallTiles[1].height
+        for _, tile in ipairs(wallTiles) do
+            if tile.y < highestY then
+                highestY = tile.y
+            end
+            if tile.y + tile.height > lowestY then
+                lowestY = tile.y + tile.height
+            end
+        end
+
+        self.ySpeed = 0
+
+        if yDistance > 0 then
+            newY = highestY - hitboxSize - hitboxMargin - 1
+        elseif yDistance < 0 then
+            newY = lowestY - hitboxMargin
+        end
+    end
+
+    self.y = newY
+
+    -- Change levels if appropriate
+    if #exitTiles > 0 then
+        -- Just pick one for now unless we get bugs
+        self:changeLevel(exitTiles[1].level)
     end
 end
 
 function Player:update(updates)
     local dt = love.timer.getDelta()
     local targetFPS = 60
-    local fixItFactor = 1.5
+    local fixItFactor = 1.5 -- Arbitrary factor that makes everything feel better
     local timeMultiplier = dt * targetFPS * fixItFactor
+
+    for _, component in ipairs(self.components) do
+        component:update(updates, timeMultiplier)
+    end
 
     self:updateX(updates, timeMultiplier)
     self:updateY(updates, timeMultiplier)
-
-    for _, component in ipairs(self.components) do
-        component:update(updates)
-    end
-end
-
--- Returns the nearest climbable tile in range
-function Player:getNearestClimbable()
-    local hitboxMargin = 0 - (self.fields.hitboxMargin or -2)
-    local collisionLayer = self.level:getLayer('Collision')
-
-    local upperLeftRow, upperLeftCol = collisionLayer:convertWorldToGrid(self.x + hitboxMargin, self.y + hitboxMargin)
-    local lowerRightRow, lowerRightCol = collisionLayer:convertWorldToGrid(self.x + self.width - hitboxMargin,
-        self.y + self.height - hitboxMargin)
-    local results = collisionLayer:getTilesInRange(upperLeftRow, upperLeftCol, lowerRightRow + 1, lowerRightCol)
-
-    local centerRow, centerCol = collisionLayer:convertWorldToGrid(self.x + self.width / 2, self.y + self.height / 2)
-
-    local selectedTile = {
-        tile = nil,
-        distance = 99999
-    }
-
-    for _, tile in ipairs(results) do
-        if Tiles.isClimbable(tile) then
-            local distance = math.distance(centerRow, centerCol, tile.row, tile.col)
-            if distance < selectedTile.distance then
-                selectedTile =
-                {
-                    tile = tile,
-                    distance = distance
-                }
-            end
-        end
-    end
-
-    return selectedTile.tile
 end
 
 -- Used to trigger a level change

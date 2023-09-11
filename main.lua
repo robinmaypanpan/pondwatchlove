@@ -8,6 +8,8 @@ require('lib/string')
 
 local flux = require('lib/flux')
 
+local Tiles = require('game/Tiles')
+
 local LevelBuilder = require('lib/ldtk/LevelBuilder')
 local Camera = require('game/Camera')
 
@@ -87,7 +89,7 @@ function love.update(dt)
 
         local jump = love.keyboard.isDown('space')
 
-        local useKeyDown = moveDown or love.keyboard.isDown('e')
+        local useKeyDown = love.keyboard.isDown('e')
         local use = useKeyDown and currentTime - useTime > useDelay
 
         if use then
@@ -130,6 +132,38 @@ function drawStaticBackground()
     end
 end
 
+function drawDebug()
+    local font = love.graphics.newFont(12)
+    love.graphics.setFont(font)
+    -- Draw ground tiles
+    love.graphics.setColor(0, 1, 0, 1)
+    local groundTiles = player:getGroundTiles(player.x, player.y)
+    for _, tile in ipairs(groundTiles) do
+        love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
+    end
+
+    -- Draw collision tiles
+    love.graphics.setColor(1, 1, 0, 1)
+    for _, tile in ipairs(player.xEdge) do
+        love.graphics.print('TX: ' .. tile.x, player.x, player.y - 44)
+        love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
+    end
+
+    love.graphics.setColor(1, 0, 1, 1)
+    for _, tile in ipairs(player.yEdge) do
+        love.graphics.print('TY: ' .. tile.x, player.x, player.y - 56)
+        love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
+    end
+
+    -- Draw hitbox
+    love.graphics.setColor(0, 0, 1, 1)
+    local hitbox = player:getHitbox(player.x, player.y)
+    love.graphics.rectangle('line', hitbox.x, hitbox.y, hitbox.width, hitbox.height)
+
+    love.graphics.print('P:' .. player.x .. ',' .. player.y, player.x, player.y - 20)
+    love.graphics.print('S:' .. player.xSpeed .. ',' .. player.ySpeed, player.x, player.y - 32)
+end
+
 -- Called after calling update each frame.
 function love.draw()
     love.graphics.origin()
@@ -143,36 +177,7 @@ function love.draw()
 
     world:draw()
 
-    -- -- Draw character tiles
-    -- love.graphics.setColor(0, 0, 1, 1)
-    -- local playerTiles = player:getPlayerTiles(player.x, player.y)
-    -- for _, tile in ipairs(playerTiles) do
-    --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
-    -- end
-
-    -- -- Draw ground tiles
-    -- love.graphics.setColor(0, 1, 0, 1)
-    -- local groundTiles = player:getGroundTiles(player.x, player.y)
-    -- for _, tile in ipairs(groundTiles) do
-    --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
-    -- end
-
-    -- -- Draw collision tiles
-    -- love.graphics.setColor(1, 0, 0, 1)
-    -- local edgeTiles = player:getEdgeTiles('x', player.xSpeed)
-    -- for _, tile in ipairs(edgeTiles) do
-    --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
-    -- end
-
-    -- local edgeTiles = player:getEdgeTiles('y', player.ySpeed)
-    -- for _, tile in ipairs(edgeTiles) do
-    --     love.graphics.rectangle("line", tile.x, tile.y, tile.width, tile.height)
-    -- end
-
-    -- Draw hitbox
-    -- love.graphics.setColor(1, 0, 0, 1)
-    -- local hitbox = player:getHitbox(player.x, player.y)
-    -- love.graphics.rectangle('line', hitbox.x, hitbox.y, hitbox.width, hitbox.height)
+    --drawDebug()
 
     love.graphics.origin()
     love.graphics.setColor(1, 1, 1, 1)
