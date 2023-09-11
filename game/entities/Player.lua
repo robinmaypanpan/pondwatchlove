@@ -60,6 +60,9 @@ function Player:initialize(data, level)
 
     self.width = self.animation.width
     self.height = self.animation.height
+
+    self.xEdge = {}
+    self.yEdge = {}
 end
 
 -- Returns a list of the tiles that are currently below the player's feet, assuming the player is at x,y
@@ -152,35 +155,6 @@ function Player:getEdgeTiles(direction, distance)
     return results
 end
 
--- Check for collisions in all the right places
-function Player:checkForCollisions(direction, distance)
-    local results = self:getEdgeTiles(direction, distance)
-
-    for _, tile in ipairs(results) do
-        if Tiles.isImpassable(tile) then
-            return {
-                type = CollisionType.Wall
-            }
-        end
-    end
-
-    for _, tile in ipairs(results) do
-        if tile.value == -1 then
-            local collisionLayer = self.level:getLayer('Collision')
-            local outsideX, outsideY = collisionLayer:convertGridToWorld(tile.row, tile.col)
-            local newLevel = world:getLevelAt(outsideX, outsideY)
-            return {
-                type = CollisionType.OutsideLevel,
-                level = newLevel,
-            }
-        end
-    end
-
-    return {
-        type = CollisionType.None
-    }
-end
-
 -- Performs updates in the X direction
 function Player:updateX(updates, timeMultiplier)
     if self.xSpeed == 0 then
@@ -216,6 +190,8 @@ function Player:updateX(updates, timeMultiplier)
         end
     end
 
+    self.xEdge = wallTiles
+
     -- Update our position to the furthest x position we can
     local newX
     if #wallTiles == 0 then
@@ -235,7 +211,7 @@ function Player:updateX(updates, timeMultiplier)
         end
 
         if xDistance > 0 then
-            newX = leftMostX - hitboxSize - hitboxMargin
+            newX = leftMostX - hitboxSize - hitboxMargin - 1
         elseif xDistance < 0 then
             newX = rightMostX - hitboxMargin
         end
@@ -272,21 +248,73 @@ end
 
 -- Updates the player's y coordinate based on the current speed
 function Player:updateY(updates, timeMultiplier)
+    if self.ySpeed == 0 then
+        return
+    end
+
+    local collisionLayer = self.level:getLayer('Collision')
     local yDistance = self.ySpeed * timeMultiplier
+    local hitboxSize = self.fields.hitboxSize
+    local hitboxMargin = (player.height - hitboxSize) / 2
 
-    local result = self:checkForCollisions('y', yDistance)
+    local tilesToCheck = self:getEdgeTiles('y', yDistance)
 
-    if result.type == CollisionType.OutsideLevel then
-        if result.level then
-            self:changeLevel(result.level)
-            self.y = self.y + yDistance
-        else
-            self.jump:endJumping()
+    local wallTiles = {}
+    local exitTiles = {}
+
+    for _, tile in ipairs(tilesToCheck) do
+        if Tiles.isImpassable(tile) then
+            table.insert(wallTiles, tile)
+        elseif tile.value == -1 then
+            -- Check if this leads to a level or not
+            local outsideX, outsideY = collisionLayer:convertGridToWorld(tile.row, tile.col)
+            local newLevel = world:getLevelAt(outsideX, outsideY)
+            if newLevel then
+                table.insert(exitTiles, {
+                    tile = tile,
+                    level = newLevel
+                })
+            else
+                table.insert(wallTiles, tile)
+            end
         end
-    elseif result.type == CollisionType.None then
-        self.y = self.y + yDistance
-    elseif result.type == CollisionType.Wall then
-        self.jump:endJumping()
+    end
+
+    self.yEdge = wallTiles
+
+    -- Update our position to the furthest x position we can
+    local newY
+    if #wallTiles == 0 then
+        newY = self.y + yDistance
+    else
+        -- We hit something
+        -- Get the top and bottom most y
+        local highestY = wallTiles[1].y
+        local lowestY = wallTiles[1].y + wallTiles[1].height
+        for _, tile in ipairs(wallTiles) do
+            if tile.y < highestY then
+                highestY = tile.y
+            end
+            if tile.y + tile.height > lowestY then
+                lowestY = tile.y + tile.height
+            end
+        end
+
+        self.ySpeed = 0
+
+        if yDistance > 0 then
+            newY = highestY - hitboxSize - hitboxMargin - 1
+        elseif yDistance < 0 then
+            newY = lowestY - hitboxMargin
+        end
+    end
+
+    self.y = newY
+
+    -- Change levels if appropriate
+    if #exitTiles > 0 then
+        -- Just pick one for now unless we get bugs
+        self:changeLevel(exitTiles[1].level)
     end
 end
 
