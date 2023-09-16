@@ -10,7 +10,7 @@ local flux = require('lib/flux')
 
 local Tiles = require('game/Tiles')
 
-local LevelBuilder = require('lib/ldtk/LevelBuilder')
+local World = require('lib/ldtk2/World')
 local Camera = require('game/Camera')
 
 local Player = require('game/entities/Player')
@@ -22,19 +22,19 @@ local useTime
 local useDelay = 0.5
 
 local entityTable = {
-    Player = function(data, level)
-        assert(player == nil, "Player was already created")
-        player = Player:new(data, level)
-        return player
-    end,
-    Camp = function(data, level)
-        local camp = Camp:new(data, level)
-        return camp
-    end,
-    ItemDispenser = function(data, level)
-        local itemDispenser = ItemDispenser:new(data, level)
-        return itemDispenser
-    end,
+    -- Player = function(data, level)
+    --     assert(player == nil, "Player was already created")
+    --     player = Player:new(data, level)
+    --     return player
+    -- end,
+    -- Camp = function(data, level)
+    --     local camp = Camp:new(data, level)
+    --     return camp
+    -- end,
+    -- ItemDispenser = function(data, level)
+    --     local itemDispenser = ItemDispenser:new(data, level)
+    --     return itemDispenser
+    -- end,
     default = function(data, level)
         local entity = Entity:new(data, level)
         return entity
@@ -47,23 +47,23 @@ function love.load(arg)
         fullscreen = false
     })
     love.graphics.setDefaultFilter('nearest', 'nearest')
-    levelFilename = 'assets/levels/world.ldtk'
+    local filename = 'assets/levels/world.ldtk'
     if arg and #arg > 1 then
-        levelFileName = arg[2]
+        filename = arg[2]
     end
 
-    builder = LevelBuilder:new(entityTable)
-    world = builder:load(levelFilename)
+    world = World:new(entityTable)
+    world:loadFromFile(filename)
 
-    world:setActiveLevel('Entrance')
+    -- world:setActiveLevel('Entrance')
 
-    camera = Camera:new(player, world)
+    -- camera = Camera:new(player, world)
 
-    useTime = love.timer.getTime()
+    -- useTime = love.timer.getTime()
 
-    -- Create our window locked canvases
-    uiCanvas = love.graphics.newCanvas()
-    backgroundCanvas = love.graphics.newCanvas()
+    -- -- Create our window locked canvases
+    -- uiCanvas = love.graphics.newCanvas()
+    -- backgroundCanvas = love.graphics.newCanvas()
 end
 
 local isLevelTransition = false
@@ -73,42 +73,44 @@ function love.update(dt)
     flux.update(dt)
     local currentTime = love.timer.getTime()
 
-    -- Clear canvas layers
-    uiCanvas:renderTo(function()
-        love.graphics.clear()
-    end)
-    backgroundCanvas:renderTo(function()
-        love.graphics.clear()
-    end)
+    world:update(dt)
 
-    if player and not camera.isTransitioning then
-        local moveLeft = love.keyboard.isDown('a') or love.keyboard.isDown('left')
-        local moveRight = love.keyboard.isDown('d') or love.keyboard.isDown('right')
-        local moveUp = love.keyboard.isDown('w') or love.keyboard.isDown('up')
-        local moveDown = love.keyboard.isDown('s') or love.keyboard.isDown('down')
+    -- -- Clear canvas layers
+    -- uiCanvas:renderTo(function()
+    --     love.graphics.clear()
+    -- end)
+    -- backgroundCanvas:renderTo(function()
+    --     love.graphics.clear()
+    -- end)
 
-        local jump = love.keyboard.isDown('space')
+    -- if player and not camera.isTransitioning then
+    --     local moveLeft = love.keyboard.isDown('a') or love.keyboard.isDown('left')
+    --     local moveRight = love.keyboard.isDown('d') or love.keyboard.isDown('right')
+    --     local moveUp = love.keyboard.isDown('w') or love.keyboard.isDown('up')
+    --     local moveDown = love.keyboard.isDown('s') or love.keyboard.isDown('down')
 
-        local useKeyDown = love.keyboard.isDown('e')
-        local use = useKeyDown and currentTime - useTime > useDelay
+    --     local jump = love.keyboard.isDown('space')
 
-        if use then
-            useTime = currentTime
-        end
+    --     local useKeyDown = love.keyboard.isDown('e')
+    --     local use = useKeyDown and currentTime - useTime > useDelay
 
-        player:update({
-            moveLeft = moveLeft,
-            moveRight = moveRight,
-            moveUp = moveUp,
-            moveDown = moveDown,
-            jump = jump,
-            use = use
-        })
-    end
+    --     if use then
+    --         useTime = currentTime
+    --     end
 
-    camera:update()
+    --     player:update({
+    --         moveLeft = moveLeft,
+    --         moveRight = moveRight,
+    --         moveUp = moveUp,
+    --         moveDown = moveDown,
+    --         jump = jump,
+    --         use = use
+    --     })
+    -- end
 
-    drawStaticBackground()
+    -- camera:update()
+
+    -- drawStaticBackground()
 end
 
 function drawStaticBackground()
@@ -166,20 +168,19 @@ end
 
 -- Called after calling update each frame.
 function love.draw()
-    love.graphics.origin()
-    love.graphics.draw(backgroundCanvas)
+    -- love.graphics.origin()
+    -- love.graphics.draw(backgroundCanvas)
 
-    local scale = love.graphics.getWidth() / world.levelWidth
+    local scale = love.graphics.getWidth() / world.gridWidth
     love.graphics.scale(scale)
 
-
-    camera:draw()
+    -- camera:draw()
 
     world:draw()
 
     --drawDebug()
 
-    love.graphics.origin()
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(uiCanvas)
+    -- love.graphics.origin()
+    -- love.graphics.setColor(1, 1, 1, 1)
+    -- love.graphics.draw(uiCanvas)
 end
