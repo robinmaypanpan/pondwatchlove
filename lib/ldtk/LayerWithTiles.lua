@@ -1,5 +1,5 @@
-local class = require('lib/middleclass')
-local getFields = require('lib/ldtk/getFields')
+local class = require('middleclass')
+local getFields = require('ldtk2.getFields')
 
 -- Super class for layers that can contain tiles, including IntLayers and TileLayers
 local LayerWithTiles = class('LayerWithTiles')
