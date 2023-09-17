@@ -5,9 +5,7 @@ end
 require('lib/')
 
 local flux = require('flux')
-
 local World = require('ldtk2.World')
-
 local Entity = require('game.entities.Entity')
 
 local entityTable = {

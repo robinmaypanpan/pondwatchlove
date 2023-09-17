@@ -5,7 +5,9 @@ local getFields = require('ldtk2.getFields')
 
 local Tileset = require('ldtk2.Tileset')
 local EnumSet = require('ldtk2.EnumSet')
--- local TileLayer = require('ldtk2.TileLayer')
+local TileLayer = require('ldtk2.TileLayer')
+local IntLayer = require('ldtk2.IntLayer')
+local EntityLayer = require('ldtk2.EntityLayer')
 
 -- Extracts the settings for the world
 function configureWorld(world, data)
@@ -51,11 +53,11 @@ function extractLayers(data, tilesets)
     for _,layerData in ipairs(data) do
         local layer
         if layerData.__type == 'IntGrid' then
-            layer = IntLayer:new(layerData)
+            layer = IntLayer:new(layerData, tilesets)
         elseif layerData.__type == 'Tiles' or layerData.__type == 'AutoLayer' then
-            layer = TileLayer:new(layerData)
+            layer = TileLayer:new(layerData, tilesets)
         elseif layerData.__type == 'Entities' then
-            layer = EntityLayer:new(layerData)
+            layer = EntityLayer:new(layerData, tilesets)
         end
 
         table.insert(layers, layer)
@@ -88,7 +90,7 @@ function World:loadFromFile(filename)
 
     self.tilesets = extractTilesets(data.defs.tilesets)
     self.enums = extractEnums(data.defs.enums, self.tilesets)
-    -- self.layers = extractLayers(data.defs.layers, self.tilesets)
+    self.layers = extractLayers(data.defs.layers, self.tilesets)
     -- self.levels = extractLevels(data.levels)
 end
 

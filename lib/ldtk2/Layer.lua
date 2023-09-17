@@ -19,8 +19,6 @@ function Layer:initialize(data, tilesets)
     -- Indicates distance to offset this particular layer
     self.x = data.pxOffsetX
     self.y = data.pxOffsetY
-
-    self.fields = getFields(data)
 end
 
 -- Standard update function
