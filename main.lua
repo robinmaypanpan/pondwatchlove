@@ -16,11 +16,6 @@ local entityTable = {
 }
 
 function love.load(arg)
-    love.window.setTitle('Garden Love')
-    love.window.setMode(1280, 720, {
-        fullscreen = false
-    })
-    love.graphics.setDefaultFilter('nearest', 'nearest')
     local filename = 'assets/levels/world.ldtk'
     if arg and #arg > 1 then
         filename = arg[2]
@@ -29,7 +24,13 @@ function love.load(arg)
     world = World:new(entityTable)
     world:loadFromFile(filename)
 
-    -- world:setActiveLevel('Entrance')
+    love.window.setTitle('Garden Love')
+    love.window.setMode(1280, 720, {
+        fullscreen = false
+    })
+    love.graphics.setDefaultFilter('nearest', 'nearest')
+
+    world:setActiveLevels({'Entrance'})
 
     -- camera = Camera:new(player, world)
 

@@ -5,8 +5,7 @@ local getFields = require('ldtk2.getFields')
 
 local Tileset = require('ldtk2.Tileset')
 local EnumSet = require('ldtk2.EnumSet')
-local TileLayer = require('ldtk2.TileLayer')
-local IntLayer = require('ldtk2.IntLayer')
+local LayerDefinition = require('ldtk2.LayerDefinition')
 local EntityLayer = require('ldtk2.EntityLayer')
 local Level = require('ldtk2.Level')
 
@@ -48,19 +47,11 @@ function extractEnums(data, tilesets)
 end
 
 -- Extract and create all the layers that need to be rendered
-function extractLayers(data, tilesets)
+function extractLayerDefinitions(data, tilesets)
     local layers = {}
 
     for _,layerData in ipairs(data) do
-        local layer
-        if layerData.__type == 'IntGrid' then
-            layer = IntLayer:new(layerData, tilesets)
-        elseif layerData.__type == 'Tiles' or layerData.__type == 'AutoLayer' then
-            layer = TileLayer:new(layerData, tilesets)
-        elseif layerData.__type == 'Entities' then
-            layer = EntityLayer:new(layerData, tilesets)
-        end
-
+        local layerDefinition = LayerDefinition:new(data)
         table.insert(layers, layer)
     end
 
@@ -69,27 +60,27 @@ end
 
 -- Returns a table of levels
 function extractLevels(data)
-    local levels = {}
+    local levelDb = {}
+    local levelList = {}
 
     for _,levelData in ipairs(data) do
         local level = Level:new(levelData)
-        levels[level.uid] = level
-        levels[level.iid] = level
-        levels[level.id] = level
+        levelDb[level.uid] = level
+        levelDb[level.iid] = level
+        levelDb[level.id] = level
+        table.insert(levelList, level)
     end
 
-    return levels
+    return levelDb, levelList
 end
 
 -- Represents a single LDTK world
 local World = class('World')
 
 function World:initialize(entityTable)
-    self.tilesets = {}
-    self.layers = {}
-    self.levels = {}
     self.entityTable = entityTable
 
+    -- Active levels should be drawn and updated
     self.activeLevels = {}
 end
 
@@ -103,19 +94,72 @@ function World:loadFromFile(filename)
     
     configureWorld(self, data)
 
-    self.tilesets = extractTilesets(data.defs.tilesets)
-    self.enums = extractEnums(data.defs.enums, self.tilesets)
-    self.layers = extractLayers(data.defs.layers, self.tilesets)
-    self.levels = extractLevels(data.levels)
+    self.tilesetDb = extractTilesets(data.defs.tilesets)
+    self.enums = extractEnums(data.defs.enums, self.tilesetDb)
+    self.layerList = extractLayerDefinitions(data.defs.layers)
+    self.levelDb, self.allLevels = extractLevels(data.levels)
+end
+
+-- Returns a level at a given location, checking active levels first
+function World:getLevelAt(x, y)
+    for _, level in ipairs(self.levelList) do
+        if level:isWithinLevel(x, y) then
+            return level
+        end
+    end
+
+    return nil
+end
+
+-- Sets the active levels to draw and nearby levels to
+-- update
+function World:setActiveLevels(levelList)
+    -- First, cache a map of levels that are activated already
+    local activeLevels = {}
+    for _,levelId in ipairs(levelList) do
+        activeLevels[levelId] = true
+    end
+
+    -- Deactive old levels that are not in the list
+    for _, level in ipairs(self.activeLevels) do
+        if not activeLevels[level.id] then
+            level:deactivate()
+        end
+    end
+
+    -- Now setup the newly active levels
+    self.activeLevels = {}
+    for _,levelId in ipairs(levelList) do
+        
+    -- first load all the level data
+        local level = self.levelDb[levelId]
+        assert(level ~= nil, 'Could not find desired level')
+        table.insert(self.activeLevels, level)
+        level:activate()
+    end
 end
 
 -- Executes any updates in the world and makes sure updates
 -- are sent to all children
 function World:update(dt)
+    for _,level in ipairs(self.activeLevels) do
+        level:update(dt)
+    end
 end
 
 -- Draws the world
 function World:draw()
+    -- Draw backgrounds for all the currently active levels
+    for _,level in ipairs(self.activeLevels) do
+        level:drawBackground()
+    end
+
+    -- Iterate over each layer
+    for _,layerDefinition in ipairs(self.layerList) do
+        for _,level in ipairs(self.activeLevels) do
+            level:draw(layerDefinition)
+        end
+    end
 end
 
 return World
