@@ -8,6 +8,7 @@ local EnumSet = require('ldtk2.EnumSet')
 local TileLayer = require('ldtk2.TileLayer')
 local IntLayer = require('ldtk2.IntLayer')
 local EntityLayer = require('ldtk2.EntityLayer')
+local Level = require('ldtk2.Level')
 
 -- Extracts the settings for the world
 function configureWorld(world, data)
@@ -66,6 +67,20 @@ function extractLayers(data, tilesets)
     return layers
 end
 
+-- Returns a table of levels
+function extractLevels(data)
+    local levels = {}
+
+    for _,levelData in ipairs(data) do
+        local level = Level:new(levelData)
+        levels[level.uid] = level
+        levels[level.iid] = level
+        levels[level.id] = level
+    end
+
+    return levels
+end
+
 -- Represents a single LDTK world
 local World = class('World')
 
@@ -91,7 +106,7 @@ function World:loadFromFile(filename)
     self.tilesets = extractTilesets(data.defs.tilesets)
     self.enums = extractEnums(data.defs.enums, self.tilesets)
     self.layers = extractLayers(data.defs.layers, self.tilesets)
-    -- self.levels = extractLevels(data.levels)
+    self.levels = extractLevels(data.levels)
 end
 
 -- Executes any updates in the world and makes sure updates
