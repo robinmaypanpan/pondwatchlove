@@ -21,7 +21,14 @@ function love.load(arg)
         filename = arg[2]
     end
 
-    world = World:new(entityTable)
+    world = World:new()
+
+    world:configure({
+        activateAllLevels = true,
+        loadAllOnCreation = true,
+        entityTable = entityTable
+    })
+    
     world:loadFromFile(filename)
 
     love.window.setTitle('Garden Love')
@@ -30,9 +37,7 @@ function love.load(arg)
     })
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
-    world:setActiveLevels({'Entrance'})
-
-    -- camera = Camera:new(player, world)
+    -- world:setActiveLevels({'Entrance'})
 
     -- -- Create our window locked canvases
     -- uiCanvas = love.graphics.newCanvas()
@@ -55,8 +60,6 @@ function love.update(dt)
     -- backgroundCanvas:renderTo(function()
     --     love.graphics.clear()
     -- end)
-
-    -- camera:update()
 end
 
 -- Called after calling update each frame.
@@ -66,9 +69,7 @@ function love.draw()
 
     local scale = love.graphics.getWidth() / world.gridWidth
     love.graphics.scale(scale)
-
-    -- camera:draw()
-
+    
     world:draw()
 
     --drawDebug()

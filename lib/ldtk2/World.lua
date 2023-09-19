@@ -77,11 +77,17 @@ end
 -- Represents a single LDTK world
 local World = class('World')
 
-function World:initialize(entityTable)
-    self.entityTable = entityTable
-
+function World:initialize()
     -- Active levels should be drawn and updated
     self.activeLevels = {}
+end
+
+-- Configure the game
+function World:configure(options)
+    self.options = options
+    if options.entityTable then
+        self.entityTable = options.entityTable
+    end
 end
 
 -- Loads the world from an ldtk file
@@ -98,6 +104,14 @@ function World:loadFromFile(filename)
     self.enums = extractEnums(data.defs.enums, self.tilesetDb)
     self.layerList = extractLayerDefinitions(data.defs.layers)
     self.levelDb, self.allLevels = extractLevels(data.levels)
+
+    if self.options.activateAllLevels then
+        local levels = {}
+        for _,level in ipairs(self.allLevels) do
+            table.insert(levels, level.id)
+        end
+        self:setActiveLevels(levels)
+    end
 end
 
 -- Returns a level at a given location, checking active levels first
@@ -137,6 +151,7 @@ function World:setActiveLevels(levelList)
         table.insert(self.activeLevels, level)
         level:activate()
     end
+    
 end
 
 -- Executes any updates in the world and makes sure updates
