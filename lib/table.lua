@@ -16,3 +16,13 @@ function table.removeItem(tbl, item)
     print('Found key ' .. key)
     table.remove(tbl, key)
 end
+
+-- return a reversed version of a table
+function table.reverse(tbl)
+    local reversedTable = {}
+    for i = #tbl, 1, -1 do
+        table.insert(reversedTable, tbl[i])
+    end
+
+    return reversedTable
+end
