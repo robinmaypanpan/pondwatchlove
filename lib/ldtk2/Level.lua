@@ -1,9 +1,52 @@
 local json = require('json')
 local class = require('middleclass')
 
+local fixRelPath = require('ldtk2.fixRelPath')
+
+local EntityLayer = require('ldtk2.EntityLayer')
+local IntLayer = require('ldtk2.IntLayer')
+local TileLayer = require('ldtk2.TileLayer')
+
+-- Returns the background table
+local function extractBackground(data)
+    local background = {}
+
+    background.color = data.bgColor or data.__bgColor;
+
+    if data.bgRelPath then
+        local bgPath = fixRelPath(data.bgRelPath)
+        background.image = love.graphics.newImage(bgPath)
+        background.position = data.bgPos
+        background.pivotX = data.bgPivotX
+        background.pivotY = data.bgPivotY
+    end
+
+    return background
+end
+
+-- Returns displayable layers
+local function extractLayers(data, level, tilesets)
+    local layers = {}
+    for _, layerData in ipairs(data.layerInstances) do
+        local layer
+        if layerData.__type == 'IntGrid' then
+            layer = IntLayer:new(layerData, level, tilesets)
+        elseif layerData.__type == 'Tiles' or layerData.__type == 'AutoLayer' then
+            layer = TileLayer:new(layerData, level, tilesets)
+        elseif layerData.__type == 'Entities' then
+            layer = EntityLayer:new(layerData, level)
+        end
+
+        -- Update our layer database for later access
+        layers[layer.id] = layer
+    end
+
+    return layers
+end
+
 local Level = class('Level')
 
-function Level:initialize(data)
+function Level:initialize(data, tilesets)
     self.data = data
     
     self.id = data.identifier
@@ -26,25 +69,14 @@ function Level:initialize(data)
 
     self.fields = getFields(data)
 
-    local bgColor = data.bgColor or data.__bgColor
+    self.layers = {}
+    self.background = {}
 
-    self.background = {
-        color = bgColor,
-    }
-
-    if data.bgRelPath then
-        local bgPath = fixRelPath(data.bgRelPath)
-        self.background.image = love.graphics.newImage(bgPath)
-        self.background.position = data.bgPos
-        self.background.pivotX = data.bgPivotX
-        self.background.pivotY = data.bgPivotY
-    end
-
-    self:load()
+    self:load(tilesets)
 end
 
 -- Loads all the data for this level
-function Level:load()
+function Level:load(tilesets)
     if self.filename then   
         -- TODO: Make this generic  
         local filename = 'assets/levels/' .. self.filename
@@ -54,6 +86,10 @@ function Level:load()
 
         self.data = json.decode(fileData)
     end
+
+    self.background = extractBackground(self.data)
+
+    self.layers = extractLayers(self.data, self, tilesets)
 
     self.isLoaded = true
 end
@@ -75,6 +111,11 @@ function Level:convertLevelToWorld(x, y)
     return x + self.x, y + self.y
 end
 
+-- Returns the layer with the indicated id
+function Level:getLayer(layerId)
+    return self.layers[layerId]
+end
+
 -- Start any operations that should occur while this level is active
 function Level:activate()
 end
@@ -88,7 +129,12 @@ function Level:update(dt)
 end
 
 -- Called to tell the level to draw this indicated layer
-function Level:draw(layerDefinition)
+function Level:drawLayer(layerDefinition)
+    assert(layerDefinition ~= nil, "No layer definition provided to draw layer")
+    local layer = self:getLayer(layerDefinition.id)
+    assert(layer ~= nil, "Could not find layer " .. layerDefinition.id)
+
+    layer:draw()
 end
 
 -- Special function to specifically draw the background

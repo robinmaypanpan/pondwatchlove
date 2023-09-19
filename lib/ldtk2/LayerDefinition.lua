@@ -4,7 +4,7 @@ local class = require('middleclass')
 local LayerDefinition = class('LayerDefinition')
 
 function LayerDefinition:initialize(data)
-    self.id = data.__identifier
+    self.id = data.identifier
     self.uid = data.uid
     self.type = data.type
 

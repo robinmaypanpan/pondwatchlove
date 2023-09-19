@@ -10,7 +10,7 @@ local EntityLayer = require('ldtk2.EntityLayer')
 local Level = require('ldtk2.Level')
 
 -- Extracts the settings for the world
-function configureWorld(world, data)
+local function configureWorld(world, data)
     -- Store a raw copy of the data
     world.data = data
 
@@ -23,11 +23,12 @@ function configureWorld(world, data)
 end
 
 -- Returns a list of tileset objects configured with provided data
-function extractTilesets(data)
+local function extractTilesets(data)
     local tilesets = {}
     for _, tilesetData in ipairs(data) do
         if tilesetData.relPath then
             local tileset = Tileset:new(tilesetData)
+            tileset:load()
             tilesets[tileset.id] = tileset
             tilesets[tileset.uid] = tileset
         end
@@ -36,7 +37,7 @@ function extractTilesets(data)
 end
 
 -- Returns a list of enums
-function extractEnums(data, tilesets)
+local function extractEnums(data, tilesets)
     local enumSets = {}
     for _, enumSetData in ipairs(data) do
         local enumSet = EnumSet:new(enumSetData, tilesets)
@@ -47,7 +48,7 @@ function extractEnums(data, tilesets)
 end
 
 -- Extract and create all the layers that need to be rendered
-function extractLayerDefinitions(data, tilesets)
+local function extractLayerDefinitions(data)
     local layers = {}
     for i = #data, 1, -1 do
         local layerDefinition = LayerDefinition:new(data[i])
@@ -58,12 +59,12 @@ function extractLayerDefinitions(data, tilesets)
 end
 
 -- Returns a table of levels
-function extractLevels(data)
+local function extractLevels(data, tilesets)
     local levelDb = {}
     local levelList = {}
 
     for _,levelData in ipairs(data) do
-        local level = Level:new(levelData)
+        local level = Level:new(levelData, tilesets)
         levelDb[level.uid] = level
         levelDb[level.iid] = level
         levelDb[level.id] = level
@@ -79,6 +80,11 @@ local World = class('World')
 function World:initialize()
     -- Active levels should be drawn and updated
     self.activeLevels = {}
+
+    self.camera = {
+        x = 0,
+        y = 0
+    }
 end
 
 -- Configure the game
@@ -102,7 +108,7 @@ function World:loadFromFile(filename)
     self.tilesetDb = extractTilesets(data.defs.tilesets)
     self.enums = extractEnums(data.defs.enums, self.tilesetDb)
     self.layerList = extractLayerDefinitions(data.defs.layers)
-    self.levelDb, self.allLevels = extractLevels(data.levels)
+    self.levelDb, self.allLevels = extractLevels(data.levels, self.tilesetDb)
 
     if self.options.activateAllLevels then
         local levels = {}
@@ -153,6 +159,17 @@ function World:setActiveLevels(levelList)
     
 end
 
+-- Sets the camera position
+function World:setCameraSettings(settings)
+    -- Sets up camera settings for smooth transitions, etc.
+end
+
+-- Sets the new camear position
+function World:setCameraPosition(x,y,w,h)
+    self.camera.x = x
+    self.camera.y = y
+end
+
 -- Executes any updates in the world and makes sure updates
 -- are sent to all children
 function World:update(dt)
@@ -168,10 +185,13 @@ function World:draw()
         level:drawBackground()
     end
 
+    love.graphics.origin()
+    love.graphics.translate(-self.camera.x, -self.camera.y)
+
     -- Iterate over each layer
     for _,layerDefinition in ipairs(self.layerList) do
         for _,level in ipairs(self.activeLevels) do
-            level:draw(layerDefinition)
+            level:drawLayer(layerDefinition)
         end
     end
 end

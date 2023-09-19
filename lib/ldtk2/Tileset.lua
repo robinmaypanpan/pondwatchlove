@@ -77,6 +77,7 @@ end
 function Tileset:load()
     self.imageSource = love.graphics.newImage(fixRelPath(self.data.relPath))
     self.imageSource:setFilter("nearest", "nearest")
+    self.isLoaded = true
 end
 
 -- Returns a SpriteBatch object

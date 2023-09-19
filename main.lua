@@ -44,12 +44,34 @@ function love.load(arg)
     -- backgroundCanvas = love.graphics.newCanvas()
 end
 
-local isLevelTransition = false
+local function processInput(dt)
+    local spd = 100
+
+    local moveLeft = love.keyboard.isDown('a') or love.keyboard.isDown('left')
+    local moveRight = love.keyboard.isDown('d') or love.keyboard.isDown('right')
+    local moveUp = love.keyboard.isDown('w') or love.keyboard.isDown('up')
+    local moveDown = love.keyboard.isDown('s') or love.keyboard.isDown('down')
+
+    local camera = world.camera
+
+    if moveLeft then
+        camera.x = camera.x - spd * dt
+    elseif moveRight then
+        camera.x = camera.x + spd * dt
+    end
+    if moveUp then
+        camera.y = camera.y - spd * dt
+    elseif moveDown then
+        camera.y = camera.y + spd * dt
+    end
+end
 
 -- Called before calling draw each time a frame updates
 function love.update(dt)
     flux.update(dt)
     local currentTime = love.timer.getTime()
+
+    processInput(dt)
 
     world:update(dt)
 

@@ -5,11 +5,14 @@ local Layer = require('ldtk2.Layer')
 -- Super class for all layers
 local GridLayer = class('GridLayer', Layer)
 
-function GridLayer:initialize(data, tilesets)
-    Layer.initialize(self, data, tilesets)
+function GridLayer:initialize(data, level, tilesets)
+    Layer.initialize(self, data, level)
 
-    self.tileSize = data.gridSize
-    self.tileset = tilesets[data.tilesetDefUid]
+    self.tileSize = data.__gridSize
+
+    -- Obtain the size of this grid
+    self.numRows = data.__cHei
+    self.numCols = data.__cWid
 end
 
 -- Sets the tile id at the specified row and column
