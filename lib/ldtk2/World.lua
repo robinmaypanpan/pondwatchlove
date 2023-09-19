@@ -49,10 +49,9 @@ end
 -- Extract and create all the layers that need to be rendered
 function extractLayerDefinitions(data, tilesets)
     local layers = {}
-
-    for _,layerData in ipairs(data) do
-        local layerDefinition = LayerDefinition:new(data)
-        table.insert(layers, layer)
+    for i = #data, 1, -1 do
+        local layerDefinition = LayerDefinition:new(data[i])
+        table.insert(layers, layerDefinition)
     end
 
     return layers
