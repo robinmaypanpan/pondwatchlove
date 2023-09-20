@@ -16,7 +16,6 @@ local entityTable = {
 }
 
 function love.load(arg)
-
     local filename = 'assets/levels/world.ldtk'
     if arg and #arg > 1 then
         filename = arg[2]
@@ -29,7 +28,7 @@ function love.load(arg)
         loadAllOnCreation = true,
         entityTable = entityTable
     })
-    
+
     world:loadFromFile(filename)
 
     love.window.setTitle('Garden Love')
@@ -53,18 +52,21 @@ local function processInput(dt)
     local moveUp = love.keyboard.isDown('w') or love.keyboard.isDown('up')
     local moveDown = love.keyboard.isDown('s') or love.keyboard.isDown('down')
 
-    local camera = world:getCamera()
+    local dx = 0
+    local dy = 0
 
     if moveLeft then
-        camera.x = camera.x - spd * dt
+        dx = -spd * dt
     elseif moveRight then
-        camera.x = camera.x + spd * dt
+        dx = spd * dt
     end
     if moveUp then
-        camera.y = camera.y - spd * dt
+        dy = -spd * dt
     elseif moveDown then
-        camera.y = camera.y + spd * dt
+        dy = spd * dt
     end
+
+    world:getCamera():move(dx, dy)
 end
 
 -- Called before calling draw each time a frame updates
