@@ -177,7 +177,7 @@ end
 
 -- Draws the world
 function World:draw()
-    self.camera:translateGraphics()
+    self.camera:attach()
     -- Draw backgrounds for all the currently active levels
     for _, level in ipairs(self.activeLevels) do
         level:drawBackground()
@@ -189,6 +189,7 @@ function World:draw()
             level:drawLayer(layerDefinition)
         end
     end
+    self.camera:detach()
 end
 
 return World

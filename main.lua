@@ -16,6 +16,12 @@ local entityTable = {
 }
 
 function love.load(arg)
+    love.window.setTitle('Garden Love')
+    love.window.setMode(1280, 720, {
+        fullscreen = false
+    })
+    love.graphics.setDefaultFilter('nearest', 'nearest')
+
     local filename = 'assets/levels/world.ldtk'
     if arg and #arg > 1 then
         filename = arg[2]
@@ -28,18 +34,13 @@ function love.load(arg)
         loadAllOnCreation = true,
         entityTable = entityTable,
         cameraSettings = {
-            dampenMovement = true,
-            centerTarget = true
+            movement = 'dampen',
+            centerTarget = true,
+            dampValue = 4
         }
     })
 
     world:loadFromFile(filename)
-
-    love.window.setTitle('Garden Love')
-    love.window.setMode(1280, 720, {
-        fullscreen = false
-    })
-    love.graphics.setDefaultFilter('nearest', 'nearest')
 
     -- world:setActiveLevels({'Entrance'})
 
@@ -76,6 +77,7 @@ local function processInput(dt)
 end
 
 function love.mousepressed(screenX, screenY, button, istouch, presses)
+    print('mousepressed at ' .. screenX .. ', ' .. screenY)
     if button == 1 then
         Mouse1IsDown = true
         local camera = world:getCamera()
@@ -87,7 +89,7 @@ end
 function love.mousemoved(screenX, screenY, dx, dy, istouch)
     if Mouse1IsDown then
         local camera = world:getCamera()
-        camera:move(dx, dy)
+        camera:move(-dx, -dy)
     end
 end
 
