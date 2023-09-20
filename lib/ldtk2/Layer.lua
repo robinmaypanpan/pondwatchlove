@@ -19,11 +19,6 @@ function Layer:initialize(data, layerDefinition, level)
     self.level = level
 
     self.opacity = data.__opacity
-
-    -- Parallex interaction with camera for this player
-    self.parallaxX = data.parallaxFactorX
-    self.parallaxY = data.parallaxFactorY
-    self.scaleWithParallax = data.parallaxScaling
 end
 
 -- Standard update function

@@ -159,7 +159,24 @@ function Level:drawLayer(layerDefinition, camera)
         end)
         love.graphics.pop()
 
-        love.graphics.draw(canvas, self.x + layerDefinition.pxOffsetX, self.y + layerDefinition.pxOffsetY)
+        local dx, dy = camera:getOffsetFrom(self)
+        local scaleX = 1
+        local scaleY = 1
+
+        dx = dx * layerDefinition.parallaxFactorX
+        dy = dy * layerDefinition.parallaxFactorY
+
+        if layerDefinition.parallaxScaling then
+            scaleX = -1 * layerDefinition.parallaxFactorX + 1
+            scaleY = -1 * layerDefinition.parallaxFactorY + 1
+        end
+
+        local originX = self.width / 2
+        local originY = self.height / 2
+        local x = self.x + layerDefinition.pxOffsetX + originX + dx
+        local y = self.y + layerDefinition.pxOffsetY + originY + dy
+        love.graphics.draw(canvas, x, y, 0,
+            scaleX, scaleY, originX, originY)
     end
 end
 

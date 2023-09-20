@@ -118,6 +118,17 @@ function Camera:unlockCamera()
     self.cameraLock = nil
 end
 
+-- Returns the offset between the center of the rectangle and the camera
+function Camera:getOffsetFrom(rectangle)
+    local camCenterX = self.x + self.width / 2
+    local camCenterY = self.y + self.height / 2
+
+    local rectangleCenterX = rectangle.x + rectangle.width / 2
+    local rectangleCenterY = rectangle.y + rectangle.height / 2
+
+    return camCenterX - rectangleCenterX, camCenterY - rectangleCenterY
+end
+
 function Camera:update(dt)
     if self.cameraLock then
         local lockLeft = self.cameraLock.x
