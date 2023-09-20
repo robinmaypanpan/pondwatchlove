@@ -22,7 +22,7 @@ function love.load(arg)
     })
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
-    local filename = 'assets/levels/world.ldtk'
+    local filename = 'assets/levels/parallax_world.ldtk'
     if arg and #arg > 1 then
         filename = arg[2]
     end
