@@ -48,7 +48,7 @@ end
 -- Instead of following a target, allows direct control over camera position
 function Camera:moveTo(x, y)
     return flux.to(self, self.settings.tweenSpeed, { x = x, y = y, targetX = x, targetY = y }):ease(self.settings
-    .tweenEase)
+        .tweenEase)
 end
 
 -- Sets the new position of the camera
@@ -130,7 +130,7 @@ function Camera:update(dt)
 
     local dx = self.targetX - self.x
     local dy = self.targetY - self.y
-    if math.abs(dx) > 1 or math.abs(dy) > 1 then
+    if math.abs(dx) >= 1 or math.abs(dy) >= 1 then
         if self.settings.movement == 'dampen' then
             local dampValue = self.settings.dampValue or 3
             self.x = self.x + dx * math.min(dampValue * dt, 1)

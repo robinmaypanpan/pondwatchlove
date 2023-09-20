@@ -75,42 +75,42 @@ function love.update(dt)
 
     world:update(dt)
 
-    -- -- Clear canvas layers
-    -- uiCanvas:renderTo(function()
-    --     love.graphics.clear()
-    -- end)
-    -- backgroundCanvas:renderTo(function()
-    --     love.graphics.clear()
-    -- end)
+    -- Clear canvas layers
+    uiCanvas:renderTo(function()
+        love.graphics.clear()
+    end)
+    backgroundCanvas:renderTo(function()
+        love.graphics.clear()
+    end)
 
-    -- if player and not camera.isTransitioning then
-    --     local moveLeft = love.keyboard.isDown('a') or love.keyboard.isDown('left')
-    --     local moveRight = love.keyboard.isDown('d') or love.keyboard.isDown('right')
-    --     local moveUp = love.keyboard.isDown('w') or love.keyboard.isDown('up')
-    --     local moveDown = love.keyboard.isDown('s') or love.keyboard.isDown('down')
+    if player and not camera.isTransitioning then
+        local moveLeft = love.keyboard.isDown('a') or love.keyboard.isDown('left')
+        local moveRight = love.keyboard.isDown('d') or love.keyboard.isDown('right')
+        local moveUp = love.keyboard.isDown('w') or love.keyboard.isDown('up')
+        local moveDown = love.keyboard.isDown('s') or love.keyboard.isDown('down')
 
-    --     local jump = love.keyboard.isDown('space')
+        local jump = love.keyboard.isDown('space')
 
-    --     local useKeyDown = love.keyboard.isDown('e')
-    --     local use = useKeyDown and currentTime - useTime > useDelay
+        local useKeyDown = love.keyboard.isDown('e')
+        local use = useKeyDown and currentTime - useTime > useDelay
 
-    --     if use then
-    --         useTime = currentTime
-    --     end
+        if use then
+            useTime = currentTime
+        end
 
-    --     player:update({
-    --         moveLeft = moveLeft,
-    --         moveRight = moveRight,
-    --         moveUp = moveUp,
-    --         moveDown = moveDown,
-    --         jump = jump,
-    --         use = use
-    --     })
-    -- end
+        player:update({
+            moveLeft = moveLeft,
+            moveRight = moveRight,
+            moveUp = moveUp,
+            moveDown = moveDown,
+            jump = jump,
+            use = use
+        })
+    end
 
-    -- camera:update()
+    camera:update()
 
-    -- drawStaticBackground()
+    drawStaticBackground()
 end
 
 function drawStaticBackground()
@@ -168,19 +168,19 @@ end
 
 -- Called after calling update each frame.
 function love.draw()
-    -- love.graphics.origin()
-    -- love.graphics.draw(backgroundCanvas)
+    love.graphics.origin()
+    love.graphics.draw(backgroundCanvas)
 
     local scale = love.graphics.getWidth() / world.gridWidth
     love.graphics.scale(scale)
 
-    -- camera:draw()
+    camera:draw()
 
     world:draw()
 
     --drawDebug()
 
-    -- love.graphics.origin()
-    -- love.graphics.setColor(1, 1, 1, 1)
-    -- love.graphics.draw(uiCanvas)
+    love.graphics.origin()
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(uiCanvas)
 end
