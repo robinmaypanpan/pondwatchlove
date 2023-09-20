@@ -102,7 +102,8 @@ function love.mousereleased(x, y, button, istouch, presses)
 end
 
 function love.wheelmoved(x, y)
-
+    local camera = world:getCamera()
+    camera:setZoom(camera.zoom + y / 10)
 end
 
 -- Called before calling draw each time a frame updates

@@ -67,10 +67,21 @@ function Camera:worldToScreen(worldX, worldY)
 end
 
 function Camera:setZoom(zoom)
-    self.zoom = zoom
+    local screenWidth = love.graphics.getWidth()
+    local screenHeight = love.graphics.getHeight()
 
-    self.width = love.graphics.getWidth() / zoom
-    self.height = love.graphics.getHeight() / zoom
+    local zx = (screenWidth / self.zoom - screenWidth / zoom) / 2
+    local zy = (screenHeight / self.zoom - screenHeight / zoom) / 2
+
+    self.x = self.x + zx
+    self.y = self.y + zy
+
+    self.targetX = self.targetX + zx
+    self.targetY = self.targetY + zy
+
+    self.zoom = zoom
+    self.width = screenWidth / zoom
+    self.height = screenHeight / zoom
 end
 
 function Camera:update(dt)
