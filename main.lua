@@ -36,7 +36,8 @@ function love.load(arg)
         cameraSettings = {
             movement = 'dampen',
             centerTarget = true,
-            dampValue = 4
+            dampValue = 4,
+            zoom = 2
         }
     })
 
@@ -89,7 +90,8 @@ end
 function love.mousemoved(screenX, screenY, dx, dy, istouch)
     if Mouse1IsDown then
         local camera = world:getCamera()
-        camera:move(-dx, -dy)
+        local worldDX, worldDY = camera:screenDeltaToWorld(dx, dy)
+        camera:move(-worldDX, -worldDY)
     end
 end
 
@@ -97,6 +99,10 @@ function love.mousereleased(x, y, button, istouch, presses)
     if button == 1 then
         Mouse1IsDown = false
     end
+end
+
+function love.wheelmoved(x, y)
+
 end
 
 -- Called before calling draw each time a frame updates
