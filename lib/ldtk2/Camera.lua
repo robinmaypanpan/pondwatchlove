@@ -18,7 +18,9 @@ function Camera:initialize(world, settings)
 
     if settings == nil then
         settings = {
-            maxSpeed = 200
+            maxSpeed = 200,
+            tweenSpeed = 0.5,
+            tweenEase = 'quadinout'
         }
     end
 
@@ -41,6 +43,12 @@ function Camera:initialize(world, settings)
     end
 
     self:setZoom(zoom)
+end
+
+-- Instead of following a target, allows direct control over camera position
+function Camera:moveTo(x, y)
+    return flux.to(self, self.settings.tweenSpeed, { x = x, y = y, targetX = x, targetY = y }):ease(self.settings
+    .tweenEase)
 end
 
 -- Sets the new position of the camera
@@ -132,10 +140,14 @@ function Camera:update(dt)
         else
             self.x = self.targetX
             self.y = self.targetY
+            self.targetX = self.x
+            self.targetY = self.y
         end
     else
         self.x = self.targetX
         self.y = self.targetY
+        self.targetX = self.x
+        self.targetY = self.y
     end
 end
 

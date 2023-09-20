@@ -138,11 +138,41 @@ function World:getLevelAt(x, y)
     return nil
 end
 
+-- Prepares a transition from the current level to the provided level id
+function World:prepareLevelTransitionTo(levelId)
+    self.newLevel = self.levelDb[levelId]
+    assert(self.newLevel ~= nil, 'Invalid level id provided')
+
+    -- update the current level property
+    local oldLevel = self.currentLevel
+
+    -- Set both levels to active
+    self:setActiveLevels({ self.newLevel.id, oldLevel.id })
+
+    -- Allow the camera to move freely
+    self.camera:unlockCamera()
+end
+
+-- Completes an in progress level transition
+function World:completeLevelTransition()
+    assert(self.newLevel ~= nil, 'Not currently transitioning levels')
+    self.currentLevel = self.newLevel
+    self.newLevel = nil
+    self:setCurrentLevel(self.currentLevel.id)
+end
+
 -- Sets the provided level as active and locks the camera to it
 function World:setCurrentLevel(levelId)
+    local newLevel = self.levelDb[levelId]
+    self.currentLevel = newLevel
+
     self:setActiveLevels({ levelId })
-    local level = self.levelDb[levelId]
-    self.camera:lockCamera(level)
+    self.camera:lockCamera(newLevel)
+end
+
+-- returns the current level
+function World:getCurrentLevel()
+    return self.currentLevel
 end
 
 -- Sets the active levels to draw and nearby levels to

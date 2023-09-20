@@ -32,7 +32,7 @@ function love.load(arg)
     world:configure({
         loadAllOnCreation = true,
         entityTable = entityTable,
-        lockCameraToLevel = true
+        lockCameraToCurrentLevel = true
     })
 
     world:loadFromFile(filename)
@@ -41,7 +41,9 @@ function love.load(arg)
         movement = 'dampen',
         centerTarget = true,
         dampValue = 4,
-        levelZoom = 1
+        levelZoom = 1,
+        tweenSpeed = 0.4,
+        tweenEase = 'quintinout'
     })
 
     world:setCurrentLevel('Entrance')
@@ -85,6 +87,20 @@ function love.mousepressed(screenX, screenY, button, istouch, presses)
         local camera = world:getCamera()
         local worldX, worldY = camera:screenToWorld(screenX, screenY)
         camera:setTarget(worldX, worldY)
+    elseif button == 2 then
+        if world:getCurrentLevel().id == 'Entrance' then
+            world:prepareLevelTransitionTo('Level_2')
+            world:getCamera():moveTo(world.newLevel.x, world.newLevel.y)
+                :oncomplete(function()
+                    world:completeLevelTransition()
+                end)
+        else
+            world:prepareLevelTransitionTo('Entrance')
+            world:getCamera():moveTo(world.newLevel.x, world.newLevel.y)
+                :oncomplete(function()
+                    world:completeLevelTransition()
+                end)
+        end
     end
 end
 
