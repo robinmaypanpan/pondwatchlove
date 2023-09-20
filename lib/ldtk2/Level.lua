@@ -1,11 +1,17 @@
 local json = require('json')
 local class = require('middleclass')
+local colorFromValue = require('colorFromValue')
 
 local fixRelPath = require('ldtk2.fixRelPath')
 
 local EntityLayer = require('ldtk2.EntityLayer')
 local IntLayer = require('ldtk2.IntLayer')
 local TileLayer = require('ldtk2.TileLayer')
+
+-- Calculate the correct position based on the pivot
+local function calculatePivot(pivot, source, destination)
+    return destination * pivot - source * pivot
+end
 
 -- Returns the background table
 local function extractBackground(data)
@@ -79,6 +85,8 @@ function Level:initialize(data, layerDb, tilesets)
     self.layers = {}
     self.background = {}
 
+    self.rgb = {love.math.random(),love.math.random(),love.math.random(), 1}
+
     self:load(layerDb, tilesets)
 end
 
@@ -147,8 +155,63 @@ function Level:drawLayer(layerDefinition)
     end
 end
 
--- Special function to specifically draw the background
 function Level:drawBackground()
+    if not self.backgroundCanvas then
+        self:drawBackgroundToCanvas()
+    end
+
+    -- if self.fields.LockBGToCamera then
+    --     -- Defer background drawing to camera
+    --     return
+    -- end
+
+    love.graphics.setColor(1,1,1,1)
+    love.graphics.draw(self.backgroundCanvas, self.x, self.y)
+end
+
+-- Special function to specifically draw the background
+function Level:drawBackgroundToCanvas()
+    self.backgroundCanvas = love.graphics.newCanvas(self.width, self.height)
+
+    self.backgroundCanvas:renderTo(function()
+        local bg = self.background
+
+        if bg.image then
+            print('Drawing background image for ' .. self.id)
+            if bg.position == 'Repeat' then
+                -- TODO: Implementing repeating backgrounds
+            else
+                local scaleX, scaleY, x, y
+                if bg.position == 'Cover' then
+                    scaleX = self.width / bg.image:getWidth()
+                    scaleY = self.height / bg.image:getHeight()
+                    scaleX = math.max(scaleX, scaleY)
+                    scaleY = scaleX
+                elseif bg.position == 'Contain' then
+                    scaleX = self.width / bg.image:getWidth()
+                    scaleY = self.height / bg.image:getHeight()
+                    scaleX = math.min(scaleX, scaleY)
+                    scaleY = scaleX
+                elseif bg.position == 'CoverDirty' then
+                    scaleX = self.width / bg.image:getWidth()
+                    scaleY = self.height / bg.image:getHeight()
+                elseif bg.position == 'Unscaled' then
+                    scaleX = 1
+                    scaleY = 1
+                end
+                x = calculatePivot(bg.pivotX, scaleX * bg.image:getWidth(), self.width)
+                y = calculatePivot(bg.pivotY, scaleY * bg.image:getHeight(), self.height)
+
+                love.graphics.setColor(1, 1, 1, 1);
+                love.graphics.draw(bg.image, x, y, 0, scaleX, scaleY, bg.pivotX, bg.pivotY)
+            end
+        else
+            print('Drawing '.. bg.color ..' background rectangle for ' .. self.id)
+            love.graphics.setColor(colorFromValue(bg.color))
+            love.graphics.rectangle('fill', 0, 0, self.width, self.height)
+        end
+    end)
+
 end
 
 return Level

@@ -181,13 +181,13 @@ end
 
 -- Draws the world
 function World:draw()
+    love.graphics.origin()
+    love.graphics.translate(-self.camera.x, -self.camera.y)
+
     -- Draw backgrounds for all the currently active levels
     for _,level in ipairs(self.activeLevels) do
         level:drawBackground()
     end
-
-    love.graphics.origin()
-    love.graphics.translate(-self.camera.x, -self.camera.y)
 
     -- Iterate over each layer
     for _,layerDefinition in ipairs(self.layerList) do

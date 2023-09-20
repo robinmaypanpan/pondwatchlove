@@ -16,6 +16,7 @@ local entityTable = {
 }
 
 function love.load(arg)
+
     local filename = 'assets/levels/world.ldtk'
     if arg and #arg > 1 then
         filename = arg[2]
@@ -45,7 +46,7 @@ function love.load(arg)
 end
 
 local function processInput(dt)
-    local spd = 100
+    local spd = 800
 
     local moveLeft = love.keyboard.isDown('a') or love.keyboard.isDown('left')
     local moveRight = love.keyboard.isDown('d') or love.keyboard.isDown('right')
@@ -89,9 +90,6 @@ function love.draw()
     -- love.graphics.origin()
     -- love.graphics.draw(backgroundCanvas)
 
-    local scale = love.graphics.getWidth() / world.gridWidth
-    love.graphics.scale(scale)
-    
     world:draw()
 
     --drawDebug()
