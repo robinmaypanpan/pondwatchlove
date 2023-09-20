@@ -99,6 +99,10 @@ function World:configure(options)
     end
 end
 
+function World:configureCamera(options)
+    self.camera = Camera:new(self, options)
+end
+
 -- Loads the world from an ldtk file
 function World:loadFromFile(filename)
     assert(love.filesystem.getInfo(filename), "Level file " .. filename .. " does not exist")

@@ -4,6 +4,15 @@ local flux = require('flux')
 
 local Camera = class('Camera')
 
+-- Settings options
+-- movement = dampen
+--            linear
+--            instant
+-- centerTarget
+-- dampValue
+-- levelZoom
+-- zoom
+
 function Camera:initialize(world, settings)
     self.world = world
 
@@ -23,12 +32,15 @@ function Camera:initialize(world, settings)
     self.speed = 0
     self.tween = nil
 
-    self.zoom = settings.zoom or 1
+    local zoom = 1
+    if settings.levelZoom ~= nil and world.gridWidth ~= nil then
+        -- Set the zoom to a multiple of the width of the level grid
+        zoom = (love.graphics.getWidth() / world.gridWidth) / settings.levelZoom
+    elseif settings.zoom ~= nil then
+        zoom = settings.zoom
+    end
 
-    self.width = love.graphics.getWidth() / self.zoom
-    self.height = love.graphics.getHeight() / self.zoom
-
-    print('Screen size is ' .. self.width .. 'x' .. self.height)
+    self:setZoom(zoom)
 end
 
 -- Sets the new position of the camera
@@ -69,15 +81,16 @@ end
 function Camera:setZoom(zoom)
     local screenWidth = love.graphics.getWidth()
     local screenHeight = love.graphics.getHeight()
+    if self.zoom ~= nil then
+        local zx = (screenWidth / self.zoom - screenWidth / zoom) / 2
+        local zy = (screenHeight / self.zoom - screenHeight / zoom) / 2
 
-    local zx = (screenWidth / self.zoom - screenWidth / zoom) / 2
-    local zy = (screenHeight / self.zoom - screenHeight / zoom) / 2
+        self.x = self.x + zx
+        self.y = self.y + zy
 
-    self.x = self.x + zx
-    self.y = self.y + zy
-
-    self.targetX = self.targetX + zx
-    self.targetY = self.targetY + zy
+        self.targetX = self.targetX + zx
+        self.targetY = self.targetY + zy
+    end
 
     self.zoom = zoom
     self.width = screenWidth / zoom

@@ -32,16 +32,17 @@ function love.load(arg)
     world:configure({
         activateAllLevels = true,
         loadAllOnCreation = true,
-        entityTable = entityTable,
-        cameraSettings = {
-            movement = 'dampen',
-            centerTarget = true,
-            dampValue = 4,
-            zoom = 2
-        }
+        entityTable = entityTable
     })
 
     world:loadFromFile(filename)
+
+    world:configureCamera({
+        movement = 'dampen',
+        centerTarget = true,
+        dampValue = 4,
+        levelZoom = 1
+    })
 
     -- world:setActiveLevels({'Entrance'})
 
