@@ -44,8 +44,8 @@ function TileLayer:initialize(data, layerDefinition, level, tilesets)
             height = self.tileSize
         }
 
-        tile.quad = self.tileset:getTileQuad(tileData.t)
-        
+        tile.quad = self.tileset:getTileQuad(tile.tileId)
+
         if not self.tiles[tileRow] then
             self.tiles[tileRow] = {}
         end
