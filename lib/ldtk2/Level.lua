@@ -77,6 +77,8 @@ function Level:initialize(data, layerDb, tilesets)
     self.width = data.pxWid
     self.height = data.pxHei
 
+    self.drawCanvas = love.graphics.newCanvas(self.width, self.height)
+
     -- Unused at this time
     self.depth = data.worldDepth
 
@@ -151,10 +153,11 @@ function Level:drawLayer(layerDefinition, camera)
     assert(layerDefinition ~= nil, "No layer definition provided to draw layer")
     local layer = self:getLayer(layerDefinition.identifier)
     if layer then
-        local canvas = love.graphics.newCanvas(self.width, self.height)
+        local canvas = self.drawCanvas
         love.graphics.push()
         love.graphics.origin()
         canvas:renderTo(function()
+            love.graphics.clear()
             layer:draw()
         end)
         love.graphics.pop()
