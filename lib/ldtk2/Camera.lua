@@ -70,8 +70,8 @@ function Camera:update(dt)
     if math.abs(dx) > 1 or math.abs(dy) > 1 then
         if self.settings.movement == 'dampen' then
             local dampValue = self.settings.dampValue or 3
-            self.x = self.x + dx * math.min(dampValue * dt, 1)
-            self.y = self.y + dy * math.min(dampValue * dt, 1)
+            self.x = math.floor(self.x + dx * math.min(dampValue * dt, 1))
+            self.y = math.floor(self.y + dy * math.min(dampValue * dt, 1))
         elseif self.settings.movement == 'linear' then
             -- TODO: Implement this!
         else
