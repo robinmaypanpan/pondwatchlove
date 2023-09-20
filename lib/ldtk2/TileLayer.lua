@@ -5,8 +5,8 @@ local GridLayer = require('ldtk2.GridLayer')
 -- Super class for all layers
 local TileLayer = class('TileLayer', GridLayer)
 
-function TileLayer:initialize(data, level, tilesets)
-    GridLayer.initialize(self, data, level, tilesets)
+function TileLayer:initialize(data, layerDefinition, level, tilesets)
+    GridLayer.initialize(self, data, layerDefinition, level, tilesets)
 
     self.tileset = tilesets[data.__tilesetDefUid]
 
@@ -23,10 +23,19 @@ function TileLayer:initialize(data, level, tilesets)
     end
 
     for _, tileData in ipairs(tiles) do
+        local tileRow = math.floor(tileData.px[2] / self.tileSize)
+        local tileCol = math.floor(tileData.px[1] / self.tileSize)
+
+        assert(tileRow < self.numRows, "Invalid row for tile")
+        assert(tileCol < self.numCols, "Invalid col for tile")
+
         local tile = {
             tileId = tileData.t,
             sourceLocation = { x = tileData.src[1], y = tileData.src[2] },
-            drawLocation = { x = tileData.px[1], y = tileData.px[2] },
+            x = tileData.px[1],
+            y = tileData.px[2],
+            row = tileRow,
+            col = tileCol,
             flipX = tileData.f == 1 or tileData.f == 3,
             flipY = tileData.f == 2 or tileData.f == 3,
             opacity = tileData.a,
@@ -36,10 +45,7 @@ function TileLayer:initialize(data, level, tilesets)
         }
 
         tile.quad = self.tileset:getTileQuad(tileData.t)
-
-        local tileRow = math.floor(tileData.px[2] / self.numRows)
-        local tileCol = math.floor(tileData.px[1] / self.numCols)
-
+        
         if not self.tiles[tileRow] then
             self.tiles[tileRow] = {}
         end
@@ -52,36 +58,10 @@ function TileLayer:initialize(data, level, tilesets)
 
 end
 
--- Retrieves the tile at the indicated location
--- Returns the grid value at a given location
-function TileLayer:getTile(row, col)
-    local nullTile = {
-        value = -1,
-        tileId = -1,
-        id = 'Missing',
-        row = row,
-        col = col,
-        x = col * self.tileSize + self.level.x,
-        y = row * self.tileSize + self.level.y,
-        width = self.tileSize,
-        height = self.tileSize
-    }
-
-    if row < 0 or col < 0 or row >= self.numRows or col >= self.numCols then
-        return nullTile
-    end
-
-    if not self.tiles[row] then
-        return nullTile
-    end
-
-    return self.tiles[row][col]
-end
-
 function TileLayer:renderTileToSpriteBatch(row,col, spriteBatch)
     local tile = self:getTile(row, col)
     assert(tile ~= nil, "Tile does not exist at "..row..", "..col)
-    assert(tile.tileId ~= -1, "Tile does not have rendering data at "..row..", "..col)
+    assert(tile.tileId ~= -1, "Tile does not have rendering data at "..row..", "..col .. " for layer " .. self.id .. " on level " .. self.level.id)
     local scaleX = 1
     local scaleY = 1
     if tile.flipX then
@@ -90,7 +70,7 @@ function TileLayer:renderTileToSpriteBatch(row,col, spriteBatch)
     if tile.flipY then
         scaleY = -1
     end
-    spriteBatch:add(tile.quad, tile.drawLocation.x, tile.drawLocation.y, 0, scaleX, scaleY)
+    spriteBatch:add(tile.quad, tile.x, tile.y, 0, scaleX, scaleY)
 end
 
 -- Draws this current tile layer

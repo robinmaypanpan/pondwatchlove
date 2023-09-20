@@ -1,5 +1,5 @@
-local class = require('lib/middleclass')
-local getFields = require('lib/ldtk/getFields')
+local class = require('middleclass')
+local getFields = require('ldtk2.getFields')
 
 local Entity = class('Entity')
 

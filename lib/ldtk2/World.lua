@@ -5,7 +5,6 @@ local getFields = require('ldtk2.getFields')
 
 local Tileset = require('ldtk2.Tileset')
 local EnumSet = require('ldtk2.EnumSet')
-local LayerDefinition = require('ldtk2.LayerDefinition')
 local EntityLayer = require('ldtk2.EntityLayer')
 local Level = require('ldtk2.Level')
 
@@ -49,22 +48,24 @@ end
 
 -- Extract and create all the layers that need to be rendered
 local function extractLayerDefinitions(data)
-    local layers = {}
+    local layerList = {}
+    local layerDb = {}
     for i = #data, 1, -1 do
-        local layerDefinition = LayerDefinition:new(data[i])
-        table.insert(layers, layerDefinition)
+        local layerDefinition = data[i]
+        table.insert(layerList, layerDefinition)
+        layerDb[layerDefinition.identifier] = layerDefinition
     end
 
-    return layers
+    return layerDb, layerList
 end
 
 -- Returns a table of levels
-local function extractLevels(data, tilesets)
+local function extractLevels(data, layers, tilesets)
     local levelDb = {}
     local levelList = {}
 
     for _,levelData in ipairs(data) do
-        local level = Level:new(levelData, tilesets)
+        local level = Level:new(levelData, layers, tilesets)
         levelDb[level.uid] = level
         levelDb[level.iid] = level
         levelDb[level.id] = level
@@ -107,8 +108,8 @@ function World:loadFromFile(filename)
 
     self.tilesetDb = extractTilesets(data.defs.tilesets)
     self.enums = extractEnums(data.defs.enums, self.tilesetDb)
-    self.layerList = extractLayerDefinitions(data.defs.layers)
-    self.levelDb, self.allLevels = extractLevels(data.levels, self.tilesetDb)
+    self.layerDb, self.layerList = extractLayerDefinitions(data.defs.layers)
+    self.levelDb, self.allLevels = extractLevels(data.levels, self.layerDb, self.tilesetDb)
 
     if self.options.activateAllLevels then
         local levels = {}

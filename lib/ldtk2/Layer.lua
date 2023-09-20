@@ -5,10 +5,15 @@ local getFields = require('ldtk2.getFields')
 -- Super class for all layers
 local Layer = class('Layer')
 
-function Layer:initialize(data, level)
+function Layer:initialize(data, layerDefinition, level)
     self.id = data.__identifier
+
+    assert(self.id ~= nil, "Missing identifier for layer")
+
     self.iid = data.iid
-    self.uid = data.uid
+
+    self.layerDefinition = layerDefinition
+
     self.type = data.__type
 
     self.level = level

@@ -25,20 +25,27 @@ local function extractBackground(data)
 end
 
 -- Returns displayable layers
-local function extractLayers(data, level, tilesets)
+local function extractLayers(data, level, layerDb, tilesets)
     local layers = {}
     for _, layerData in ipairs(data.layerInstances) do
+        local layerDefinition = layerDb[layerData.__identifier]
+        assert(layerDefinition ~= nil, "Missing layer definition")
+
         local layer
         if layerData.__type == 'IntGrid' then
-            layer = IntLayer:new(layerData, level, tilesets)
+            layer = IntLayer:new(layerData, layerDefinition, level, tilesets)
         elseif layerData.__type == 'Tiles' or layerData.__type == 'AutoLayer' then
-            layer = TileLayer:new(layerData, level, tilesets)
+            layer = TileLayer:new(layerData, layerDefinition, level, tilesets)
         elseif layerData.__type == 'Entities' then
-            layer = EntityLayer:new(layerData, level)
+            layer = EntityLayer:new(layerData, layerDefinition, level)
         end
 
-        -- Update our layer database for later access
-        layers[layer.id] = layer
+        if layer ~= nil then
+            assert(layer.id ~= nil, "Layer missing id")
+
+            -- Update our layer database for later access
+            layers[layer.id] = layer
+        end
     end
 
     return layers
@@ -46,7 +53,7 @@ end
 
 local Level = class('Level')
 
-function Level:initialize(data, tilesets)
+function Level:initialize(data, layerDb, tilesets)
     self.data = data
     
     self.id = data.identifier
@@ -72,11 +79,14 @@ function Level:initialize(data, tilesets)
     self.layers = {}
     self.background = {}
 
-    self:load(tilesets)
+    self:load(layerDb, tilesets)
 end
 
 -- Loads all the data for this level
-function Level:load(tilesets)
+function Level:load(layerDb, tilesets)
+    assert(layerDb ~= nil, "Layer DB not provided")
+    assert(tilesets ~= nil, "Tilesets missing")
+    
     if self.filename then   
         -- TODO: Make this generic  
         local filename = 'assets/levels/' .. self.filename
@@ -89,7 +99,7 @@ function Level:load(tilesets)
 
     self.background = extractBackground(self.data)
 
-    self.layers = extractLayers(self.data, self, tilesets)
+    self.layers = extractLayers(self.data, self, layerDb, tilesets)
 
     self.isLoaded = true
 end
@@ -131,10 +141,10 @@ end
 -- Called to tell the level to draw this indicated layer
 function Level:drawLayer(layerDefinition)
     assert(layerDefinition ~= nil, "No layer definition provided to draw layer")
-    local layer = self:getLayer(layerDefinition.id)
-    assert(layer ~= nil, "Could not find layer " .. layerDefinition.id)
-
-    layer:draw()
+    local layer = self:getLayer(layerDefinition.identifier)
+    if layer then
+        layer:draw()
+    end
 end
 
 -- Special function to specifically draw the background

@@ -5,8 +5,8 @@ local Layer = require('ldtk2.Layer')
 -- Super class for all layers
 local EntityLayer = class('EntityLayer', Layer)
 
-function EntityLayer:initialize(data, level)
-    Layer.initialize(self, data, level)
+function EntityLayer:initialize(data, layerDefinition, level)
+    Layer.initialize(self, data, layerDefinition, level)
 
     self.entities = {}
 end
