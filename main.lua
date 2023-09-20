@@ -53,7 +53,7 @@ local function processInput(dt)
     local moveUp = love.keyboard.isDown('w') or love.keyboard.isDown('up')
     local moveDown = love.keyboard.isDown('s') or love.keyboard.isDown('down')
 
-    local camera = world.camera
+    local camera = world:getCamera()
 
     if moveLeft then
         camera.x = camera.x - spd * dt

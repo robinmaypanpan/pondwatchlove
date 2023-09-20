@@ -8,6 +8,8 @@ local EnumSet = require('ldtk2.EnumSet')
 local EntityLayer = require('ldtk2.EntityLayer')
 local Level = require('ldtk2.Level')
 
+local Camera = require('ldtk2.Camera')
+
 -- Extracts the settings for the world
 local function configureWorld(world, data)
     -- Store a raw copy of the data
@@ -82,10 +84,7 @@ function World:initialize()
     -- Active levels should be drawn and updated
     self.activeLevels = {}
 
-    self.camera = {
-        x = 0,
-        y = 0
-    }
+    self.camera = Camera:new()
 end
 
 -- Configure the game
@@ -160,20 +159,15 @@ function World:setActiveLevels(levelList)
     
 end
 
--- Sets the camera position
-function World:setCameraSettings(settings)
-    -- Sets up camera settings for smooth transitions, etc.
-end
-
--- Sets the new camear position
-function World:setCameraPosition(x,y,w,h)
-    self.camera.x = x
-    self.camera.y = y
+-- Returns the camera
+function World:getCamera()
+    return self.camera
 end
 
 -- Executes any updates in the world and makes sure updates
 -- are sent to all children
 function World:update(dt)
+    self.camera:update(dt)
     for _,level in ipairs(self.activeLevels) do
         level:update(dt)
     end
@@ -181,9 +175,7 @@ end
 
 -- Draws the world
 function World:draw()
-    love.graphics.origin()
-    love.graphics.translate(-self.camera.x, -self.camera.y)
-
+    self.camera:translateGraphics()
     -- Draw backgrounds for all the currently active levels
     for _,level in ipairs(self.activeLevels) do
         level:drawBackground()
