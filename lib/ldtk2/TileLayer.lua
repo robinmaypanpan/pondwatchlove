@@ -51,17 +51,18 @@ function TileLayer:initialize(data, layerDefinition, level, tilesets)
         end
 
         self.tiles[tileRow][tileCol] = tile
-        table.insert(self.drawTiles, {row=tileRow, col=tileCol})
+        table.insert(self.drawTiles, { row = tileRow, col = tileCol })
     end
 
     self.tilesetBatch = self.tileset:createSpriteBatch(self.numRows, self.numCols)
-
 end
 
-function TileLayer:renderTileToSpriteBatch(row,col, spriteBatch)
+function TileLayer:renderTileToSpriteBatch(row, col, spriteBatch)
     local tile = self:getTile(row, col)
-    assert(tile ~= nil, "Tile does not exist at "..row..", "..col)
-    assert(tile.tileId ~= -1, "Tile does not have rendering data at "..row..", "..col .. " for layer " .. self.id .. " on level " .. self.level.id)
+    assert(tile ~= nil, "Tile does not exist at " .. row .. ", " .. col)
+    assert(tile.tileId ~= -1,
+        "Tile does not have rendering data at " ..
+        row .. ", " .. col .. " for layer " .. self.id .. " on level " .. self.level.id)
     local scaleX = 1
     local scaleY = 1
     if tile.flipX then
@@ -82,8 +83,7 @@ function TileLayer:draw()
         end
         self.tilesetBatch:flush()
         love.graphics.setColor(1, 1, 1, self.opacity)
-        love.graphics.draw(self.tilesetBatch, self.level.x, self.level.y)
-        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.draw(self.tilesetBatch)
     end
 end
 

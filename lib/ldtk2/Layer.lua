@@ -23,10 +23,7 @@ function Layer:initialize(data, layerDefinition, level)
     -- Parallex interaction with camera for this player
     self.parallaxX = data.parallaxFactorX
     self.parallaxY = data.parallaxFactorY
-
-    -- Indicates distance to offset this particular layer
-    self.x = data.__pxTotalOffsetX
-    self.y = data.__pxTotalOffsetY
+    self.scaleWithParallax = data.parallaxScaling
 end
 
 -- Standard update function

@@ -227,7 +227,7 @@ function World:draw()
     -- Iterate over each layer
     for _, layerDefinition in ipairs(self.layerList) do
         for _, level in ipairs(self.activeLevels) do
-            level:drawLayer(layerDefinition)
+            level:drawLayer(layerDefinition, self.camera)
         end
     end
     self.camera:detach()

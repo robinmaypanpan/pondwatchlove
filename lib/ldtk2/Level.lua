@@ -147,11 +147,18 @@ function Level:update(dt)
 end
 
 -- Called to tell the level to draw this indicated layer
-function Level:drawLayer(layerDefinition)
+function Level:drawLayer(layerDefinition, camera)
     assert(layerDefinition ~= nil, "No layer definition provided to draw layer")
     local layer = self:getLayer(layerDefinition.identifier)
     if layer then
-        layer:draw()
+        local canvas = love.graphics.newCanvas(self.width, self.height)
+        love.graphics.push()
+        love.graphics.origin()
+        canvas:renderTo(function()
+            layer:draw()
+        end)
+        love.graphics.pop()
+        love.graphics.draw(canvas, self.x, self.y)
     end
 end
 
