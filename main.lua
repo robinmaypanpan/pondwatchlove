@@ -26,7 +26,11 @@ function love.load(arg)
     world:configure({
         activateAllLevels = true,
         loadAllOnCreation = true,
-        entityTable = entityTable
+        entityTable = entityTable,
+        cameraSettings = {
+            dampenMovement = true,
+            centerTarget = true
+        }
     })
 
     world:loadFromFile(filename)
@@ -66,37 +70,43 @@ local function processInput(dt)
         dy = spd * dt
     end
 
-    world:getCamera():move(dx, dy)
+    if dx ~= 0 or dy ~= 0 then
+        world:getCamera():move(dx, dy)
+    end
+end
+
+function love.mousepressed(screenX, screenY, button, istouch, presses)
+    if button == 1 then
+        Mouse1IsDown = true
+        local camera = world:getCamera()
+        local worldX, worldY = camera:screenToWorld(screenX, screenY)
+        camera:setTarget(worldX, worldY)
+    end
+end
+
+function love.mousemoved(screenX, screenY, dx, dy, istouch)
+    if Mouse1IsDown then
+        local camera = world:getCamera()
+        camera:move(dx, dy)
+    end
+end
+
+function love.mousereleased(x, y, button, istouch, presses)
+    if button == 1 then
+        Mouse1IsDown = false
+    end
 end
 
 -- Called before calling draw each time a frame updates
 function love.update(dt)
     flux.update(dt)
-    local currentTime = love.timer.getTime()
 
     processInput(dt)
 
     world:update(dt)
-
-    -- -- Clear canvas layers
-    -- uiCanvas:renderTo(function()
-    --     love.graphics.clear()
-    -- end)
-    -- backgroundCanvas:renderTo(function()
-    --     love.graphics.clear()
-    -- end)
 end
 
 -- Called after calling update each frame.
 function love.draw()
-    -- love.graphics.origin()
-    -- love.graphics.draw(backgroundCanvas)
-
     world:draw()
-
-    --drawDebug()
-
-    -- love.graphics.origin()
-    -- love.graphics.setColor(1, 1, 1, 1)
-    -- love.graphics.draw(uiCanvas)
 end

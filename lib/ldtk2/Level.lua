@@ -61,7 +61,7 @@ local Level = class('Level')
 
 function Level:initialize(data, layerDb, tilesets)
     self.data = data
-    
+
     self.id = data.identifier
     self.uid = data.uid
     self.iid = data.iid
@@ -85,7 +85,7 @@ function Level:initialize(data, layerDb, tilesets)
     self.layers = {}
     self.background = {}
 
-    self.rgb = {love.math.random(),love.math.random(),love.math.random(), 1}
+    self.rgb = { love.math.random(), love.math.random(), love.math.random(), 1 }
 
     self:load(layerDb, tilesets)
 end
@@ -94,9 +94,9 @@ end
 function Level:load(layerDb, tilesets)
     assert(layerDb ~= nil, "Layer DB not provided")
     assert(tilesets ~= nil, "Tilesets missing")
-    
-    if self.filename then   
-        -- TODO: Make this generic  
+
+    if self.filename then
+        -- TODO: Make this generic
         local filename = 'assets/levels/' .. self.filename
         assert(love.filesystem.getInfo(filename), "Level file " .. filename .. " does not exist")
 
@@ -156,28 +156,23 @@ function Level:drawLayer(layerDefinition)
 end
 
 function Level:drawBackground()
-    if not self.backgroundCanvas then
+    if self.backgroundCanvas == nil then
         self:drawBackgroundToCanvas()
     end
 
-    -- if self.fields.LockBGToCamera then
-    --     -- Defer background drawing to camera
-    --     return
-    -- end
-
-    love.graphics.setColor(1,1,1,1)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.draw(self.backgroundCanvas, self.x, self.y)
 end
 
 -- Special function to specifically draw the background
 function Level:drawBackgroundToCanvas()
+    print('Creating background canvas for' .. self.id)
     self.backgroundCanvas = love.graphics.newCanvas(self.width, self.height)
 
     self.backgroundCanvas:renderTo(function()
         local bg = self.background
 
         if bg.image then
-            print('Drawing background image for ' .. self.id)
             if bg.position == 'Repeat' then
                 -- TODO: Implementing repeating backgrounds
             else
@@ -206,12 +201,10 @@ function Level:drawBackgroundToCanvas()
                 love.graphics.draw(bg.image, x, y, 0, scaleX, scaleY, bg.pivotX, bg.pivotY)
             end
         else
-            print('Drawing '.. bg.color ..' background rectangle for ' .. self.id)
             love.graphics.setColor(colorFromValue(bg.color))
             love.graphics.rectangle('fill', 0, 0, self.width, self.height)
         end
     end)
-
 end
 
 return Level

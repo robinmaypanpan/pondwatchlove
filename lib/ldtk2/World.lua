@@ -66,7 +66,7 @@ local function extractLevels(data, layers, tilesets)
     local levelDb = {}
     local levelList = {}
 
-    for _,levelData in ipairs(data) do
+    for _, levelData in ipairs(data) do
         local level = Level:new(levelData, layers, tilesets)
         levelDb[level.uid] = level
         levelDb[level.iid] = level
@@ -84,7 +84,7 @@ function World:initialize()
     -- Active levels should be drawn and updated
     self.activeLevels = {}
 
-    self.camera = Camera:new()
+    self.camera = Camera:new(self)
 end
 
 -- Configure the game
@@ -92,6 +92,10 @@ function World:configure(options)
     self.options = options
     if options.entityTable then
         self.entityTable = options.entityTable
+    end
+
+    if options.cameraSettings then
+        self.camera = Camera:new(self, options.cameraSettings)
     end
 end
 
@@ -102,7 +106,7 @@ function World:loadFromFile(filename)
     local rawData = love.filesystem.read(filename)
 
     local data = json.decode(rawData)
-    
+
     configureWorld(self, data)
 
     self.tilesetDb = extractTilesets(data.defs.tilesets)
@@ -112,7 +116,7 @@ function World:loadFromFile(filename)
 
     if self.options.activateAllLevels then
         local levels = {}
-        for _,level in ipairs(self.allLevels) do
+        for _, level in ipairs(self.allLevels) do
             table.insert(levels, level.id)
         end
         self:setActiveLevels(levels)
@@ -135,7 +139,7 @@ end
 function World:setActiveLevels(levelList)
     -- First, cache a map of levels that are activated already
     local activeLevels = {}
-    for _,levelId in ipairs(levelList) do
+    for _, levelId in ipairs(levelList) do
         activeLevels[levelId] = true
     end
 
@@ -148,15 +152,13 @@ function World:setActiveLevels(levelList)
 
     -- Now setup the newly active levels
     self.activeLevels = {}
-    for _,levelId in ipairs(levelList) do
-        
-    -- first load all the level data
+    for _, levelId in ipairs(levelList) do
+        -- first load all the level data
         local level = self.levelDb[levelId]
         assert(level ~= nil, 'Could not find desired level')
         table.insert(self.activeLevels, level)
         level:activate()
     end
-    
 end
 
 -- Returns the camera
@@ -168,7 +170,7 @@ end
 -- are sent to all children
 function World:update(dt)
     self.camera:update(dt)
-    for _,level in ipairs(self.activeLevels) do
+    for _, level in ipairs(self.activeLevels) do
         level:update(dt)
     end
 end
@@ -177,13 +179,13 @@ end
 function World:draw()
     self.camera:translateGraphics()
     -- Draw backgrounds for all the currently active levels
-    for _,level in ipairs(self.activeLevels) do
+    for _, level in ipairs(self.activeLevels) do
         level:drawBackground()
     end
 
     -- Iterate over each layer
-    for _,layerDefinition in ipairs(self.layerList) do
-        for _,level in ipairs(self.activeLevels) do
+    for _, layerDefinition in ipairs(self.layerList) do
+        for _, level in ipairs(self.activeLevels) do
             level:drawLayer(layerDefinition)
         end
     end
