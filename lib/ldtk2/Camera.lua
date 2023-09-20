@@ -50,15 +50,15 @@ end
 
 -- Converts screen coordinates to world coordinates
 function Camera:screenToWorld(screenX, screenY)
-    print('screenToWorld ' .. screenX .. ', ' .. screenY)
     local x = screenX + self.x
     local y = screenY + self.y
-    print('returning ' .. x .. ', ' .. y)
     return x, y
 end
 
 function Camera:worldToScreen(worldX, worldY)
-
+    local x = worldX - self.x
+    local y = worldY - self.y
+    return x, y
 end
 
 function Camera:setZoom(scale)
