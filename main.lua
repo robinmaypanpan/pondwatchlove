@@ -30,9 +30,9 @@ function love.load(arg)
     world = World:new()
 
     world:configure({
-        activateAllLevels = true,
         loadAllOnCreation = true,
-        entityTable = entityTable
+        entityTable = entityTable,
+        lockCameraToLevel = true
     })
 
     world:loadFromFile(filename)
@@ -44,7 +44,7 @@ function love.load(arg)
         levelZoom = 1
     })
 
-    -- world:setActiveLevels({'Entrance'})
+    world:setCurrentLevel('Entrance')
 
     -- -- Create our window locked canvases
     -- uiCanvas = love.graphics.newCanvas()

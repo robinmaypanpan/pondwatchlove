@@ -138,6 +138,13 @@ function World:getLevelAt(x, y)
     return nil
 end
 
+-- Sets the provided level as active and locks the camera to it
+function World:setCurrentLevel(levelId)
+    self:setActiveLevels({ levelId })
+    local level = self.levelDb[levelId]
+    self.camera:lockCamera(level)
+end
+
 -- Sets the active levels to draw and nearby levels to
 -- update
 function World:setActiveLevels(levelList)

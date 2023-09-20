@@ -78,10 +78,13 @@ function Camera:worldToScreen(worldX, worldY)
     return x, y
 end
 
+-- Sets the camera zoom level
 function Camera:setZoom(zoom)
     local screenWidth = love.graphics.getWidth()
     local screenHeight = love.graphics.getHeight()
     if self.zoom ~= nil then
+        -- Reposition to keep the original zoom centered
+        -- TODO: Change this to consider centerTarget
         local zx = (screenWidth / self.zoom - screenWidth / zoom) / 2
         local zy = (screenHeight / self.zoom - screenHeight / zoom) / 2
 
@@ -97,7 +100,26 @@ function Camera:setZoom(zoom)
     self.height = screenHeight / zoom
 end
 
+-- Locks the camera to the provided rectangle in world space
+function Camera:lockCamera(rectangle)
+    self.cameraLock = rectangle
+end
+
+-- Unlocks the camera to allow it to show any position
+function Camera:unlockCamera()
+    self.cameraLock = nil
+end
+
 function Camera:update(dt)
+    if self.cameraLock then
+        local lockLeft = self.cameraLock.x
+        local lockRight = self.cameraLock.x + self.cameraLock.width - self.width
+        local lockTop = self.cameraLock.y
+        local lockBottom = self.cameraLock.y + self.cameraLock.height - self.height
+        self.targetX = math.mid(lockLeft, self.targetX, lockRight)
+        self.targetY = math.mid(lockTop, self.targetY, lockBottom)
+    end
+
     local dx = self.targetX - self.x
     local dy = self.targetY - self.y
     if math.abs(dx) > 1 or math.abs(dy) > 1 then
