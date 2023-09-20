@@ -158,7 +158,8 @@ function Level:drawLayer(layerDefinition, camera)
             layer:draw()
         end)
         love.graphics.pop()
-        love.graphics.draw(canvas, self.x, self.y)
+
+        love.graphics.draw(canvas, self.x + layerDefinition.pxOffsetX, self.y + layerDefinition.pxOffsetY)
     end
 end
 
