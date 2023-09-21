@@ -176,8 +176,10 @@ function Level:drawLayer(layerDefinition, camera)
 
         local originX = self.width / 2
         local originY = self.height / 2
+
         local x = self.x + layerDefinition.pxOffsetX + originX + dx
         local y = self.y + layerDefinition.pxOffsetY + originY + dy
+
         love.graphics.draw(canvas, x, y, 0,
             scaleX, scaleY, originX, originY)
     end
